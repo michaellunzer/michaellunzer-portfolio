@@ -19,21 +19,21 @@ export default class Blogs extends Component {
         <div className="site-container blogs-page" id="Blogs">
           <div className="container">
             <div className="section-head">
-              <h1 className="line-heading h2">Blogs</h1>
+              <h1 className="line-heading h2">Projects</h1>
             </div>
             <ul
               className={`blogs-list ${
-                data.allContentfulBlogs.edges.length < 5 ? "few-blogs" : ""
+                data.allContentfulWorks.edges.length < 5 ? "few-blogs" : ""
               }`}
             >
-              {data.allContentfulBlogs.edges.map((item, index) => {
+              {data.allContentfulWorks.edges.map((item, index) => {
                 return (
                   <li key={index} className="item">
                     <div className="inner">
                       <Link className="link" to={item.node.slug} />
-                      {item.node.featureImage ? (
+                      {item.node.featuredImage ? (
                         <Img
-                          fixed={item.node.featureImage.fluid}
+                          fixed={item.node.featuredImage.fluid}
                           objectFit="cover"
                           objectPosition="50% 50%"
                         />
@@ -41,7 +41,7 @@ export default class Blogs extends Component {
                         <div className="no-image"></div>
                       )}
                       <div className="details">
-                        <h3 className="title">{item.node.title}</h3>
+                        <h3 className="title">{item.node.siteName}</h3>
                         <span className="date">
                           <i className="fas fa-calendar-alt"></i>{" "}
                           {moment(item.node.createdAt).format("LL")}
@@ -60,13 +60,13 @@ export default class Blogs extends Component {
 }
 
 export const pageQuery = graphql`
-  query BlogsQuery {
-    allContentfulBlogs(sort: {fields: createdAt, order: DESC}) {
+query WorksQuery {
+    allContentfulWorks(sort: {fields: createdAt, order: DESC}) {
       edges {
         node {
-          title
+          siteName
           slug
-          featureImage {
+          featuredImage {
             fluid(maxWidth: 1500) {
               base64
               aspectRatio

@@ -15,9 +15,9 @@ export default class work extends Component {
               return (
                 <li key={index} className="item">
                   <div className="inner">
-                    <a href={item.node.url}>
+                    <a href={item.node.slug}>
                       <Img
-                        fixed={item.node.image.fluid}
+                        fixed={item.node.featuredImage.fluid}
                         objectFit="cover"
                         objectPosition="50% 50%"
                       />

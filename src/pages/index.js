@@ -12,12 +12,14 @@ import Blogs from "../components/blogs";
 import Testimonial from "../components/testimonial";
 import Contact from "../components/contact";
 import Photos from "../components/photos";
+import Map from "../components/map";
+import Resume from "../components/resume";
 
 const IndexPage = ({ data }) => (
   <Layout header="home">
     <SEO
-      title={data.contentfulAboutMe.designation}
-      keywords={[`Rohit Gupta`, `Frontend Developer`, `Developer`]}
+      title={data.contentfulAboutMe.designation} 
+      keywords={[`Michael Lunzer`, `Customer Success Manager`, `Technical Account Manager`]}
     />
     <Banner data={data.contentfulAboutMe}></Banner>
 
@@ -64,6 +66,16 @@ const IndexPage = ({ data }) => (
       .map(t => {
         return <Contact data={data.contentfulAboutMe.gmail}></Contact>;
       })}
+
+    {/* {data.contentfulSiteInformation.menus
+      .filter(item => item === "Resume")
+      .map(t => {
+        return <Resume data={data.allContentfulResume}></Resume>;
+      })} */}
+
+      {/* <Resume /> */}
+
+      <Map />
   </Layout>
 );
 
@@ -88,7 +100,6 @@ export const pageQuery = graphql`
         }
       }
       designation
-      age
       facebook
       github
       gmail
@@ -171,12 +182,32 @@ export const pageQuery = graphql`
         }
       }
     }
+    allContentfulResume (limit: 5, sort: {fields: createdAt, order: DESC}) {
+      edges {
+        node {
+          title
+          slug
+          featureImage {
+              fluid(maxWidth: 600) {
+                base64
+                aspectRatio
+                src
+                srcSet
+                srcWebp
+                srcSetWebp
+                sizes
+              }
+            }
+            createdAt
+        }
+      }
+    }
     allContentfulWorks {
       edges {
         node {
           siteName
-          url
-          image {
+          slug
+          featuredImage {
             fluid(maxWidth: 600) {
               base64
               aspectRatio

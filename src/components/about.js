@@ -14,9 +14,9 @@ const Header = ({ data }) => (
         </div>
         <div className="left col-md-7 col-lg-8">
           <div className="about-details">
-            <span className="name">My Name is {data.name}.</span>
+            <h1 className="name">My Name is {data.name}.</h1>
             <h2 className="sub-position">
-              I'm a Professional {data.designation}.
+              I'm a {data.designation}.
             </h2>
             <div
               dangerouslySetInnerHTML={{
@@ -28,10 +28,10 @@ const Header = ({ data }) => (
                 <strong>Full Name</strong>
                 <p>{data.name}</p>
               </li>
-              <li>
+              {/* <li>
                 <strong>Age</strong>
                 <p>{data.age} Years</p>
-              </li>
+              </li> */}
               <li>
                 <strong>Location</strong>
                 <p>{data.location}</p>
@@ -47,8 +47,16 @@ const Header = ({ data }) => (
               <ul>
                 <li>
                   <a
-                    className="fab fa-facebook-f"
-                    href={data.facebook}
+                    className="fab fa-linkedin-in"
+                    href={data.linkdin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  ></a>
+                </li>
+                <li>
+                  <a
+                    className="fab fa-github"
+                    href={data.github}
                     target="_blank"
                     rel="noopener noreferrer"
                   ></a>
@@ -63,24 +71,16 @@ const Header = ({ data }) => (
                 </li>
                 <li>
                   <a
+                    className="fab fa-facebook-f"
+                    href={data.facebook}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  ></a>
+                </li>
+                <li>
+                  <a
                     className="fab fa-instagram"
                     href={data.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  ></a>
-                </li>
-                <li>
-                  <a
-                    className="fab fa-linkedin-in"
-                    href={data.linkdin}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  ></a>
-                </li>
-                <li>
-                  <a
-                    className="fab fa-github"
-                    href={data.github}
                     target="_blank"
                     rel="noopener noreferrer"
                   ></a>

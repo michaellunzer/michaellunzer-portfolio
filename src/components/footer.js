@@ -5,7 +5,7 @@ export default class footer extends Component {
     return (
       <div className="site-footer" id="footer">
         <div className="container">
-          <span>{this.props.siteName}</span>
+          <span>Copyright &copy; {this.props.siteName} 2020</span>
         </div>
       </div>
     );

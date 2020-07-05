@@ -35,15 +35,8 @@ export default class Header extends Component {
             >
               <span></span>
             </div>
-            {header === "home" ? (
               <div className="menu">
-                <ul
-                  onClick={() => {
-                    this.setState({
-                      menu: false
-                    });
-                  }}
-                >
+                <ul>
                   <li>
                     <Link to="/#home">Home</Link>
                   </li>
@@ -70,7 +63,7 @@ export default class Header extends Component {
                     .map(t => {
                       return (
                         <li>
-                          <Link to={`/#Blogs`}>Blogs</Link>
+                          <Link to={`/#Blogs`}>Blog</Link>
                         </li>
                       );
                     })}
@@ -111,41 +104,28 @@ export default class Header extends Component {
                         </li>
                       );
                     })}
-                </ul>
-              </div>
-            ) : (
-              <div className="menu">
-                <ul
-                  onClick={() => {
-                    this.setState({
-                      menu: false
-                    });
-                  }}
-                >
-                  <li>
-                    <Link to="/#home">Home</Link>
-                  </li>
                   {data.menus
-                    .filter(item => item === "Blogs")
+                    .filter(item => item === "Resume")
                     .map(t => {
                       return (
                         <li>
-                          <Link to="/blogs">Blogs</Link>
+                          <Link to={`/resume`}>Resume</Link>
                         </li>
                       );
                     })}
                   {data.menus
-                    .filter(item => item === "Photos")
+                    .filter(item => item === "Map")
                     .map(t => {
                       return (
                         <li>
-                          <Link to="/photos">Photos</Link>
+                          <Link to={`/#Map`}>Map</Link>
                         </li>
                       );
                     })}
                 </ul>
+          
               </div>
-            )}
+
           </div>
         </div>
       </header>

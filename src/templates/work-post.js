@@ -7,14 +7,15 @@ import { DiscussionEmbed } from "disqus-react";
 import Layout from "../components/layout";
 import SEO from "../components/seo";
 import Share from "../components/share";
+import { documentToReactComponents } from "@contentful/rich-text-react-renderer"
 
-export default class blogPost extends Component {
+export default class workPost extends Component {
   render() {
-    const data = this.props.data.contentfulBlogs;
+    const data = this.props.data.contentfulWorks;
     const disqusShortname = "RohitGupta";
     const disqusConfig = {
       identifier: data.id,
-      title: data.title
+      title: data.siteName
     };
 
     const siteurl = this.props.data.contentfulSiteInformation.siteUrl + "/";
@@ -24,27 +25,27 @@ export default class blogPost extends Component {
       site: {
         siteMetadata: { siteurl, twiteerhandle }
       },
-      title: data.title,
+      title: data.siteName,
       slug: data.slug
     };
 
     return (
       <Layout>
         <SEO
-          title={data.title}
+          title={data.siteName}
           keywords={[
             `Michael Lunzer`,
             `Customer Success Manager`,
             `Technical Account Manager`,
-            `${data.title}`
+            `${data.siteName}`
           ]}
         />
         <div className="site-container blog-post">
           <div className="container">
-            {data.featureImage ? (
+            {data.featuredImage ? (
               <Img
                 className="feature-img"
-                fixed={data.featureImage.fluid}
+                fixed={data.featuredImage.fluid}
                 objectFit="cover"
                 objectPosition="50% 50%"
               />
@@ -53,16 +54,20 @@ export default class blogPost extends Component {
             )}
 
             <div className="details">
-              <h1 className="title">{data.title}</h1>
+              <h1 className="title">{data.siteName}</h1>
               <span className="date">
                 <i class="fas fa-calendar-alt"></i>{" "}
                 {moment(data.createdAt).format("LL")}
               </span>
-              <div
+              {/* <div
                 dangerouslySetInnerHTML={{
-                  __html: data.description.childMarkdownRemark.html
+                  __html: data.body.childMarkdownRemark.html
                 }}
-              />
+              /> */}
+              <div>
+              {documentToReactComponents(data.body.json)}
+
+              </div>
             </div>
             <Share
               socialConfig={{
@@ -85,12 +90,15 @@ export default class blogPost extends Component {
 }
 
 export const pageQuery = graphql`
-  query SinglePostQuery($slug: String!) {
-    contentfulBlogs(slug: { eq: $slug }) {
+query SingleWorkQuery($slug: String!) {
+    contentfulWorks(slug: { eq: $slug }) {
       id
-      title
       slug
-      featureImage {
+      siteName
+      body {
+        json 
+      }
+      featuredImage {
         fluid(maxWidth: 1500) {
           base64
           aspectRatio
@@ -99,11 +107,6 @@ export const pageQuery = graphql`
           srcWebp
           srcSetWebp
           sizes
-        }
-      }
-      description {
-        childMarkdownRemark {
-          html
         }
       }
       createdAt
