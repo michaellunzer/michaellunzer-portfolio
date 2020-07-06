@@ -5,7 +5,7 @@
     </a>
   </p>
   <h1 align="center">
-    Michael Lunzer - Portfolio
+    Michael Lunzer - Portfolio Site
   </h1>
   <img src="https://github.com/michaellunzer/michaellunzer-portfolio/blob/master/docs/screenshot.png" />
 
