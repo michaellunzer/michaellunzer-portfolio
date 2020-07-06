@@ -14,8 +14,9 @@ export default class Contact extends Component {
             method="POST"
             data-netlify="true"
             // netlify
-            // netlify-honeypot="bot-field"
+            netlify-honeypot="bot-field"
           >
+          <input type="hidden" name="form-name" value="contact" />
             <div>
               <label>
                 Your Name: <input type="text" name="name" required />
