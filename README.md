@@ -1,13 +1,13 @@
   <!-- AUTO-GENERATED-CONTENT:START (STARTER) -->
   <p align="center">
     <a href="https://rg-portfolio.netlify.com/">
-      <img alt="rg-portfolio" src="https://github.com/rohitguptab/rg-portfolio/blob/master/src/images/fev_icon.png" width="50" />
+      <img alt="rg-portfolio" src="https://github.com/michaellunzer/michaellunzer-portfolio/blob/master/images/ML.png" width="50" />
     </a>
   </p>
   <h1 align="center">
-    RG-Portfolio
+    Michael Lunzer - Portfolio
   </h1>
-  <img src="https://github.com/rohitguptab/rg-portfolio/blob/master/docs/screenshot.jpg" />
+  <img src="https://github.com/michaellunzer/michaellunzer-portfolio/blob/master/docs/screenshot.png" />
 
 
 
@@ -16,6 +16,9 @@
 I also learned a lot from Andrew Mead's [Great Gatsby bootcamp](https://www.youtube.com/watch?v=8t0vNu2fCCM&t=1762s). It's a 4 hour video and will teach you enough to be dangerous with GatsbyJS.
 
   [![Netlify Status](https://api.netlify.com/api/v1/badges/56830697-4149-4bad-83e2-21dfe7b3d5b3/deploy-status)](https://app.netlify.com/sites/michaellunzer/deploys)
+
+## Everything below this is from the original readme.md file
+
 
 Kick-off your Portfolio website with RG-Portfolio gatsby starter. We have used [Gatsby](https://www.gatsbyjs.org/) + [Contenful](https://www.gatsbyjs.org/packages/gatsby-source-contentful/?=Contenful).
 
