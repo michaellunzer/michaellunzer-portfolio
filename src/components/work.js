@@ -21,7 +21,7 @@ export default class work extends Component {
                         objectFit="cover"
                         objectPosition="50% 50%"
                       />
-                      <span className="name">{item.node.siteName}</span>
+                      <span className="name">{item.node.siteName}</span> 
                     </a>
                   </div>
                 </li>

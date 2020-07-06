@@ -22,7 +22,7 @@ export default class PhotosPage extends Component {
       <Layout>
         <SEO
           title="Photos"
-          keywords={[`Rohit Gupta`, `Frontend Developer`, `Developer`, `Photo`]}
+          keywords={[`Michael Lunzer`, `Customer Success Manager`, `Cloud`, `Blogs`]}
         />
         <div className="site-container blogs-page" id="Blogs">
           <div className="container">
@@ -47,6 +47,8 @@ export default class PhotosPage extends Component {
                         objectFit="cover"
                         objectPosition="50% 50%"
                       />
+                      <span className="name">test</span>
+                      {/* this is where you place the caption */}
                     </div>
                   </li>
                 );
@@ -76,6 +78,9 @@ export default class PhotosPage extends Component {
                     src={data.contentfulPhotos.photos[selectedItem].file.url}
                     alt="popup-img"
                   />
+                 <span className="name">test</span>
+                      {/* this is where you place the caption */}
+
                 </div>
               </div>
             ) : (
@@ -91,6 +96,7 @@ export const pageQuery = graphql`
   query PhotosPageQuery {
     contentfulPhotos {
       photos {
+        title
         file {
           url
         }
