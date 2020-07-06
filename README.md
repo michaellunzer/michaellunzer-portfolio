@@ -9,6 +9,14 @@
   </h1>
   <img src="https://github.com/rohitguptab/rg-portfolio/blob/master/docs/screenshot.jpg" />
 
+
+
+ ## My portfolio website was created using a template called RG-Portfolio. It's awesome and I've learned a lot by using it!
+
+I also learned a lot from Andrew Mead's [Great Gatsby bootcamp](https://www.youtube.com/watch?v=8t0vNu2fCCM&t=1762s). It's a 4 hour video and will teach you enough to be dangerous with GatsbyJS.
+
+  [![Netlify Status](https://api.netlify.com/api/v1/badges/56830697-4149-4bad-83e2-21dfe7b3d5b3/deploy-status)](https://app.netlify.com/sites/michaellunzer/deploys)
+
 Kick-off your Portfolio website with RG-Portfolio gatsby starter. We have used [Gatsby](https://www.gatsbyjs.org/) + [Contenful](https://www.gatsbyjs.org/packages/gatsby-source-contentful/?=Contenful).
 
 ### Live Demo:
@@ -18,7 +26,7 @@ https://rg-portfolio.netlify.com/
 ### Feature:
 
 - Blogs listing with each blog post.
-- Contact form with Email notification using formspree.io.
+- Contact form with Email notification using netlify forms
 - Photos and Blogs page listing.
 - Different types of sections like About, Service, Blogs, Work, Testimonials, Photos, and contact.
 - All settings manage from contentful for example Header Menu, Homepage sections, blogs, and photos, etc.

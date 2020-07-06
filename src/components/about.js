@@ -69,14 +69,14 @@ const Header = ({ data }) => (
                     rel="noopener noreferrer"
                   ></a>
                 </li>
-                <li>
+                {/* <li>
                   <a
                     className="fab fa-facebook-f"
                     href={data.facebook}
                     target="_blank"
                     rel="noopener noreferrer"
                   ></a>
-                </li>
+                </li> */}
                 <li>
                   <a
                     className="fab fa-instagram"
