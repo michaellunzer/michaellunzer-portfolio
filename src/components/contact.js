@@ -9,12 +9,9 @@ export default class Contact extends Component {
             <h2 className="text-center">Contact</h2>
           </div>
           <form
-            // action={`https://formspree.io/${this.props.data}`}
             name="contact"
-            method="POST"
+            method="post"
             data-netlify="true"
-            // netlify
-            netlify-honeypot="bot-field"
           >
           <input type="hidden" name="form-name" value="contact" />
             <div>
@@ -31,6 +28,8 @@ export default class Contact extends Component {
               <label>
                 Message: <textarea name="message" required></textarea>
               </label>
+            </div>
+            <div data-netlify-recaptcha="true">
             </div>
             <div>
               <button type="submit">Send</button>
