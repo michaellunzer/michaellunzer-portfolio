@@ -96,7 +96,7 @@ query SingleWorkQuery($slug: String!) {
       slug
       siteName
       body {
-        json 
+        json
       }
       featuredImage {
         fluid(maxWidth: 1500) {

@@ -204,7 +204,7 @@ code{background-color:#333;border-radius:3px;margin-bottom:30px;display:block;pa
     h1,
     .h1{font-size:32px}
     h2{font-size:24px;line-height:30px}
-    .responsive-menu{display:flex;float:left}
+    .responsive-menu{display:flex;float:right}
     .site-header .header-main .menu ul li a{padding:6px 20px;display:inline-block;width:100%;border-bottom:1px solid #fff;box-sizing:border-box;font-size:14px}
 }
 @media only screen and (max-width:568px){
