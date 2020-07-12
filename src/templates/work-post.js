@@ -8,53 +8,6 @@ import Layout from "../components/layout";
 import SEO from "../components/seo";
 import Share from "../components/share";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
-// import { MARKS } from '@contentful/rich-text-types';
-// import { BLOCKS } from "@contentful/rich-text-types";
-// import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
-// import Image from "gatsby-image";
-// import { useContentfulImage } from "../../hooks";
-
-// import { documentToReactComponents } from '@contentful/rich-text-react-renderer'
-
-// const options = {
-//   renderNode: {
-//     [BLOCKS.EMBEDDED_ASSET]: node => {
-//       const fluid = useContentfulImage(
-//         node.data.target.fields.file["en-US"].url
-//       );
-//       return (
-//         <Image title={node.data.target.fields.title["en-US"]} fluid={fluid} />
-//       );
-//     }
-//   }
-// };
-
-// const Works = (props) => {
-//   const options = {
-//       renderNode: {
-//           "embedded-asset-block": (node) => {
-//               const alt = node.data.target.fields.title['en-US']
-//               const url = node.data.target.fields.file['en-US'].url
-//               return <img alt={alt} src={url} />
-//           }
-//       }
-//   }
-
-//   return (
-//     <Layout>
-//         <Head title={props.data.contentfulBlogPost.title}/>
-//         <h1>{props.data.contentfulBlogPost.title}</h1>
-//         <p>{props.data.contentfulBlogPost.publishedDate}</p>
-//         {documentToReactComponents(props.data.contentfulBlogPost.body.json, options)}
-//     </Layout>
-// )
-// }
-
-// export default Blog
-
-// export default ({ richTextJson }) =>
-//   documentToReactComponents(richTextJson, options);
-
 
 export default class workPost extends Component {
   render() {
@@ -115,11 +68,6 @@ export default class workPost extends Component {
                 <i class="fas fa-calendar-alt"></i>{" "}
                 {moment(data.createdAt).format("LL")}
               </span>
-              {/* <div
-                dangerouslySetInnerHTML={{
-                  __html: data.body.body.value.html
-                }}
-              /> */}
               <div>
               {documentToReactComponents(data.body.json, options)}
 
