@@ -31,6 +31,7 @@ module.exports = {
       options: {
         spaceId: process.env.SPACE_ID,
         accessToken: process.env.API_KEY,
+        downloadLocal: true,
       }
     },
     `gatsby-transformer-sharp`,
