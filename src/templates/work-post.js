@@ -9,7 +9,9 @@ import SEO from "../components/seo";
 import Share from "../components/share";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
 import { BLOCKS, INLINES } from '@contentful/rich-text-types'; 
-import Iframe from "../components/iframe";
+// import Iframe from "../components/iframe";
+// import iframeStyles from "../css/iframe.module.scss"
+
 
 export default class workPost extends Component {
   render() {
@@ -38,15 +40,9 @@ export default class workPost extends Component {
               return <img alt={alt} src={url} />
           }
           ,
-      //     // add render options for embedded-entry-inline
-
-      //     // [INLINES.HYPERLINK]: (node) => {
-      //     //   const iframe_title = node.data.title;
-      //     //   const iframe_url = node.data.uri;
-      // renderiframeNode: {
+     // add render options for embedded-entry-inline
           [INLINES.EMBEDDED_ENTRY]: (node) => {
-            // const iframe_title = node.data.title;
-            // const iframe_url = node.data.uri;
+
               const iframe_title = node.data.target.fields.title['en-US']
               const iframe_url = node.data.target.fields.url['en-US']
               const iframe_id = node.data.target.sys.contentType.sys.id
@@ -55,30 +51,27 @@ export default class workPost extends Component {
               const iframe_width = node.data.target.fields.width['en-US'];
               // if type ID is "iframe", return an iframe
               if (node.data.target.sys.contentType.sys.id == "iframe") {
-                return (
-                  // <div><p>
-                  //       { iframe_id }
-                  //       { iframe_url }
-                  // </p>
-                  // </div>
-                  
+                return ( 
+                  <div class="iframe-container">
                           <iframe
                               title={iframe_title}
-                              width="560"
-                              height="315"
+                              // width={iframe_width}
+                              // height={iframe_height}
                               src={iframe_url}
-                              frameBorder="0"
-                              allow="accelerometer; autoplay; encrypted-media; gyroscope;"
+                              // frameBorder="0"
+                              allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" 
                               allowFullScreen
                               ></iframe>
+                  </div>
                         )
-          }
+// One day I need to pass this to a reusable component and reference it from iframe.js
+// for now, I've commented out the component
               // return (
               // <Iframe title={iframe_title} description={iframe_description} src={iframe_url} height={iframe_height} width={iframe_width} />
               //     // add code to pass variables to iframe.js component [ ] do this tomorrow
               // )
-              // };
-
+              }
+          }
 
        // example for custom component
                   // [BLOCKS.EMBEDDED_ENTRY]: (node) => {
@@ -105,7 +98,7 @@ export default class workPost extends Component {
             //           ></iframe>
             //      )
               //  }
-             } 
+            //  } 
           }
         
       };
@@ -142,7 +135,6 @@ export default class workPost extends Component {
               </span>
               <div>
               {documentToReactComponents(data.body.json, options)}
-
               </div>
             </div>
             <Share
