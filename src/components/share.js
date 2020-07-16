@@ -30,7 +30,7 @@ const Share = ({ socialConfig }) => {
         </span>
         <span className="text">Twitter</span>
       </TwitterShareButton>
-      <WhatsappShareButton
+      {/* <WhatsappShareButton
         url={socialConfig.config.url}
         className="button is-outlined is-rounded whatsapp"
         title={socialConfig.config.title}
@@ -39,7 +39,7 @@ const Share = ({ socialConfig }) => {
           <i className="fab fa-whatsapp"></i>
         </span>
         <span className="text">WhatsApp</span>
-      </WhatsappShareButton>
+      </WhatsappShareButton> */}
     </div>
   );
 };

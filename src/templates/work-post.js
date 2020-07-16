@@ -8,6 +8,8 @@ import Layout from "../components/layout";
 import SEO from "../components/seo";
 import Share from "../components/share";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
+import { BLOCKS, INLINES } from '@contentful/rich-text-types'; 
+import Iframe from "../components/iframe";
 
 export default class workPost extends Component {
   render() {
@@ -30,13 +32,83 @@ export default class workPost extends Component {
     };
     const options = {
       renderNode: {
-          "embedded-asset-block": (node) => {
+          [BLOCKS.EMBEDDED_ASSET]: (node) => {
               const alt = node.data.target.fields.title['en-US']
               const url = node.data.target.fields.file['en-US'].url
               return <img alt={alt} src={url} />
           }
-      }
-  };
+          ,
+      //     // add render options for embedded-entry-inline
+
+      //     // [INLINES.HYPERLINK]: (node) => {
+      //     //   const iframe_title = node.data.title;
+      //     //   const iframe_url = node.data.uri;
+      // renderiframeNode: {
+          [INLINES.EMBEDDED_ENTRY]: (node) => {
+            // const iframe_title = node.data.title;
+            // const iframe_url = node.data.uri;
+              const iframe_title = node.data.target.fields.title['en-US']
+              const iframe_url = node.data.target.fields.url['en-US']
+              const iframe_id = node.data.target.sys.contentType.sys.id
+              const iframe_description = node.data.target.fields.description['en-US'];
+              const iframe_height = node.data.target.fields.height['en-US'];
+              const iframe_width = node.data.target.fields.width['en-US'];
+              // if type ID is "iframe", return an iframe
+              if (node.data.target.sys.contentType.sys.id == "iframe") {
+                return (
+                  // <div><p>
+                  //       { iframe_id }
+                  //       { iframe_url }
+                  // </p>
+                  // </div>
+                  
+                          <iframe
+                              title={iframe_title}
+                              width="560"
+                              height="315"
+                              src={iframe_url}
+                              frameBorder="0"
+                              allow="accelerometer; autoplay; encrypted-media; gyroscope;"
+                              allowFullScreen
+                              ></iframe>
+                        )
+          }
+              // return (
+              // <Iframe title={iframe_title} description={iframe_description} src={iframe_url} height={iframe_height} width={iframe_width} />
+              //     // add code to pass variables to iframe.js component [ ] do this tomorrow
+              // )
+              // };
+
+
+       // example for custom component
+                  // [BLOCKS.EMBEDDED_ENTRY]: (node) => {
+                  //   const { title, description } = node.data.target.fields;
+                  //   return <CustomComponent title={title} description={description} />
+                  // }
+                
+              
+
+
+
+            //  [INLINES.HYPERLINK]: node => {
+            //    if (node.data.uri.indexOf("youtube.com") !== -1) {
+            //      // if entry is video, return an iframe
+            //      return (
+            //        <iframe
+            //           title={node.data.title}
+            //           width="560"
+            //           height="315"
+            //           src={node.data.uri}
+            //           frameBorder="0"
+            //           allow="accelerometer; autoplay; encrypted-media; gyroscope;"
+            //           allowFullScreen
+            //           ></iframe>
+            //      )
+              //  }
+             } 
+          }
+        
+      };
 
     return (
       <Layout>

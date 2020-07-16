@@ -5,6 +5,7 @@
   "version": "0.1.0",
   "author": "Michael Lunzer <michaellunzer@gmail.com>",
   "dependencies": {
+    "@contentful/gatsby-transformer-contentful-richtext": "^13.1.0",
     "@contentful/rich-text-react-renderer": "^14.1.1",
     "bootstrap": "^4.4.1",
     "disqus-react": "^1.0.7",
