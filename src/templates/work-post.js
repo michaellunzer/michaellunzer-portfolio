@@ -16,7 +16,7 @@ import { BLOCKS, INLINES } from '@contentful/rich-text-types';
 export default class workPost extends Component {
   render() {
     const data = this.props.data.contentfulWorks;
-    const disqusShortname = "RohitGupta";
+    const disqusShortname = "michaellunzer-portfolio";
     const disqusConfig = {
       identifier: data.id,
       title: data.siteName
