@@ -8,7 +8,7 @@ import Layout from "../components/layout";
 import SEO from "../components/seo";
 import Share from "../components/share";
 import { documentToReactComponents } from "@contentful/rich-text-react-renderer";
-import { BLOCKS, INLINES } from '@contentful/rich-text-types'; 
+import { BLOCKS, INLINES, MARKS } from '@contentful/rich-text-types'; 
 // import Iframe from "../components/iframe";
 // import iframeStyles from "../css/iframe.module.scss"
 
@@ -71,7 +71,13 @@ export default class workPost extends Component {
               //     // add code to pass variables to iframe.js component [ ] do this tomorrow
               // )
               }
-          }
+        //     },
+        //       renderMark: {
+        //         [MARKS.CODE]: code => {
+        //           return <pre className="code-snippet">{code}</pre>
+        //         }
+        //   }
+        // }
 
        // example for custom component
                   // [BLOCKS.EMBEDDED_ENTRY]: (node) => {
@@ -97,9 +103,9 @@ export default class workPost extends Component {
             //           allowFullScreen
             //           ></iframe>
             //      )
-              //  }
-            //  } 
-          }
+               }
+             } 
+          
         
       };
 
