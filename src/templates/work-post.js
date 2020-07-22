@@ -137,7 +137,7 @@ export default class workPost extends Component {
               <h1 className="title">{data.siteName}</h1>
               <span className="date">
                 <i class="fas fa-calendar-alt"></i>{" "}
-                {moment(data.createdAt).format("LL")}
+                {moment(data.publishedDate).format("LL")}
               </span>
               <div>
               {documentToReactComponents(data.body.json, options)}
@@ -184,6 +184,7 @@ query SingleWorkQuery($slug: String!) {
         }
       }
       createdAt
+      publishedDate
     }
     contentfulSiteInformation {
       siteUrl

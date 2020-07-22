@@ -13,7 +13,7 @@ export default class Blogs extends Component {
     return (
       <Layout>
         <SEO
-          title="Blogs"
+          title="Works"
           keywords={[`Michael Lunzer`, `Customer Success Manager`, `Cloud`, `Blogs`]}
         />
         <div className="site-container blogs-page" id="Blogs">
@@ -44,7 +44,7 @@ export default class Blogs extends Component {
                         <h3 className="title">{item.node.siteName}</h3>
                         <span className="date">
                           <i className="fas fa-calendar-alt"></i>{" "}
-                          {moment(item.node.createdAt).format("LL")}
+                          {moment(item.node.publishedDate).format("LL")}
                         </span>
                       </div>
                     </div>
@@ -61,7 +61,7 @@ export default class Blogs extends Component {
 
 export const pageQuery = graphql`
 query WorksQuery {
-    allContentfulWorks(sort: {fields: createdAt, order: DESC}) {
+    allContentfulWorks(sort: {fields: publishedDate, order: DESC}) {
       edges {
         node {
           siteName
@@ -77,6 +77,7 @@ query WorksQuery {
               sizes
             }
           }
+          publishedDate
           createdAt
         }
       }
