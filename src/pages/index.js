@@ -202,7 +202,7 @@ export const pageQuery = graphql`
         }
       }
     }
-    allContentfulWorks {
+    allContentfulWorks(sort: {fields: publishedDate, order: DESC}) {
       edges {
         node {
           siteName
@@ -218,6 +218,8 @@ export const pageQuery = graphql`
               sizes
             }
           }
+          publishedDate
+          createdAt
         }
       }
     }
