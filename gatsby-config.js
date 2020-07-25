@@ -43,9 +43,9 @@ module.exports = {
         name: `Michael Lunzer`,
         short_name: `Michael Lunzer`,
         start_url: `/`,
-        background_color: `#6D87A0`,
+        background_color: `#494964`,
         theme_color: `#333`,
-        icon: `src/images/ML.png` // This path is relative to the root of the site.
+        icon: `src/images/ML-blue-background.png` // This path is relative to the root of the site.
       }
     }, // To learn more, visit: https://gatsby.dev/offline // this (optional) plugin enables Progressive Web App + Offline functionality
     `gatsby-plugin-offline`
