@@ -43,7 +43,7 @@ module.exports = {
         name: `Michael Lunzer`,
         short_name: `Michael Lunzer`,
         start_url: `/`,
-        background_color: `#494964`,
+        background_color: `#6D87A0`,
         theme_color: `#333`,
         icon: `src/images/ML.png` // This path is relative to the root of the site.
       }
