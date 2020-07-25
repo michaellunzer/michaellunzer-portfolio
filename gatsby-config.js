@@ -47,7 +47,7 @@ module.exports = {
         theme_color: `#ffffff`,
         icon: `src/images/ML.png`, // This path is relative to the root of the site.
         icon_options: {
-          "background_color": "white"
+          "background_color": "white",
           "theme_color": "white"
         }
       }
