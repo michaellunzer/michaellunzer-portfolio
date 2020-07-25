@@ -19,7 +19,7 @@ export default class work extends Component {
                       <Img
                         fixed={item.node.featuredImage.fluid}
                         objectFit="cover"
-                        objectPosition="50% 50%"
+                        objectPosition="50% 100%"
                       />
                       <span className="name">{item.node.siteName}</span> 
                     </a>
