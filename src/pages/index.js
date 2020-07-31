@@ -14,6 +14,7 @@ import Contact from "../components/contact";
 import Photos from "../components/photos";
 import Map from "../components/map";
 import Resume from "../components/resume";
+import Projects from "../components/projects";
 
 const IndexPage = ({ data }) => (
   <Layout header="home">
@@ -45,6 +46,12 @@ const IndexPage = ({ data }) => (
       .filter(item => item === "Work")
       .map(t => {
         return <Work data={data.allContentfulWorks}></Work>;
+      })}
+
+    {data.contentfulSiteInformation.menus
+      .filter(item => item === "Projects")
+      .map(t => {
+        return <Projects data={data.allContentfulProjects}></Projects>;
       })}
 
     {data.contentfulSiteInformation.menus
@@ -139,6 +146,26 @@ export const pageQuery = graphql`
       }
     }
     allContentfulBlogs(limit: 5, sort: {fields: createdAt, order: DESC}) {
+      edges {
+        node {
+          title
+          slug
+          featureImage {
+            fluid(maxWidth: 600) {
+              base64
+              aspectRatio
+              src
+              srcSet
+              srcWebp
+              srcSetWebp
+              sizes
+            }
+          }
+          createdAt
+        }
+      }
+    }
+    allContentfulProjects(limit: 5, sort: {fields: createdAt, order: DESC}) {
       edges {
         node {
           title
