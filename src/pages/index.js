@@ -13,7 +13,7 @@ import Testimonial from "../components/testimonial";
 import Contact from "../components/contact";
 import Photos from "../components/photos";
 import Map from "../components/map";
-import Resume from "../components/resume";
+// import Resume from "../components/resume";
 import Projects from "../components/projects";
 
 const IndexPage = ({ data }) => (
@@ -182,6 +182,7 @@ export const pageQuery = graphql`
             }
           }
           createdAt
+          publishedDate
         }
       }
     }

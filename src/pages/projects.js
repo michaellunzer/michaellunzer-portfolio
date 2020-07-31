@@ -44,7 +44,7 @@ export default class Projects extends Component {
                         <h3 className="title">{item.node.title}</h3>
                         <span className="date">
                           <i className="fas fa-calendar-alt"></i>{" "}
-                          {moment(item.node.createdAt).format("LL")}
+                          {moment(item.node.publishedDate).format("LL")}
                         </span>
                       </div>
                     </div>
@@ -78,6 +78,7 @@ export const pageQuery = graphql`
             }
           }
           createdAt
+          publishedDate
         }
       }
     }

@@ -8,7 +8,7 @@ h2{font-size:28px;line-height:34px;color:#363636}
 h3{font-size:22px}
 h4{font-size:18px}
 h5{font-size:10px}
-p{font-size:14px}
+p{font-size:16px}
 .banner{position:relative;height:100vh}
 a:hover{color:#d83d0a;text-decoration:underline}
 .banner .banner-details{position:absolute;top:50%;left:50%;z-index:9;display:flex;justify-content:center;align-items:center;flex-direction:column;transform:translate(-50%,-50%);-webkit-transform:translate(-50%,-50%);-moz-transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);-o-transform:translate(-50%,-50%);width:90%;color:#fff}
@@ -175,7 +175,7 @@ pre{margin-bottom:0}
 .blog-post .details ul li{font-size:14px}
 .photos-list .slick-list .slick-track{margin:0 -5px}
 .photos-list .slick-list .slick-track .slick-slide{padding:0 5px}
-code{background-color:#333;border-radius:3px;margin-bottom:30px;display:block;padding:15px!important;color:#fff !important}
+/* code{background-color:#333;border-radius:3px;margin-bottom:30px;display:block;padding:15px!important;color:#fff !important} */
 .photos-item img,
 .photos-page-list .item img{-webkit-transition:all .3s!important;transition:all .3s!important}
 .photos-item img:hover,
@@ -327,7 +327,7 @@ code{background-color:#333;border-radius:3px;margin-bottom:30px;display:block;pa
     padding-top: 75%;
   }
 
-  code {
+  /* code {
     color: #fff!important;
     background-color: #333;
     display: block;
@@ -335,4 +335,37 @@ code{background-color:#333;border-radius:3px;margin-bottom:30px;display:block;pa
     padding: 15px!important;
     border-radius: 3px;
     margin-bottom: 30px;
+  } */
+
+  .gatsby-highlight {
+    background-color: #1d1f21;
+    border-radius: 0.3em;
+    margin: 0.5em 0;
+    padding: 1em;
+    overflow: auto;
+    block-size: max-content;
   }
+  
+  .gatsby-highlight pre[class*="language-"].line-numbers {
+    padding: 0;
+    padding-left: 2.8em; /* 3 */
+    overflow: initial; 
+    line-height: 180%;
+  }
+
+  /**
+ * Remove the default PrismJS theme background-color, border-radius, margin,
+ * padding and overflow.
+ * 1. Make the element just wide enough to fit its content.
+ * 2. Always fill the visible space in .gatsby-highlight.
+ * 3. Adjust the position of the line numbers
+ */
+.gatsby-highlight pre[class*="language-"] {
+  background-color: transparent;
+  margin: 0;
+  padding: 0;
+  overflow: initial;
+  float: left; /* 1 */
+  min-width: 100%; /* 2 */
+}
+

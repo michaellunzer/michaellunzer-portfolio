@@ -56,7 +56,7 @@ export default class projectPost extends Component {
               <h1 className="title">{data.title}</h1>
               <span className="date">
                 <i class="fas fa-calendar-alt"></i>{" "}
-                {moment(data.createdAt).format("LL")}
+                {moment(data.publishedDate).format("LL")}
               </span>
               <div
                 dangerouslySetInnerHTML={{
@@ -107,6 +107,7 @@ export const pageQuery = graphql`
         }
       }
       createdAt
+      publishedDate
     }
     contentfulSiteInformation {
       siteUrl
