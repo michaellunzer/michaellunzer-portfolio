@@ -85,6 +85,22 @@ const Header = ({ data }) => (
                     rel="noopener noreferrer"
                   ></a>
                 </li>
+                <li>
+                <a
+                  className="fab fa-soundcloud"
+                  href={data.soundcloud}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                ></a>
+              </li>
+              <li>
+                <a
+                  className="fab fa-spotify"
+                  href={data.spotify}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                ></a>
+              </li>
               </ul>
             </div>
           </div>
