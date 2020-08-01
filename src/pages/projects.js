@@ -7,14 +7,14 @@ import moment from "moment";
 import Layout from "../components/layout";
 import SEO from "../components/seo";
 
-export default class Blogs extends Component {
+export default class Projects extends Component {
   render() {
     const { data } = this.props;
     return (
       <Layout>
         <SEO
-          title="Works"
-          keywords={[`Michael Lunzer`, `Customer Success Manager`, `Cloud`, `Blogs`]}
+          title="Projects"
+          keywords={[`Michael Lunzer`, `Customer Success Manager`, `Cloud`, `Projects`]}
         />
         <div className="site-container blogs-page" id="Blogs">
           <div className="container">
@@ -23,17 +23,17 @@ export default class Blogs extends Component {
             </div>
             <ul
               className={`blogs-list ${
-                data.allContentfulWorks.edges.length < 5 ? "few-blogs" : ""
+                data.allContentfulProjects.edges.length < 5 ? "few-blogs" : ""
               }`}
             >
-              {data.allContentfulWorks.edges.map((item, index) => {
+              {data.allContentfulProjects.edges.map((item, index) => {
                 return (
                   <li key={index} className="item">
                     <div className="inner">
                       <Link className="link" to={item.node.slug} />
-                      {item.node.featuredImage ? (
+                      {item.node.featureImage ? (
                         <Img
-                          fixed={item.node.featuredImage.fluid}
+                          fixed={item.node.featureImage.fluid}
                           objectFit="cover"
                           objectPosition="50% 50%"
                         />
@@ -41,7 +41,7 @@ export default class Blogs extends Component {
                         <div className="no-image"></div>
                       )}
                       <div className="details">
-                        <h3 className="title">{item.node.siteName}</h3>
+                        <h3 className="title">{item.node.title}</h3>
                         <span className="date">
                           <i className="fas fa-calendar-alt"></i>{" "}
                           {moment(item.node.publishedDate).format("LL")}
@@ -60,13 +60,13 @@ export default class Blogs extends Component {
 }
 
 export const pageQuery = graphql`
-query WorksQuery {
-    allContentfulWorks(sort: {fields: publishedDate, order: DESC}) {
+  query ProjectsQuery {
+    allContentfulProjects(sort: {fields: publishedDate, order: DESC}) {
       edges {
         node {
-          siteName
+          title
           slug
-          featuredImage {
+          featureImage {
             fluid(maxWidth: 1500) {
               base64
               aspectRatio
@@ -77,8 +77,8 @@ query WorksQuery {
               sizes
             }
           }
-          publishedDate
           createdAt
+          publishedDate
         }
       }
     }

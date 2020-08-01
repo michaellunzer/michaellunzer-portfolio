@@ -7,13 +7,14 @@ import SEO from "../components/seo";
 import Banner from "../components/banner";
 import About from "../components/about";
 import Service from "../components/service";
-import Work from "../components/work";
+// import Work from "../components/work";
 import Blogs from "../components/blogs";
 import Testimonial from "../components/testimonial";
 import Contact from "../components/contact";
 import Photos from "../components/photos";
 import Map from "../components/map";
-import Resume from "../components/resume";
+// import Resume from "../components/resume";
+import Projects from "../components/projects";
 
 const IndexPage = ({ data }) => (
   <Layout header="home">
@@ -41,10 +42,16 @@ const IndexPage = ({ data }) => (
         return <Blogs data={data.allContentfulBlogs}></Blogs>;
       })}
 
-    {data.contentfulSiteInformation.menus
+    {/* {data.contentfulSiteInformation.menus
       .filter(item => item === "Work")
       .map(t => {
         return <Work data={data.allContentfulWorks}></Work>;
+      })} */}
+
+    {data.contentfulSiteInformation.menus
+      .filter(item => item === "Projects")
+      .map(t => {
+        return <Projects data={data.allContentfulProjects}></Projects>;
       })}
 
     {data.contentfulSiteInformation.menus
@@ -158,6 +165,27 @@ export const pageQuery = graphql`
         }
       }
     }
+    allContentfulProjects(limit: 5, sort: {fields: publishedDate, order: DESC}) {
+      edges {
+        node {
+          title
+          slug
+          featureImage {
+            fluid(maxWidth: 600) {
+              base64
+              aspectRatio
+              src
+              srcSet
+              srcWebp
+              srcSetWebp
+              sizes
+            }
+          }
+          createdAt
+          publishedDate
+        }
+      }
+    }
     allContentfulTestimonials {
       edges {
         node {
@@ -202,27 +230,6 @@ export const pageQuery = graphql`
         }
       }
     }
-    allContentfulWorks(sort: {fields: publishedDate, order: DESC}) {
-      edges {
-        node {
-          siteName
-          slug
-          featuredImage {
-            fluid(maxWidth: 600) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-            }
-          }
-          publishedDate
-          createdAt
-        }
-      }
-    }
     contentfulPhotos {
       photos {
         fluid(maxWidth: 600) {
@@ -241,3 +248,26 @@ export const pageQuery = graphql`
     }
   }
 `;
+
+// removed this from the query above
+    // allContentfulWorks(sort: {fields: publishedDate, order: DESC}) {
+    //   edges {
+    //     node {
+    //       siteName
+    //       slug
+    //       featuredImage {
+    //         fluid(maxWidth: 600) {
+    //           base64
+    //           aspectRatio
+    //           src
+    //           srcSet
+    //           srcWebp
+    //           srcSetWebp
+    //           sizes
+    //         }
+    //       }
+    //       publishedDate
+    //       createdAt
+    //     }
+    //   }
+    // }
