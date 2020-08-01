@@ -61,7 +61,7 @@ export default class Projects extends Component {
 
 export const pageQuery = graphql`
   query ProjectsQuery {
-    allContentfulProjects(sort: {fields: createdAt, order: DESC}) {
+    allContentfulProjects(sort: {fields: publishedDate, order: DESC}) {
       edges {
         node {
           title

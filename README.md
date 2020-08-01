@@ -9,7 +9,9 @@
   </h1>
   <img src="https://github.com/michaellunzer/michaellunzer-portfolio/blob/master/docs/screenshot.png" />
 
+### Live Demo:
 
+https://michaellunzer.com
 
  ## My portfolio website was created using a template called RG-Portfolio. It's awesome and I've learned a lot by using it!
 

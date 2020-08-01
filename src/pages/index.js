@@ -7,7 +7,7 @@ import SEO from "../components/seo";
 import Banner from "../components/banner";
 import About from "../components/about";
 import Service from "../components/service";
-import Work from "../components/work";
+// import Work from "../components/work";
 import Blogs from "../components/blogs";
 import Testimonial from "../components/testimonial";
 import Contact from "../components/contact";
@@ -42,11 +42,11 @@ const IndexPage = ({ data }) => (
         return <Blogs data={data.allContentfulBlogs}></Blogs>;
       })}
 
-    {data.contentfulSiteInformation.menus
+    {/* {data.contentfulSiteInformation.menus
       .filter(item => item === "Work")
       .map(t => {
         return <Work data={data.allContentfulWorks}></Work>;
-      })}
+      })} */}
 
     {data.contentfulSiteInformation.menus
       .filter(item => item === "Projects")
@@ -165,7 +165,7 @@ export const pageQuery = graphql`
         }
       }
     }
-    allContentfulProjects(limit: 5, sort: {fields: createdAt, order: DESC}) {
+    allContentfulProjects(limit: 5, sort: {fields: publishedDate, order: DESC}) {
       edges {
         node {
           title
@@ -230,27 +230,6 @@ export const pageQuery = graphql`
         }
       }
     }
-    allContentfulWorks(sort: {fields: publishedDate, order: DESC}) {
-      edges {
-        node {
-          siteName
-          slug
-          featuredImage {
-            fluid(maxWidth: 600) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-            }
-          }
-          publishedDate
-          createdAt
-        }
-      }
-    }
     contentfulPhotos {
       photos {
         fluid(maxWidth: 600) {
@@ -269,3 +248,26 @@ export const pageQuery = graphql`
     }
   }
 `;
+
+// removed this from the query above
+    // allContentfulWorks(sort: {fields: publishedDate, order: DESC}) {
+    //   edges {
+    //     node {
+    //       siteName
+    //       slug
+    //       featuredImage {
+    //         fluid(maxWidth: 600) {
+    //           base64
+    //           aspectRatio
+    //           src
+    //           srcSet
+    //           srcWebp
+    //           srcSetWebp
+    //           sizes
+    //         }
+    //       }
+    //       publishedDate
+    //       createdAt
+    //     }
+    //   }
+    // }
