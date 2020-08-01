@@ -114,6 +114,8 @@ export const pageQuery = graphql`
       instagram
       linkdin
       twitter
+      soundcloud
+      spotify
       location
       description {
         childMarkdownRemark {
