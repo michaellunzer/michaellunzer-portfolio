@@ -19,7 +19,7 @@ export default class Projects extends Component {
               return (
                 <li key={index} className="item">
                   <div className="inner">
-                    <Link className="link" to={item.node.slug} />
+                    <Link className="link" to={"projects/" + item.node.slug} />
 
                     {item.node.featureImage ? (
                       <Img
