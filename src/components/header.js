@@ -104,6 +104,15 @@ export default class Header extends Component {
                       );
                     })}
                   {data.menus
+                    .filter(item => item === "Bucket List")
+                    .map(t => {
+                      return (
+                        <li>
+                          <Link to={`/#BucketList`}>Bucket List</Link>
+                        </li>
+                      );
+                    })}
+                  {data.menus
                     .filter(item => item === "Contact")
                     .map(t => {
                       return (

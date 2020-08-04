@@ -15,6 +15,7 @@ import Photos from "../components/photos";
 import Map from "../components/map";
 // import Resume from "../components/resume";
 import Projects from "../components/projects";
+import BucketList from "../components/bucketlist"
 
 const IndexPage = ({ data }) => (
   <Layout header="home">
@@ -66,6 +67,12 @@ const IndexPage = ({ data }) => (
       .filter(item => item === "Photos")
       .map(t => {
         return <Photos data={data.contentfulPhotos}></Photos>;
+      })}
+
+    {data.contentfulSiteInformation.menus
+      .filter(item => item === "Bucket List")
+      .map(t => {
+        return <BucketList data={data.allContentfulBucketList}></BucketList>;
       })}
 
     {data.contentfulSiteInformation.menus
@@ -245,6 +252,34 @@ export const pageQuery = graphql`
         }
       }
     }
+    allContentfulBucketList(limit: 5, sort: {fields: dateAccomplished, order: DESC})  {
+      edges {
+        node {
+          title
+          id
+          slug
+          description {
+            description
+            childMarkdownRemark {
+              html
+            }
+          }
+          accomplished
+          dateAccomplished
+					featureImage {
+					fluid(maxWidth: 1500) {
+					base64
+					aspectRatio
+					src
+					srcSet
+					srcWebp
+					srcSetWebp
+					sizes
+					}
+					}
+        }
+      }
+    }
     contentfulSiteInformation {
       menus
     }
@@ -270,6 +305,39 @@ export const pageQuery = graphql`
     //       }
     //       publishedDate
     //       createdAt
+    //     }
+    //   }
+    // }
+
+    // allContentfulBucketList(limit: 100) {
+    //   edges {
+    //     node {
+    //       title
+    //       id
+    //       slug
+    //       description {
+    //         description
+    //         childMarkdownRemark {
+    //           html
+    //         }
+    //       }
+    //       accomplished
+    //       dateAccomplished
+    //       photos {
+    //         title
+    //         file {
+    //           url
+    //         }
+    //         fluid(maxWidth: 600) {
+    //           base64
+    //           aspectRatio
+    //           src
+    //           srcSet
+    //           srcWebp
+    //           srcSetWebp
+    //           sizes
+    //         }
+    //       }
     //     }
     //   }
     // }
