@@ -40,7 +40,15 @@ export default class BucketListPage extends Component {
                 return (
                   <li key={index} className="item">
                   <div className={"accomplished" + item.node.accomplished}>
-                    <div className="inner">
+                    <div 
+                    className="inner"
+                    onClick={() => {
+                      this.setState({
+                        activePopup: true,
+                        selectedItem: index
+                      });
+                    }}
+                    >
 
                       {/* <Link className="link" to={item.node.slug} /> */}
                       {item.node.featureImage ? (
@@ -72,6 +80,48 @@ export default class BucketListPage extends Component {
                 );
               })}
             </ul>
+            {activePopup ? (
+              <div className="rg-popup">
+                <span
+                  className="popup-layer"
+                  onClick={() => {
+                    this.setState({
+                      activePopup: false
+                    });
+                  }}
+                ></span>
+
+                <div className="popup-inner">
+                  <i
+                    className="fas fa-times"
+                    onClick={() => {
+                      this.setState({
+                        activePopup: false
+                      });
+                    }}
+                  ></i>
+                    <img
+                    src="http://leemunroe.github.io/motherplate/img/cat@2x.jpg"
+                    alt="popup-img"
+                  />
+                    {/* <Img
+                      className="feature-img"
+                      fixed={data.this.props.data.contentfulProjects.featureImage.fluid}
+                      objectFit="cover"
+                      objectPosition="50% 50%"
+                    /> */}
+                        {/* <Img
+                          fixed={data.index.node.featureImage.fluid}
+                          objectFit="cover"
+                          objectPosition="50% 50%"
+                        /> */}
+                 <span className="name">{this.props.title}</span>
+                      {/* this is where you place the caption */}
+                </div>
+                </div>
+            )  : (
+              ""
+            )}
           </div>
         </div>
       </Layout>
