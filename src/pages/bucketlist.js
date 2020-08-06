@@ -100,18 +100,19 @@ export default class BucketListPage extends Component {
                       });
                     }}
                   ></i>
-                    {/* <img
-                    src="http://leemunroe.github.io/motherplate/img/cat@2x.jpg"
-                    alt="popup-img"
-                  /> */}
-                  {/* this is where I need to fix the image url */}
-                  <Img
-                    fixed={item.node.featureImage.fluid}
-                    objectFit="cover"
-                    objectPosition="50% 50%"
-                  />
-                 <span className="name">test</span>
+                  <div className="bucketlistpopup"> {/* Need to add CSS to make the image responsive */}
+                  <div className={"accomplished" + data.allContentfulBucketList.edges[this.state.selectedItem].node.accomplished}>
+                  <span className="name"><h2>{data.allContentfulBucketList.edges[this.state.selectedItem].node.title}</h2></span>
                       {/* this is where you place the caption */}
+                    <img
+                    src={data.allContentfulBucketList.edges[this.state.selectedItem].node.featureImage.file.url}
+                    alt="popup-img"
+                  />
+                  <div>
+                  {data.allContentfulBucketList.edges[this.state.selectedItem].node.description.childMarkdownRemark.html}
+                  </div>
+                  </div>
+                </div>
                 </div>
                 </div>
             )  : (
@@ -125,35 +126,38 @@ export default class BucketListPage extends Component {
 }
 export const pageQuery = graphql`
 query BucketListPageQuery {
-  allContentfulBucketList(sort: {fields: dateAccomplished, order: DESC})  {
-      edges {
-        node {
-          title
-          id
-          slug
-          description {
-            description
-            childMarkdownRemark {
-              html
-            }
+  allContentfulBucketList(sort: { fields: dateAccomplished, order: DESC }) {
+    edges {
+      node {
+        title
+        id
+        slug
+        description {
+          description
+          childMarkdownRemark {
+            html
           }
-          accomplished
-          dateAccomplished
-					featureImage {
-					fluid(maxWidth: 1500) {
-					base64
-					aspectRatio
-					src
-					srcSet
-					srcWebp
-					srcSetWebp
-					sizes
-					}
-					}
+        }
+        accomplished
+        dateAccomplished
+        featureImage {
+          file {
+            url
+          }
+          fluid(maxWidth: 1500) {
+            base64
+            aspectRatio
+            src
+            srcSet
+            srcWebp
+            srcSetWebp
+            sizes
+          }
         }
       }
     }
   }
+}
 `;
 
 
