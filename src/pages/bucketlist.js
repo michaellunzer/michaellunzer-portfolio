@@ -100,22 +100,17 @@ export default class BucketListPage extends Component {
                       });
                     }}
                   ></i>
-                    <img
+                    {/* <img
                     src="http://leemunroe.github.io/motherplate/img/cat@2x.jpg"
                     alt="popup-img"
+                  /> */}
+                  {/* this is where I need to fix the image url */}
+                  <Img
+                    fixed={item.node.featureImage.fluid}
+                    objectFit="cover"
+                    objectPosition="50% 50%"
                   />
-                    {/* <Img
-                      className="feature-img"
-                      fixed={data.this.props.data.contentfulProjects.featureImage.fluid}
-                      objectFit="cover"
-                      objectPosition="50% 50%"
-                    /> */}
-                        {/* <Img
-                          fixed={data.index.node.featureImage.fluid}
-                          objectFit="cover"
-                          objectPosition="50% 50%"
-                        /> */}
-                 <span className="name">{this.props.title}</span>
+                 <span className="name">test</span>
                       {/* this is where you place the caption */}
                 </div>
                 </div>
