@@ -41,12 +41,6 @@ const IndexPage = ({ data }) => (
         return <Blogs data={data.allContentfulBlogs}></Blogs>;
       })}
 
-    {/* {data.contentfulSiteInformation.menus
-      .filter(item => item === "Work")
-      .map(t => {
-        return <Work data={data.allContentfulWorks}></Work>;
-      })} */}
-
     {data.contentfulSiteInformation.menus
       .filter(item => item === "Projects")
       .map(t => {

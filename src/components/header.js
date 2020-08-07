@@ -94,12 +94,21 @@ export default class Header extends Component {
                         </li>
                       );
                     })}
-                  {data.menus
+                    {data.menus
                     .filter(item => item === "Contact")
                     .map(t => {
                       return (
                         <li>
                           <Link to={`/#Contact`}>Contact</Link>
+                        </li>
+                      );
+                    })}
+                    {data.menus
+                    .filter(item => item === "Map")
+                    .map(t => {
+                      return (
+                        <li>
+                          <Link to={`/#Map`}>Map</Link>
                         </li>
                       );
                     })}
@@ -112,15 +121,7 @@ export default class Header extends Component {
                         </li>
                       );
                     })}
-                  {data.menus
-                    .filter(item => item === "Map")
-                    .map(t => {
-                      return (
-                        <li>
-                          <Link to={`/#Map`}>Map</Link>
-                        </li>
-                      );
-                    })}
+
                 </ul>
           
               </div>
