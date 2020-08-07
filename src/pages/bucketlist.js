@@ -100,7 +100,7 @@ export default class BucketListPage extends Component {
                       });
                     }}
                   ></i>
-                  <div className="bucketlistpopup"> {/* Need to add CSS to make the image responsive */}
+                  <div className="BucketListPopup"> {/* Need to add CSS to make the image responsive */}
                   <div className={"accomplished" + data.allContentfulBucketList.edges[this.state.selectedItem].node.accomplished}>
                   <span className="name"><h2>{data.allContentfulBucketList.edges[this.state.selectedItem].node.title}</h2></span>
                       {/* this is where you place the caption */}
@@ -108,9 +108,11 @@ export default class BucketListPage extends Component {
                     src={data.allContentfulBucketList.edges[this.state.selectedItem].node.featureImage.file.url}
                     alt="popup-img"
                   />
-                  <div>
-                  {data.allContentfulBucketList.edges[this.state.selectedItem].node.description.childMarkdownRemark.html}
-                  </div>
+                  <div
+                  dangerouslySetInnerHTML={{
+                  __html: data.allContentfulBucketList.edges[this.state.selectedItem].node.description.childMarkdownRemark.html
+                }}
+                  />
                   </div>
                 </div>
                 </div>
@@ -144,7 +146,7 @@ query BucketListPageQuery {
           file {
             url
           }
-          fluid(maxWidth: 1500) {
+          fluid(maxWidth: 600) {
             base64
             aspectRatio
             src
