@@ -7,11 +7,9 @@ import SEO from "../components/seo";
 import Banner from "../components/banner";
 import About from "../components/about";
 import Service from "../components/service";
-// import Work from "../components/work";
 import Blogs from "../components/blogs";
 import Testimonial from "../components/testimonial";
 import Contact from "../components/contact";
-import Photos from "../components/photos";
 import Map from "../components/map";
 // import Resume from "../components/resume";
 import Projects from "../components/projects";
@@ -61,12 +59,6 @@ const IndexPage = ({ data }) => (
         return (
           <Testimonial data={data.allContentfulTestimonials}></Testimonial>
         );
-      })}
-
-    {data.contentfulSiteInformation.menus
-      .filter(item => item === "Photos")
-      .map(t => {
-        return <Photos data={data.contentfulPhotos}></Photos>;
       })}
 
     {data.contentfulSiteInformation.menus
@@ -239,19 +231,6 @@ export const pageQuery = graphql`
         }
       }
     }
-    contentfulPhotos {
-      photos {
-        fluid(maxWidth: 600) {
-          base64
-          aspectRatio
-          src
-          srcSet
-          srcWebp
-          srcSetWebp
-          sizes
-        }
-      }
-    }
     allContentfulBucketList(limit: 5, sort: {fields: dateAccomplished, order: DESC})  {
       edges {
         node {
@@ -285,59 +264,3 @@ export const pageQuery = graphql`
     }
   }
 `;
-
-// removed this from the query above
-    // allContentfulWorks(sort: {fields: publishedDate, order: DESC}) {
-    //   edges {
-    //     node {
-    //       siteName
-    //       slug
-    //       featuredImage {
-    //         fluid(maxWidth: 600) {
-    //           base64
-    //           aspectRatio
-    //           src
-    //           srcSet
-    //           srcWebp
-    //           srcSetWebp
-    //           sizes
-    //         }
-    //       }
-    //       publishedDate
-    //       createdAt
-    //     }
-    //   }
-    // }
-
-    // allContentfulBucketList(limit: 100) {
-    //   edges {
-    //     node {
-    //       title
-    //       id
-    //       slug
-    //       description {
-    //         description
-    //         childMarkdownRemark {
-    //           html
-    //         }
-    //       }
-    //       accomplished
-    //       dateAccomplished
-    //       photos {
-    //         title
-    //         file {
-    //           url
-    //         }
-    //         fluid(maxWidth: 600) {
-    //           base64
-    //           aspectRatio
-    //           src
-    //           srcSet
-    //           srcWebp
-    //           srcSetWebp
-    //           sizes
-    //         }
-    //       }
-    //     }
-    //   }
-    // }
