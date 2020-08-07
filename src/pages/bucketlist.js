@@ -40,7 +40,15 @@ export default class BucketListPage extends Component {
                 return (
                   <li key={index} className="item">
                   <div className={"accomplished" + item.node.accomplished}>
-                    <div className="inner">
+                    <div 
+                    className="inner"
+                    onClick={() => {
+                      this.setState({
+                        activePopup: true,
+                        selectedItem: index
+                      });
+                    }}
+                    >
 
                       {/* <Link className="link" to={item.node.slug} /> */}
                       {item.node.featureImage ? (
@@ -72,6 +80,46 @@ export default class BucketListPage extends Component {
                 );
               })}
             </ul>
+            {activePopup ? (
+              <div className="rg-popup">
+                <span
+                  className="popup-layer"
+                  onClick={() => {
+                    this.setState({
+                      activePopup: false
+                    });
+                  }}
+                ></span>
+
+                <div className="popup-inner">
+                  <i
+                    className="fas fa-times"
+                    onClick={() => {
+                      this.setState({
+                        activePopup: false
+                      });
+                    }}
+                  ></i>
+                  <div className="BucketListPopup"> {/* Need to add CSS to make the image responsive */}
+                  <div className={"accomplished" + data.allContentfulBucketList.edges[this.state.selectedItem].node.accomplished}>
+                  <span className="name"><h2>{data.allContentfulBucketList.edges[this.state.selectedItem].node.title}</h2></span>
+                      {/* this is where you place the caption */}
+                    <img
+                    src={data.allContentfulBucketList.edges[this.state.selectedItem].node.featureImage.file.url}
+                    alt="popup-img"
+                  />
+                  <div
+                  dangerouslySetInnerHTML={{
+                  __html: data.allContentfulBucketList.edges[this.state.selectedItem].node.description.childMarkdownRemark.html
+                }}
+                  />
+                  </div>
+                </div>
+                </div>
+                </div>
+            )  : (
+              ""
+            )}
           </div>
         </div>
       </Layout>
@@ -80,35 +128,38 @@ export default class BucketListPage extends Component {
 }
 export const pageQuery = graphql`
 query BucketListPageQuery {
-  allContentfulBucketList(sort: {fields: dateAccomplished, order: DESC})  {
-      edges {
-        node {
-          title
-          id
-          slug
-          description {
-            description
-            childMarkdownRemark {
-              html
-            }
+  allContentfulBucketList(sort: { fields: dateAccomplished, order: DESC }) {
+    edges {
+      node {
+        title
+        id
+        slug
+        description {
+          description
+          childMarkdownRemark {
+            html
           }
-          accomplished
-          dateAccomplished
-					featureImage {
-					fluid(maxWidth: 1500) {
-					base64
-					aspectRatio
-					src
-					srcSet
-					srcWebp
-					srcSetWebp
-					sizes
-					}
-					}
+        }
+        accomplished
+        dateAccomplished
+        featureImage {
+          file {
+            url
+          }
+          fluid(maxWidth: 600) {
+            base64
+            aspectRatio
+            src
+            srcSet
+            srcWebp
+            srcSetWebp
+            sizes
+          }
         }
       }
     }
   }
+}
 `;
 
 
