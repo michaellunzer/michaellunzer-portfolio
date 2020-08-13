@@ -21,7 +21,7 @@ export default class Resume extends Component {
           <div className="container">
             <div className="section-head">
               <h1 className="line-heading h2">{data.contentfulResume.title}</h1>
-              <p><b>Uploaded:</b> {data.contentfulResume.createdAt}</p>
+              <p><b>Uploaded:</b> {data.contentfulResume.updatedAt}</p>
             </div>
             <div class="resume-container">
             <embed src={`https:${data.contentfulResume.pdf.file.url}`} class="pdf" type="application/pdf" />

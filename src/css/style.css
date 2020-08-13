@@ -391,15 +391,11 @@ pre{margin-bottom:0}
   background: rgba(65, 233, 65, 0.329); */
 }
 
-/* .BucketListPopup {
-  overflow: auto;
-  padding-bottom: 56.25%;
-  position: relative;
-  width: 100%;
-  height: 0;
-  background-color: #fff;
-}
-.BucketListPopup div {
+/* .BucketListPopup div{
+  object-fit: "cover";
+  position: "50% 50%";
+} */
+/* .BucketListPopup div {
   height: 100%;
   left: 0;
   position: absolute;
