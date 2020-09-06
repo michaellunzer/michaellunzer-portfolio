@@ -18,14 +18,6 @@ module.exports = {
     author: `@michaellunzer`
   },
   plugins: [
-    `gatsby-plugin-react-helmet`,
-    {
-      resolve: `gatsby-source-filesystem`,
-      options: {
-        name: `images`,
-        path: `${__dirname}/src/images`
-      }
-    },
     {
       resolve: `gatsby-plugin-google-analytics`,
       options: {
@@ -54,6 +46,14 @@ module.exports = {
         siteSpeedSampleRate: 10,
         cookieDomain: "",
       },
+    },
+    `gatsby-plugin-react-helmet`,
+    {
+      resolve: `gatsby-source-filesystem`,
+      options: {
+        name: `images`,
+        path: `${__dirname}/src/images`
+      }
     },
     {
       resolve: "gatsby-source-contentful",
