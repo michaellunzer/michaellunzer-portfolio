@@ -45,6 +45,8 @@ module.exports = {
         downloadLocal: false,
       }
     },
+    'gatsby-plugin-robots-txt',
+    `gatsby-plugin-advanced-sitemap`,
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
     {
