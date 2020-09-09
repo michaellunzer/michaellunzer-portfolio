@@ -15,7 +15,8 @@ module.exports = {
   siteMetadata: {
     title: `Michael Lunzer`,
     description: `Personal Site`,
-    author: `@michaellunzer`
+    author: `@michaellunzer`,
+    siteUrl: `https://www.michaellunzer.com`,
   },
   plugins: [
     {
