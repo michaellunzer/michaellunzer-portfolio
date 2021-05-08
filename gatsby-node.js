@@ -2,7 +2,6 @@
 // https://swas.io/blog/using-multiple-queries-on-gatsbyjs-createpages-node-api/
 //  
 
-
 var path = require("path");
 
 exports.createPages = ({ graphql, actions }) => {
