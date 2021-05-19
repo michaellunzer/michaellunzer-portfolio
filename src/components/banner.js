@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import Img from "gatsby-image";
+import { GatsbyImage } from "gatsby-plugin-image"
 
 export default class Banner extends Component {
   render() {
