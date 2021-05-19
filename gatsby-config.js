@@ -48,6 +48,7 @@ module.exports = {
     },
     'gatsby-plugin-robots-txt',
     `gatsby-plugin-advanced-sitemap`,
+    `gatsby-plugin-image`,
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
     {
