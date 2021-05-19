@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { graphql } from "gatsby";
+import { GatsbyImage } from "gatsby-plugin-image"
 import Img from "gatsby-image";
 import { Link } from "gatsby";
 import moment from "moment";
