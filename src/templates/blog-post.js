@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { graphql } from "gatsby";
-import Img from "gatsby-image";
+import { GatsbyImage } from "gatsby-plugin-image";
 import moment from "moment";
 import { DiscussionEmbed } from "disqus-react";
 
@@ -42,12 +42,11 @@ export default class blogPost extends Component {
         <div className="site-container blog-post">
           <div className="container">
             {data.featureImage ? (
-              <Img
+              <GatsbyImage
+                image={data.featureImage.gatsbyImageData}
                 className="feature-img"
-                fixed={data.featureImage.fluid}
                 objectFit="cover"
-                objectPosition="50% 50%"
-              />
+                objectPosition="50% 50%" />
             ) : (
               <div className="no-image"></div>
             )}
@@ -91,6 +90,7 @@ export const pageQuery = graphql`
       title
       slug
       featureImage {
+        gatsbyImageData
         fluid(maxWidth: 1500) {
           base64
           aspectRatio

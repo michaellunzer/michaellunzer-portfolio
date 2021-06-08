@@ -1,6 +1,5 @@
 import React from "react";
-import Img from "gatsby-image";
-import { GatsbyImage } from "gatsby-plugin-image"
+import { GatsbyImage } from "gatsby-plugin-image";
 
 
 const Header = ({ data }) => (
@@ -8,11 +7,10 @@ const Header = ({ data }) => (
     <div className="container">
       <div className="about-main row">
         <div className="left col-md-5 col-lg-4 mb-3">
-          <Img
-            fixed={data.photo.fluid}
+          <GatsbyImage
+            image={data.photo.gatsbyImageData}
             objectFit="cover"
-            objectPosition="top center"
-          />
+            objectPosition="top center" />
         </div>
         <div className="left col-md-7 col-lg-8">
           <div className="about-details">

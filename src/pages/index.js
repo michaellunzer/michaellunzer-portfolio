@@ -1,6 +1,6 @@
 import React from "react";
 import { graphql } from "gatsby";
-import { GatsbyImage } from "gatsby-plugin-image"
+import { GatsbyImage } from "gatsby-plugin-image";
 
 
 import Layout from "../components/layout";
@@ -91,6 +91,7 @@ export const pageQuery = graphql`
         file {
           url
         }
+        gatsbyImageData
         fluid {
           base64
           aspectRatio
@@ -118,6 +119,7 @@ export const pageQuery = graphql`
         }
       }
       bannerImage {
+        gatsbyImageData
         fluid(maxWidth: 1500) {
           base64
           aspectRatio
@@ -148,6 +150,7 @@ export const pageQuery = graphql`
           title
           slug
           featureImage {
+            gatsbyImageData
             fluid(maxWidth: 600) {
               base64
               aspectRatio
@@ -168,6 +171,7 @@ export const pageQuery = graphql`
           title
           slug
           featureImage {
+            gatsbyImageData
             fluid(maxWidth: 600) {
               base64
               aspectRatio
@@ -194,6 +198,7 @@ export const pageQuery = graphql`
             }
           }
           avatarImage {
+            gatsbyImageData
             fluid(maxWidth: 200) {
               base64
               aspectRatio
@@ -213,6 +218,7 @@ export const pageQuery = graphql`
           title
           slug
           featureImage {
+            gatsbyImageData
               fluid(maxWidth: 600) {
                 base64
                 aspectRatio
@@ -242,15 +248,16 @@ export const pageQuery = graphql`
           accomplished
           dateAccomplished
 					featureImage {
-					fluid(maxWidth: 1500) {
-					base64
-					aspectRatio
-					src
-					srcSet
-					srcWebp
-					srcSetWebp
-					sizes
-					}
+            gatsbyImageData
+					  fluid(maxWidth: 1500) {
+              base64
+              aspectRatio
+              src
+              srcSet
+              srcWebp
+              srcSetWebp
+              sizes
+					  }
 					}
         }
       }
