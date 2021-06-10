@@ -19,7 +19,7 @@ import React, { Component } from "react";
 export default class Map extends Component {
   render() {
     return (
-      <div className="contact section" id="Map">
+      <div className="blogs-section" id="Map">
       <div className="container">
         <div className="section-head">
           <h2 className="text-center">Everywhere I've Been</h2>
