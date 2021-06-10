@@ -67,15 +67,6 @@ export const pageQuery = graphql`
           slug
           featureImage {
             gatsbyImageData
-            fluid(maxWidth: 1500) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-            }
           }
           createdAt
           publishedDate

@@ -1,7 +1,5 @@
 import React from "react";
 import { graphql } from "gatsby";
-import { GatsbyImage } from "gatsby-plugin-image";
-
 
 import Layout from "../components/layout";
 import SEO from "../components/seo";
@@ -92,15 +90,6 @@ export const pageQuery = graphql`
           url
         }
         gatsbyImageData
-        fluid {
-          base64
-          aspectRatio
-          src
-          srcSet
-          srcWebp
-          srcSetWebp
-          sizes
-        }
       }
       designation
       facebook
@@ -120,15 +109,6 @@ export const pageQuery = graphql`
       }
       bannerImage {
         gatsbyImageData
-        fluid(maxWidth: 1500) {
-          base64
-          aspectRatio
-          src
-          srcSet
-          srcWebp
-          srcSetWebp
-          sizes
-        }
       }
       bannerList
     }
@@ -151,15 +131,6 @@ export const pageQuery = graphql`
           slug
           featureImage {
             gatsbyImageData
-            fluid(maxWidth: 600) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-            }
           }
           createdAt
         }
@@ -172,15 +143,6 @@ export const pageQuery = graphql`
           slug
           featureImage {
             gatsbyImageData
-            fluid(maxWidth: 600) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-            }
           }
           createdAt
           publishedDate
@@ -199,15 +161,6 @@ export const pageQuery = graphql`
           }
           avatarImage {
             gatsbyImageData
-            fluid(maxWidth: 200) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-            }
           }
         }
       }
@@ -219,15 +172,6 @@ export const pageQuery = graphql`
           slug
           featureImage {
             gatsbyImageData
-              fluid(maxWidth: 600) {
-                base64
-                aspectRatio
-                src
-                srcSet
-                srcWebp
-                srcSetWebp
-                sizes
-              }
             }
             createdAt
         }
@@ -249,15 +193,6 @@ export const pageQuery = graphql`
           dateAccomplished
 					featureImage {
             gatsbyImageData
-					  fluid(maxWidth: 1500) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-					  }
 					}
         }
       }

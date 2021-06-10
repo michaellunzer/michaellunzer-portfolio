@@ -2,8 +2,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import {
   FacebookShareButton,
-  TwitterShareButton,
-  WhatsappShareButton
+  TwitterShareButton
+  // ,
+  // WhatsappShareButton
 } from "react-share";
 
 const Share = ({ socialConfig }) => {
