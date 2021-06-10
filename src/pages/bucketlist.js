@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import Img from "gatsby-image";
+import { GatsbyImage } from "gatsby-plugin-image";
 import { graphql } from "gatsby";
-import { Link } from "gatsby";
 import moment from "moment";
 
 import Layout from "../components/layout";
@@ -52,11 +51,10 @@ export default class BucketListPage extends Component {
 
                       {/* <Link className="link" to={item.node.slug} /> */}
                       {item.node.featureImage ? (
-                        <Img
-                          fixed={item.node.featureImage.fluid}
+                        <GatsbyImage
+                          image={item.node.featureImage.gatsbyImageData}
                           objectFit="cover"
-                          objectPosition="50% 50%"
-                        />
+                          objectPosition="50% 50%" />
                       ) : (
                         <div className="no-image"></div>
                       )}
@@ -146,6 +144,7 @@ query BucketListPageQuery {
           file {
             url
           }
+          gatsbyImageData
           fluid(maxWidth: 600) {
             base64
             aspectRatio

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { graphql } from "gatsby";
-import Img from "gatsby-image";
+import { GatsbyImage } from "gatsby-plugin-image";
 import { Link } from "gatsby";
 import moment from "moment";
 
@@ -32,11 +32,10 @@ export default class Projects extends Component {
                     <div className="inner">
                       <Link className="link" to={item.node.slug} />
                       {item.node.featureImage ? (
-                        <Img
-                          fixed={item.node.featureImage.fluid}
+                        <GatsbyImage
+                          image={item.node.featureImage.gatsbyImageData}
                           objectFit="cover"
-                          objectPosition="50% 50%"
-                        />
+                          objectPosition="50% 50%" />
                       ) : (
                         <div className="no-image"></div>
                       )}
@@ -67,15 +66,7 @@ export const pageQuery = graphql`
           title
           slug
           featureImage {
-            fluid(maxWidth: 1500) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-            }
+            gatsbyImageData
           }
           createdAt
           publishedDate

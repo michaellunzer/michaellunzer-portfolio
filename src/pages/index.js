@@ -89,15 +89,7 @@ export const pageQuery = graphql`
         file {
           url
         }
-        fluid {
-          base64
-          aspectRatio
-          src
-          srcSet
-          srcWebp
-          srcSetWebp
-          sizes
-        }
+        gatsbyImageData
       }
       designation
       facebook
@@ -116,15 +108,7 @@ export const pageQuery = graphql`
         }
       }
       bannerImage {
-        fluid(maxWidth: 1500) {
-          base64
-          aspectRatio
-          src
-          srcSet
-          srcWebp
-          srcSetWebp
-          sizes
-        }
+        gatsbyImageData
       }
       bannerList
     }
@@ -146,15 +130,7 @@ export const pageQuery = graphql`
           title
           slug
           featureImage {
-            fluid(maxWidth: 600) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-            }
+            gatsbyImageData
           }
           createdAt
         }
@@ -166,15 +142,7 @@ export const pageQuery = graphql`
           title
           slug
           featureImage {
-            fluid(maxWidth: 600) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-            }
+            gatsbyImageData
           }
           createdAt
           publishedDate
@@ -192,15 +160,7 @@ export const pageQuery = graphql`
             }
           }
           avatarImage {
-            fluid(maxWidth: 200) {
-              base64
-              aspectRatio
-              src
-              srcSet
-              srcWebp
-              srcSetWebp
-              sizes
-            }
+            gatsbyImageData
           }
         }
       }
@@ -211,15 +171,7 @@ export const pageQuery = graphql`
           title
           slug
           featureImage {
-              fluid(maxWidth: 600) {
-                base64
-                aspectRatio
-                src
-                srcSet
-                srcWebp
-                srcSetWebp
-                sizes
-              }
+            gatsbyImageData
             }
             createdAt
         }
@@ -240,15 +192,7 @@ export const pageQuery = graphql`
           accomplished
           dateAccomplished
 					featureImage {
-					fluid(maxWidth: 1500) {
-					base64
-					aspectRatio
-					src
-					srcSet
-					srcWebp
-					srcSetWebp
-					sizes
-					}
+            gatsbyImageData
 					}
         }
       }

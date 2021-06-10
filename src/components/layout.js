@@ -1,11 +1,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { StaticQuery, graphql } from "gatsby";
+// import * as bootstrap from "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/css/bootstrap.css";
 
 import Header from "./header";
 import Footer from "./footer";
 
+// import * as styles from "../css/style.css";
+// import * as fontawesome from "../css/font-awesome.css";
 import "../css/style.css";
 import "../css/font-awesome.css";
 

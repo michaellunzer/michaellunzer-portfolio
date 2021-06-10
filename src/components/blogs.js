@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import Img from "gatsby-image";
+import { GatsbyImage } from "gatsby-plugin-image";
 import { Link } from "gatsby";
 import moment from "moment";
 
@@ -22,11 +22,10 @@ export default class Blogs extends Component {
                     <Link className="link" to={"blogs/" + item.node.slug} />
 
                     {item.node.featureImage ? (
-                      <Img
-                        fixed={item.node.featureImage.fluid}
+                      <GatsbyImage
+                        image={item.node.featureImage.gatsbyImageData}
                         objectFit="cover"
-                        objectPosition="50% 50%"
-                      />
+                        objectPosition="50% 50%" />
                     ) : (
                       <div className="no-image"></div>
                     )}
