@@ -101,6 +101,14 @@ const Header = ({ data }) => (
                   rel="noopener noreferrer"
                 ></a>
               </li>
+              <li>
+                <a
+                  className="fab fa-rss"
+                  href="https://michaellunzer.com/rss.xml"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                ></a>
+              </li>
               </ul>
             </div>
           </div>
