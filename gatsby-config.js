@@ -168,10 +168,7 @@ module.exports = {
                 return {
                   title: edge.node.title,
                   date: edge.node.createdAt,
-                  url: `${site.siteMetadata.siteUrl}/blogs/${edge.node.slug}`,
-                  custom_elements: [
-                    { 'content:encoded': edge.node.childContentfulBlogsDescriptionTextNode.childMarkdownRemark.rawMarkdownBody },
-                 ],
+                  url: `${site.siteMetadata.siteUrl}/blogs/${edge.node.slug}`
                }
              })
             },
@@ -183,18 +180,13 @@ module.exports = {
                     createdAt
                     title
                     slug
-                    childContentfulBlogsDescriptionTextNode {
-                      childMarkdownRemark {
-                        rawMarkdownBody
-                      }
-                    }
                     }
                   }
                 }
               }            
             `,
             output: "/rss.xml",
-            title: "http://michaellunzer.com",
+            title: "Michael Lunzer's Blog",
           }
         ]
       }
