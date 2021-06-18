@@ -148,6 +148,56 @@ module.exports = {
         // Useful for only loading the tracking script once a user has opted in to being tracked, for example.
         manualLoad: false
       }
-    }
+    },
+    {
+      resolve: `gatsby-plugin-feed`,
+      options: {
+        query: `
+          {
+            site {
+              siteMetadata {
+                siteUrl
+              }
+            }
+          }
+        `,
+        feeds:[
+          {
+            serialize: ({ query: { site, allContentfulBlogs } }) => {
+              return allContentfulBlogs.edges.map(edge => {
+                return {
+                  title: edge.node.title,
+                  date: edge.node.createdAt,
+                  url: `${site.siteMetadata.siteUrl}/blogs/${edge.node.slug}`,
+                  custom_elements: [
+                    { 'content:encoded': edge.node.childContentfulBlogsDescriptionTextNode.childMarkdownRemark.rawMarkdownBody },
+                 ],
+               }
+             })
+            },
+            query: `
+            {
+              allContentfulBlogs {
+                edges {
+                  node {
+                    createdAt
+                    title
+                    slug
+                    childContentfulBlogsDescriptionTextNode {
+                      childMarkdownRemark {
+                        rawMarkdownBody
+                      }
+                    }
+                    }
+                  }
+                }
+              }            
+            `,
+            output: "/rss.xml",
+            title: "http://michaellunzer.com",
+          }
+        ]
+      }
+     }
   ]
 };
