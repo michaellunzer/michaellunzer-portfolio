@@ -103,7 +103,7 @@ const Header = ({ data }) => (
               </li>
               <li>
                 <a
-                  className="fab fa-rss"
+                  className="fa fa-rss"
                   href="https://michaellunzer.com/rss.xml"
                   target="_blank"
                   rel="noopener noreferrer"
