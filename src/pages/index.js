@@ -14,6 +14,8 @@ import Map from "../components/map";
 // import Resume from "../components/resume";
 import Projects from "../components/projects";
 import BucketList from "../components/bucketlist"
+// import HomeAssistant from "../components/homeassistant";
+import { GetRequestSetHeaders } from "../components/GetRequestSetHeaders";
 
 const IndexPage = ({ data }) => (
   <Layout header="home">
@@ -22,6 +24,8 @@ const IndexPage = ({ data }) => (
       keywords={[`Michael Lunzer`, `Customer Success Manager`, `Technical Account Manager`]}
     />
     <Banner data={data.contentfulAboutMe}></Banner>
+
+    <GetRequestSetHeaders />
 
     {data.contentfulSiteInformation.menus
       .filter(item => item === "About")

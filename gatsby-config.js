@@ -20,6 +20,17 @@ module.exports = {
   },
   plugins: [
     {
+      resolve: `gatsby-source-graphql`,
+      options: {
+        typeName: `HomeAssistant`,
+        fieldName: `homeassistant`,
+        url: `https://home.michaellunzer.com/api/states/sensor.sn1_temperature`,
+        headers: {
+          Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI5NWY5ODI2YTFhYzU0ZmIwOTlmYzg5MjNkNGYyYzUxZiIsImlhdCI6MTYyNDY1NDI4MiwiZXhwIjoxOTQwMDE0MjgyfQ.fQLypZBR8ju5KV8shkakoL94Oa4WR1er6ZTK5ASv1nU`,
+        },
+      },
+    },
+    {
       resolve: `gatsby-plugin-gtag`,
       options: {
         // your google analytics tracking id
@@ -168,7 +179,19 @@ module.exports = {
                 return {
                   title: edge.node.title,
                   date: edge.node.createdAt,
-                  url: `${site.siteMetadata.siteUrl}/blogs/${edge.node.slug}`
+                  url: `${site.siteMetadata.siteUrl}/blogs/${edge.node.slug}`,
+                  enclosure: featureImage && {
+                    url: `{edge.node.featureImage.src} `
+                  }
+                    //       url: siteUrl
+                  // description: 
+                  //   excerpt,
+                  //   date,
+                  //   guid: blogUrl,
+                  //   enclosure: featuredImage && {
+                  //       url: siteUrl + featuredImage.publicURL,
+                  //   },
+                  //   custom_elements: [{ 'content:encoded': html }],
                }
              })
             },
@@ -180,10 +203,19 @@ module.exports = {
                     createdAt
                     title
                     slug
+                    featureImage {
+                      gatsbyImageData
+                    }
+                    childContentfulBlogsDescriptionTextNode {
+                      childMarkdownRemark {
+                        rawMarkdownBody 
+                      }
+                    }
+                    }
                     }
                   }
                 }
-              }            
+                       
             `,
             output: "/rss.xml",
             title: "Michael Lunzer's Blog",
