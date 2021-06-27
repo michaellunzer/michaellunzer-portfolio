@@ -28,8 +28,10 @@ componentDidMount() {
         // mode: 'no-cors',  // this didn't help!
         // credentials: 'same-origin',
         headers: {
-        Authorization: // need to use env variables to hide this token!!!!!! Do this before pushing to github!!!
-        process.env.HOME_ASSISTANT_TOKEN,
+        Authorization: // need to use env variables to hide this token!!!!!! Do this before pushing to github!!! it will be cycled on the server. just testing for 
+        // process.env.HOME_ASSISTANT_TOKEN
+        'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI5NWY5ODI2YTFhYzU0ZmIwOTlmYzg5MjNkNGYyYzUxZiIsImlhdCI6MTYyNDY1NDI4MiwiZXhwIjoxOTQwMDE0MjgyfQ.fQLypZBR8ju5KV8shkakoL94Oa4WR1er6ZTK5ASv1nU'
+        ,
         'Content-Type': 'application/json'
         }
     };
