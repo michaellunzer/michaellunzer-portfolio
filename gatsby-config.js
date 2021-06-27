@@ -168,7 +168,19 @@ module.exports = {
                 return {
                   title: edge.node.title,
                   date: edge.node.createdAt,
-                  url: `${site.siteMetadata.siteUrl}/blogs/${edge.node.slug}`
+                  url: `${site.siteMetadata.siteUrl}/blogs/${edge.node.slug}`,
+                  // enclosure: featureImage && {
+                  //   url: `{edge.node.featureImage.src} `
+                  // }
+                    //       url: siteUrl
+                  // description: 
+                  //   excerpt,
+                  //   date,
+                  //   guid: blogUrl,
+                  //   enclosure: featuredImage && {
+                  //       url: siteUrl + featuredImage.publicURL,
+                  //   },
+                  //   custom_elements: [{ 'content:encoded': html }],
                }
              })
             },
@@ -180,10 +192,19 @@ module.exports = {
                     createdAt
                     title
                     slug
+                    featureImage {
+                      gatsbyImageData
+                    }
+                    childContentfulBlogsDescriptionTextNode {
+                      childMarkdownRemark {
+                        rawMarkdownBody 
+                      }
+                    }
+                    }
                     }
                   }
                 }
-              }            
+                       
             `,
             output: "/rss.xml",
             title: "Michael Lunzer's Blog",
