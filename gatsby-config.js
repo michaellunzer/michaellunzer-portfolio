@@ -169,9 +169,9 @@ module.exports = {
                   title: edge.node.title,
                   date: edge.node.createdAt,
                   url: `${site.siteMetadata.siteUrl}/blogs/${edge.node.slug}`,
-                  enclosure: featureImage && {
-                    url: `{edge.node.featureImage.src} `
-                  }
+                  // enclosure: featureImage && {
+                  //   url: `{edge.node.featureImage.src} `
+                  // }
                     //       url: siteUrl
                   // description: 
                   //   excerpt,
