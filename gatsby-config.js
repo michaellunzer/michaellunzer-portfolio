@@ -20,17 +20,6 @@ module.exports = {
   },
   plugins: [
     {
-      resolve: `gatsby-source-graphql`,
-      options: {
-        typeName: `HomeAssistant`,
-        fieldName: `homeassistant`,
-        url: `https://home.michaellunzer.com/api/states/sensor.sn1_temperature`,
-        headers: {
-          Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI5NWY5ODI2YTFhYzU0ZmIwOTlmYzg5MjNkNGYyYzUxZiIsImlhdCI6MTYyNDY1NDI4MiwiZXhwIjoxOTQwMDE0MjgyfQ.fQLypZBR8ju5KV8shkakoL94Oa4WR1er6ZTK5ASv1nU`,
-        },
-      },
-    },
-    {
       resolve: `gatsby-plugin-gtag`,
       options: {
         // your google analytics tracking id
