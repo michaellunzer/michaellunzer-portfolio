@@ -15,7 +15,7 @@ import Map from "../components/map";
 import Projects from "../components/projects";
 import BucketList from "../components/bucketlist"
 // import HomeAssistant from "../components/homeassistant";
-import { GetRequestSetHeaders } from "../components/GetRequestSetHeaders";
+import { HomeAssistantTemperature } from "../components/HomeAssistantTemperature";
 
 const IndexPage = ({ data }) => (
   <Layout header="home">
@@ -25,7 +25,7 @@ const IndexPage = ({ data }) => (
     />
     <Banner data={data.contentfulAboutMe}></Banner>
 
-    <GetRequestSetHeaders />
+    <HomeAssistantTemperature />
 
     {data.contentfulSiteInformation.menus
       .filter(item => item === "About")
