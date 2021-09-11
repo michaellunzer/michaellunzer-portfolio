@@ -329,6 +329,31 @@ pre{margin-bottom:0}
     width: 100%;
 }
 
+.resume-container iframe {
+  border: 0;
+  height: 100%;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+  .resume-popup-container {
+    overflow: visible;
+    padding-top: 95%;
+    position: relative;
+    /* width: 100%; */
+  } 
+
+  .resume-popup-container iframe {
+    border: 0;
+    height: 100%;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+  }    
+
   /* 4x3 Aspect Ratio */
   .resume-container-4x3 {
     padding-top: 75%;
@@ -402,3 +427,42 @@ pre{margin-bottom:0}
   top: 0;
   width: 100%;
 } */
+
+
+/*           */
+/* Popup CSS */
+/*           */
+
+.popupmodal {
+  font-size: 12px;
+}
+.popupmodal > .modalheader {
+  width: 100%;
+  border-bottom: 1px solid gray;
+  font-size: 18px;
+  text-align: center;
+  padding: 5px;
+}
+.popupmodal > .modalcontent {
+  width: 100%;
+  padding: 10px 5px;
+}
+.popupmodal > .modalactions {
+  width: 100%;
+  padding: 10px 5px;
+  margin: auto;
+  text-align: center;
+}
+.popupmodal > .modalclose {
+  cursor: pointer;
+  position: absolute;
+  display: block;
+  padding: 2px 5px;
+  line-height: 20px;
+  right: -10px;
+  top: -10px;
+  font-size: 24px;
+  background: #ffffff;
+  border-radius: 18px;
+  border: 1px solid #cfcece;
+}
