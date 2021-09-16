@@ -106,7 +106,10 @@ h2:after,
 .work-list{display:flex;flex-wrap:wrap;list-style:none;padding:0;margin:0 -5px}
 .work-list .item{width:33.33%;padding:0 5px;margin-bottom:10px}
 .testimonials .slick-list *{outline:none!important}
-.site-footer{padding:20px;background:#333;margin-bottom:0px;text-align:center;color:#fff}
+.site-footer{padding:20px;background:#333;margin-bottom:0px;text-align:center;color:#fff;
+  flex-shrink: 1;
+  /* position:relative;bottom:0;left:0;width:100%; */
+}
 .slick-list{overflow:hidden}
 .blogs-list .item .inner .gatsby-image-wrapper{width:100%;height:250px}
 .blogs-list .item:nth-child(1) .inner .gatsby-image-wrapper,
@@ -289,18 +292,18 @@ pre{margin-bottom:0}
 
   .iframe-container {
     overflow: hidden;
-    padding-bottom: 56.25%;
+    padding-top: 56.25%;
     position: relative;
-    width: 100%;
+    /* width: 100%; */
     height: 0;
   }
     
   .iframe-container iframe {
-      /* border: 0; */
+      border: 0;
       height: 100%;
-      /* left: 0; */
+      left: 0;
       position: absolute;
-      /* top: 0; */
+      top: 0;
       width: 100%;
   }
   
@@ -315,28 +318,40 @@ pre{margin-bottom:0}
   }
 
   .resume-container {
-    overflow: hidden;
-    padding-top: 100%;
-    position: relative;
+    /* overflow: hidden; */
+    /* padding-top: 50%;  */
+    /* position: relative; */
+    /* height: 100%;
+    width: 100%; */
+    height: 100%;
+    display: flex;
+    min-height: 82.5vh;
+    flex-direction: column;
+
   } 
+
+  .resume-flex {
+    flex: 1 0 auto;
+
+  }
 
   .resume-container .pdf {
     border: 0;
-    height: 100%;
+    /* height: 100%; */
     left: 0;
     position: absolute;
     top: 0;
     width: 100%;
 }
 
-.resume-container iframe {
-  border: 0;
-  height: 100%;
-  left: 0;
-  position: absolute;
-  top: 0;
-  width: 100%;
-}
+  .resume-container iframe {
+    /* border: 0;
+    left: 0;
+    position: relative;
+    top: 0; */
+    width: 100%;
+
+  }
 
   .resume-popup-container {
     overflow: visible;
