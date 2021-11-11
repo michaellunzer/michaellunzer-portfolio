@@ -4,7 +4,6 @@ import { graphql } from "gatsby";
 import Layout from "../components/layout";
 import SEO from "../components/seo";
 
-
 export default class Resume extends Component {
   render() {
     const { data } = this.props;
@@ -14,20 +13,50 @@ export default class Resume extends Component {
           title="Resume"
           keywords={[`Michael Lunzer`, `Customer Success Manager`, `Cloud`, `Blogs`]}
         />
-        <div className="site-container resume-page" id="Resume">
+        <div className="site-container blog-post">
           <div className="container">
+            <div className="resume-container">
             <div className="section-head">
-              <h1 className="line-heading h2">{data.contentfulResume.title}</h1>
+              <h1 className="line-heading h2">
+                {/* {data.contentfulResume.title} */}
+                Request My Resume
+              </h1>
+              
               <p><b>Uploaded:</b> {data.contentfulResume.updatedAt}</p>
-            </div>
-            <div class="resume-container">
-            <embed src={`https:${data.contentfulResume.pdf.file.url}`} class="pdf" type="application/pdf" />
-            </div>
+              <p>Enter your email here and a copy of my resume will instantly be sent to your inbox. 
+                {/* There is a lot of personal information on a resume and this is to protect my privacy. */}
+              </p>
 
+            </div>
+            <div className="resume-flex">
+            {/* <div className="site-container blog-post"> */}
+
+              {/* <embed src={`https:${data.contentfulResume.pdf.file.url}`} className="pdf" type="application/pdf" /> */}
+              {/* <div className="iframe-container"> */}
+                <iframe src="https://cdn.forms-content.sg-form.com/e6f885c3-03c7-11ec-88cf-7e4d38212c3d" 
+                height="475px" width="360px"
+                ></iframe>
+
+
+
+              </div>
+
+              </div>
+              </div>
+              </div>
+
+
+
+
+{/* 
+            <div className="resume-container">
+                <embed src={`https:${data.contentfulResume.pdf.file.url}`} className="pdf" type="application/pdf" />
+            </div> */}
+  
             {/* <p><b>Description:</b> {data.contentfulResume.description.description}</p> */}
 
-          </div>
-        </div>
+          {/* </div>
+        </div> */}
       </Layout>
       );
     }
@@ -37,57 +66,7 @@ export default class Resume extends Component {
 
 
 
-// export default class Blogs extends Component {
-//   render() {
-//     const { data } = this.props;
-//     return (
-//       <Layout>
-//         <SEO
-//           title="Resume"
-//           keywords={[`Michael Lunzer`, `Customer Success Manager`, `Cloud`, `Blogs`]}
-//         />
-//         <div className="site-container blogs-page" id="Blogs">
-//           <div className="container">
-//             <div className="section-head">
-//               <h1 className="line-heading h2">Blogs</h1>
-//             </div>
-//             <ul
-//               className={`blogs-list ${
-//                 data.allContentfulBlogs.edges.length < 5 ? "few-blogs" : ""
-//               }`}
-//             >
-//               {data.allContentfulBlogs.edges.map((item, index) => {
-//                 return (
-//                   <li key={index} className="item">
-//                     <div className="inner">
-//                       <Link className="link" to={item.node.slug} />
-//                       {item.node.featureImage ? (
-//                         <Img
-//                           fixed={item.node.featureImage.fluid}
-//                           objectFit="cover"
-//                           objectPosition="50% 50%"
-//                         />
-//                       ) : (
-//                         <div className="no-image"></div>
-//                       )}
-//                       <div className="details">
-//                         <h3 className="title">{item.node.title}</h3>
-//                         <span className="date">
-//                           <i className="fas fa-calendar-alt"></i>{" "}
-//                           {moment(item.node.createdAt).format("LL")}
-//                         </span>
-//                       </div>
-//                     </div>
-//                   </li>
-//                 );
-//               })}
-//             </ul>
-//           </div>
-//         </div>
-//       </Layout>
-//     );
-//   }
-// }
+
 
 export const pageQuery = graphql`
 query ResumeQuery {

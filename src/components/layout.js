@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 import { StaticQuery, graphql } from "gatsby";
 // import * as bootstrap from "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/css/bootstrap.css";
+// import 'bootstrap/dist/js/bootstrap.bundle.min';
+// import { Modal } from bootstrap;
 
 import Header from "./header";
 import Footer from "./footer";
