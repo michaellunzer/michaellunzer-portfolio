@@ -86,10 +86,10 @@ module.exports = {
         background_color: `#ffffff`,
         theme_color: `#ffffff`,
         icon: `src/images/ML-white-background.png`, // This path is relative to the root of the site.
-        icon_options: {
-          "background_color": "white",
-          "theme_color": "white"
-        }
+        // icon_options: {
+        //   "background_color": "white",
+        //   "theme_color": "white"
+        // }
       }
     }, // To learn more, visit: https://gatsby.dev/offline // this (optional) plugin enables Progressive Web App + Offline functionality
     `gatsby-plugin-offline`,
