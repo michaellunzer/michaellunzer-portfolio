@@ -13,6 +13,9 @@ export const SpotifyTopArtists = () => {
                   node {
                     name
                     genres
+                    external_urls {
+                      spotify
+                    }
                     image {
                       localFile {
                         childImageSharp {
@@ -45,7 +48,7 @@ export const SpotifyTopArtists = () => {
                                 </div>
                                 <h3>
                                     <span className="spotify__list-item-number">{index + 1}</span>
-                                    { artist.node.name }
+                                    <a href={ artist.node.external_urls.spotify}>{ artist.node.name }</a>
                                 </h3>
                             </div>
                         )}

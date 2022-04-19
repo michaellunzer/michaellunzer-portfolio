@@ -16,11 +16,13 @@ import Projects from "../components/projects";
 import BucketList from "../components/bucketlist"
 // import HomeAssistant from "../components/homeassistant";
 import { HomeAssistantTemperature } from "../components/HomeAssistantTemperature";
+import SpotifyMonthlyPlaylists from "../components/spotifyMonthlyPlaylists"
+
 
 const IndexPage = ({ data }) => (
   <Layout header="home">
     <SEO
-      title={data.contentfulAboutMe.designation} 
+      title={data.contentfulAboutMe.designation} //go to seo.js to revert changes to add designation in the page title.
       keywords={[`Michael Lunzer`, `Customer Success Manager`, `Technical Account Manager`]}
     />
     <Banner data={data.contentfulAboutMe}></Banner>
@@ -64,6 +66,8 @@ const IndexPage = ({ data }) => (
       .map(t => {
         return <BucketList data={data.allContentfulBucketList}></BucketList>;
       })}
+
+    {/* <SpotifyMonthlyPlaylists /> */}
 
     {data.contentfulSiteInformation.menus
       .filter(item => item === "Contact")

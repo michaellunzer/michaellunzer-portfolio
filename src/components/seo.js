@@ -14,7 +14,7 @@ function SEO({ description, lang, meta, keywords, title, data }) {
               lang
             }}
             title={title}
-            titleTemplate={`%s | ${data.contentfulSiteInformation.siteName}`}
+            titleTemplate={`${data.contentfulSiteInformation.siteName}`} // old = titleTemplate={`%s | ${data.contentfulSiteInformation.siteName}`} to get "Customer Success Manager | Michael Lunzer" in the title.
             meta={[
               {
                 name: `description`,

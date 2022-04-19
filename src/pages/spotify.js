@@ -2,6 +2,8 @@ import React from "react"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
 import SpotifyTopArtists from "../components/spotifyTopArtists"
+import SpotifyMonthlyPlaylists from "../components/spotifyMonthlyPlaylists"
+
 
 const Spotify = () => (
     <Layout>
@@ -19,6 +21,8 @@ const Spotify = () => (
             {/* </div> */}
             {/* <div className="resume-flex"> */}
             <SpotifyTopArtists />
+
+            <SpotifyMonthlyPlaylists />
 
 
 
