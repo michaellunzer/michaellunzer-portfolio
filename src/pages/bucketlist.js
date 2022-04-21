@@ -124,6 +124,48 @@ export default class BucketListPage extends Component {
     );
   }
 }
+
+// original query 
+//
+// export const pageQuery = graphql`
+// query BucketListPageQuery {
+//   allContentfulBucketList(sort: { fields: dateAccomplished, order: DESC }) {
+//     edges {
+//       node {
+//         title
+//         id
+//         slug
+//         description {
+//           description
+//           childMarkdownRemark {
+//             html
+//           }
+//         }
+//         accomplished
+//         dateAccomplished
+//         featureImage {
+//           file {
+//             url
+//           }
+//           gatsbyImageData
+//           fluid(maxWidth: 600) {
+//             base64
+//             aspectRatio
+//             src
+//             srcSet
+//             srcWebp
+//             srcSetWebp
+//             sizes
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+// `;
+
+
+// without fluid
 export const pageQuery = graphql`
 query BucketListPageQuery {
   allContentfulBucketList(sort: { fields: dateAccomplished, order: DESC }) {
@@ -145,23 +187,12 @@ query BucketListPageQuery {
             url
           }
           gatsbyImageData
-          fluid(maxWidth: 600) {
-            base64
-            aspectRatio
-            src
-            srcSet
-            srcWebp
-            srcSetWebp
-            sizes
-          }
         }
       }
     }
   }
 }
 `;
-
-
 
 
 

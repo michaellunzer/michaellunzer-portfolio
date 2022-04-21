@@ -83,6 +83,40 @@ export default class blogPost extends Component {
   }
 }
 
+// export const pageQuery = graphql`
+//   query SinglePostQuery($slug: String!) {
+//     contentfulBlogs(slug: { eq: $slug }) {
+//       id
+//       title
+//       slug
+//       featureImage {
+//         gatsbyImageData
+//         fluid(maxWidth: 1500) {
+//           base64
+//           aspectRatio
+//           src
+//           srcSet
+//           srcWebp
+//           srcSetWebp
+//           sizes
+//         }
+//       }
+//       description {
+//         childMarkdownRemark {
+//           html
+//         }
+//       }
+//       createdAt
+//     }
+//     contentfulSiteInformation {
+//       siteUrl
+//       twiteerHandle
+//     }
+//   }
+// `;
+
+// without fluid
+
 export const pageQuery = graphql`
   query SinglePostQuery($slug: String!) {
     contentfulBlogs(slug: { eq: $slug }) {
@@ -91,15 +125,6 @@ export const pageQuery = graphql`
       slug
       featureImage {
         gatsbyImageData
-        fluid(maxWidth: 1500) {
-          base64
-          aspectRatio
-          src
-          srcSet
-          srcWebp
-          srcSetWebp
-          sizes
-        }
       }
       description {
         childMarkdownRemark {

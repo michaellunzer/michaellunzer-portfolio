@@ -16,7 +16,7 @@ import Projects from "../components/projects";
 import BucketList from "../components/bucketlist"
 // import HomeAssistant from "../components/homeassistant";
 import { HomeAssistantTemperature } from "../components/HomeAssistantTemperature";
-import SpotifyMonthlyPlaylists from "../components/spotifyMonthlyPlaylists"
+// import SpotifyMonthlyPlaylists from "../components/spotifyMonthlyPlaylists"
 
 
 const IndexPage = ({ data }) => (

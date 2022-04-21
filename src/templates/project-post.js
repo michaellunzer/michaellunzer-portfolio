@@ -83,6 +83,8 @@ export default class projectPost extends Component {
   }
 }
 
+// without Fluid
+
 export const pageQuery = graphql`
   query SingleProjectQuery($slug: String!) {
     contentfulProjects(slug: { eq: $slug }) {
@@ -91,15 +93,6 @@ export const pageQuery = graphql`
       slug
       featureImage {
         gatsbyImageData
-        fluid(maxWidth: 1500) {
-          base64
-          aspectRatio
-          src
-          srcSet
-          srcWebp
-          srcSetWebp
-          sizes
-        }
       }
       description {
         childMarkdownRemark {
@@ -115,3 +108,39 @@ export const pageQuery = graphql`
     }
   }
 `;
+
+
+// orignal query
+
+// export const pageQuery = graphql`
+//   query SingleProjectQuery($slug: String!) {
+//     contentfulProjects(slug: { eq: $slug }) {
+//       id
+//       title
+//       slug
+//       featureImage {
+//         gatsbyImageData
+//         fluid(maxWidth: 1500) {
+//           base64
+//           aspectRatio
+//           src
+//           srcSet
+//           srcWebp
+//           srcSetWebp
+//           sizes
+//         }
+//       }
+//       description {
+//         childMarkdownRemark {
+//           html
+//         }
+//       }
+//       createdAt
+//       publishedDate
+//     }
+//     contentfulSiteInformation {
+//       siteUrl
+//       twiteerHandle
+//     }
+//   }
+// `;
