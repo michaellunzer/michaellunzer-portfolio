@@ -20,9 +20,9 @@ const Spotify = () => (
 
             {/* </div> */}
             {/* <div className="resume-flex"> */}
-            {/* <SpotifyTopArtists /> */}
+            <SpotifyTopArtists />
 
-            {/* <SpotifyMonthlyPlaylists /> */}
+            <SpotifyMonthlyPlaylists />
 
 
 

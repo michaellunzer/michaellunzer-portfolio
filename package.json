@@ -44,7 +44,8 @@
     "react-share": "^4.2.1",
     "react-slick": "^0.25.2",
     "reactjs-popup": "^2.0.5",
-    "smooth-scroll": "^16.1.3"
+    "smooth-scroll": "^16.1.3",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
     "prettier": "^1.19.1"
