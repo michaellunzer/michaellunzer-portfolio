@@ -86,10 +86,10 @@ module.exports = {
         background_color: `#ffffff`,
         theme_color: `#ffffff`,
         icon: `src/images/ML-white-background.png`, // This path is relative to the root of the site.
-        icon_options: {
-          "background_color": "white",
-          "theme_color": "white"
-        }
+        // icon_options: {
+        //   "background_color": "white",
+        //   "theme_color": "white"
+        // }
       }
     }, // To learn more, visit: https://gatsby.dev/offline // this (optional) plugin enables Progressive Web App + Offline functionality
     `gatsby-plugin-offline`,
@@ -150,6 +150,18 @@ module.exports = {
         manualLoad: false
       }
     },
+    {
+      resolve: `gatsby-source-spotify`,
+      options: {
+          clientId: process.env.SPOTIFY_CLIENT_ID,
+          clientSecret: process.env.SPOTIFY_CLIENT_SECRET, // Don't add to public repository
+          refreshToken: process.env.SPOTIFY_REFRESH_TOKEN,
+  
+          fetchPlaylists: true, // optional. Set to false to disable fetching of your playlists
+          fetchRecent: true, // optional. Set to false to disable fetching of your recently played tracks
+          timeRanges: ['short_term', 'medium_term', 'long_term'], // optional. Set time ranges to be fetched
+        },
+      },
     {
       resolve: `gatsby-plugin-feed`,
       options: {

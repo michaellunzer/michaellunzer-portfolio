@@ -113,6 +113,15 @@ export default class Header extends Component {
                       );
                     })}
                   {data.menus
+                    .filter(item => item === "Spotify")
+                    .map(t => {
+                      return (
+                        <li>
+                          <Link to={`/spotify`}>Spotify</Link>
+                        </li>
+                      );
+                    })}
+                  {data.menus
                     .filter(item => item === "Resume")
                     .map(t => {
                       return (
