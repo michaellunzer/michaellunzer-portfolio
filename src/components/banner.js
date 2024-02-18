@@ -36,14 +36,14 @@ export default class Banner extends Component {
                   rel="noopener noreferrer"
                 ></a>
               </li>
-              <li>
+              {/* <li>
                 <a
                   className="fab fa-twitter"
                   href={data.twitter}
                   target="_blank"
                   rel="noopener noreferrer"
                 ></a>
-              </li>
+              </li> */}
               {/* <li>
                 <a
                   className="fab fa-facebook-f"
