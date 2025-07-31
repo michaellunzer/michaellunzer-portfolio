@@ -1,67 +1,26 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Helmet from "react-helmet";
-import { StaticQuery, graphql } from "gatsby";
+import Head from "next/head";
 
-function SEO({ description, lang, meta, keywords, title, data }) {
+function SEO({ description, lang, meta = [], keywords, title, siteInfo }) {
   return (
-    <StaticQuery
-      query={detailsQuery}
-      render={data => {
-        return (
-          <Helmet
-            htmlAttributes={{
-              lang
-            }}
-            title={title}
-            titleTemplate={`${data.contentfulSiteInformation.siteName}`} // old = titleTemplate={`%s | ${data.contentfulSiteInformation.siteName}`} to get "Customer Success Manager | Michael Lunzer" in the title.
-            meta={[
-              {
-                name: `description`,
-                content: data.contentfulSiteInformation.siteDescription
-              },
-              {
-                property: `og:title`,
-                content: title
-              },
-              {
-                property: `og:description`,
-                content: data.contentfulSiteInformation.siteDescription
-              },
-              {
-                property: `og:type`,
-                content: `website`
-              },
-              {
-                name: `twitter:card`,
-                content: `summary`
-              },
-              {
-                name: `twitter:creator`,
-                content: data.contentfulSiteInformation.twiteerHandle
-              },
-              {
-                name: `twitter:title`,
-                content: title
-              },
-              {
-                name: `twitter:description`,
-                content: data.contentfulSiteInformation.siteDescription
-              }
-            ]
-              .concat(
-                keywords.length > 0
-                  ? {
-                      name: `keywords`,
-                      content: keywords.join(`, `)
-                    }
-                  : []
-              )
-              .concat(meta)}
-          />
-        );
-      }}
-    />
+    <Head>
+      <title>{title}</title>
+      <meta name="description" content={siteInfo?.fields?.siteDescription || description} />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={siteInfo?.fields?.siteDescription || description} />
+      <meta property="og:type" content="website" />
+      <meta name="twitter:card" content="summary" />
+      <meta name="twitter:creator" content={siteInfo?.fields?.twiteerHandle} />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={siteInfo?.fields?.siteDescription || description} />
+      {keywords && keywords.length > 0 && (
+        <meta name="keywords" content={keywords.join(`, `)} />
+      )}
+      {meta && meta.map((tag, index) => (
+        <meta key={index} {...tag} />
+      ))}
+    </Head>
   );
 }
 
@@ -76,17 +35,8 @@ SEO.propTypes = {
   lang: PropTypes.string,
   meta: PropTypes.array,
   keywords: PropTypes.arrayOf(PropTypes.string),
-  title: PropTypes.string.isRequired
+  title: PropTypes.string.isRequired,
+  siteInfo: PropTypes.object
 };
 
 export default SEO;
-
-const detailsQuery = graphql`
-  query DefaultSEOQuery {
-    contentfulSiteInformation {
-      siteName
-      siteDescription
-      twiteerHandle
-    }
-  }
-`;

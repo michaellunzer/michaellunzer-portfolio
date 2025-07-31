@@ -1,143 +1,119 @@
-import { Link } from "gatsby";
-import React, { Component } from "react";
+"use client";
 
-export default class Header extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      menu: false
-    };
-  }
+import Link from "next/link";
+import React, { useState } from "react";
 
-  render() {
-    const { data, header } = this.props;
-    const { menu } = this.state;
-    return (
-      <header className={`site-header ${menu ? "active" : ""}`}>
-        <div className="container">
-          <div className="header-main">
-            <div className="logo">
-              <Link to="/">
-                {data.logo.file.url ? (
-                  <img src={data.logo.file.url} alt="logo" />
-                ) : (
-                  <span>{data.siteName}</span>
-                )}
-              </Link>
-            </div>
-            <div
-              className="responsive-menu"
-              onClick={() => {
-                this.setState({
-                  menu: !menu
-                });
-              }}
-            >
-              <span></span>
-            </div>
-              <div className="menu">
-                <ul>
-                  <li>
-                    <Link to="/#home">Home</Link>
-                  </li>
-                  {data.menus
-                    .filter(item => item === "About")
-                    .map(t => {
-                      return (
-                        <li>
-                          <Link to={`/#About`}>About</Link>
-                        </li>
-                      );
-                    })}
-                  {data.menus
-                    .filter(item => item === "Service")
-                    .map(t => {
-                      return (
-                        <li>
-                          <Link to={`/#Service`}>Service</Link>
-                        </li>
-                      );
-                    })}
-                  {data.menus
-                    .filter(item => item === "Blogs")
-                    .map(t => {
-                      return (
-                        <li>
-                          <Link to={`/#Blogs`}>Blog</Link>
-                        </li>
-                      );
-                    })}
-                  {data.menus
-                    .filter(item => item === "Projects")
-                    .map(t => {
-                      return (
-                        <li>
-                          <Link to={`/#Projects`}>Projects</Link>
-                        </li>
-                      );
-                    })}
-                  {data.menus
-                    .filter(item => item === "Testimonials")
-                    .map(t => {
-                      return (
-                        <li>
-                          <Link to={`/#Testimonials`}>Testimonials</Link>
-                        </li>
-                      );
-                    })}
-                  {data.menus
-                    .filter(item => item === "Bucket List")
-                    .map(t => {
-                      return (
-                        <li>
-                          <Link to={`/#BucketList`}>Bucket List</Link>
-                        </li>
-                      );
-                    })}
-                    {data.menus
-                    .filter(item => item === "Contact")
-                    .map(t => {
-                      return (
-                        <li>
-                          <Link to={`/#Contact`}>Contact</Link>
-                        </li>
-                      );
-                    })}
-                    {data.menus
-                    .filter(item => item === "Map")
-                    .map(t => {
-                      return (
-                        <li>
-                          <Link to={`/#Map`}>Map</Link>
-                        </li>
-                      );
-                    })}
-                  {data.menus
-                    .filter(item => item === "Spotify")
-                    .map(t => {
-                      return (
-                        <li>
-                          <Link to={`/spotify`}>Spotify</Link>
-                        </li>
-                      );
-                    })}
-                  {data.menus
-                    .filter(item => item === "Resume")
-                    .map(t => {
-                      return (
-                        <li>
-                          <Link to={`/resume`}>Resume</Link>
-                        </li>
-                      );
-                    })}
+export default function Header({ data, header }) {
+  const [menu, setMenu] = useState(false);
 
-                </ul>
-          
-              </div>
-
+  return (
+    <header className={`site-header ${menu ? "active" : ""}`}>
+      <div className="container">
+        <div className="header-main">
+          <div className="logo">
+            <Link href="/">
+              {data?.fields?.logo?.fields?.file?.url ? (
+                <img src={`https:${data.fields.logo.fields.file.url}`} alt="logo" />
+              ) : (
+                <span>{data?.fields?.siteName}</span>
+              )}
+            </Link>
+          </div>
+          <div
+            className="responsive-menu"
+            onClick={() => {
+              setMenu(!menu);
+            }}
+          >
+            <span></span>
+          </div>
+          <div className="menu">
+            <ul>
+              <li>
+                <Link href="/#home">Home</Link>
+              </li>
+              {data?.fields?.menus
+                ?.filter(item => item === "About")
+                .map((t, index) => {
+                  return (
+                    <li key={index}>
+                      <Link href={`/#About`}>About</Link>
+                    </li>
+                  );
+                })}
+              {data?.fields?.menus
+                ?.filter(item => item === "Service")
+                .map((t, index) => {
+                  return (
+                    <li key={index}>
+                      <Link href={`/#Service`}>Service</Link>
+                    </li>
+                  );
+                })}
+              {data?.fields?.menus
+                ?.filter(item => item === "Blogs")
+                .map((t, index) => {
+                  return (
+                    <li key={index}>
+                      <Link href={`/#Blogs`}>Blog</Link>
+                    </li>
+                  );
+                })}
+              {data?.fields?.menus
+                ?.filter(item => item === "Projects")
+                .map((t, index) => {
+                  return (
+                    <li key={index}>
+                      <Link href={`/#Projects`}>Projects</Link>
+                    </li>
+                  );
+                })}
+              {data?.fields?.menus
+                ?.filter(item => item === "Testimonials")
+                .map((t, index) => {
+                  return (
+                    <li key={index}>
+                      <Link href={`/#Testimonials`}>Testimonials</Link>
+                    </li>
+                  );
+                })}
+              {data?.fields?.menus
+                ?.filter(item => item === "Bucket List")
+                .map((t, index) => {
+                  return (
+                    <li key={index}>
+                      <Link href={`/#BucketList`}>Bucket List</Link>
+                    </li>
+                  );
+                })}
+              {data?.fields?.menus
+                ?.filter(item => item === "Contact")
+                .map((t, index) => {
+                  return (
+                    <li key={index}>
+                      <Link href={`/#Contact`}>Contact</Link>
+                    </li>
+                  );
+                })}
+              <li>
+                <Link href="/blogs">Blogs</Link>
+              </li>
+              <li>
+                <Link href="/projects">Projects</Link>
+              </li>
+              <li>
+                <Link href="/resume">Resume</Link>
+              </li>
+              <li>
+                <Link href="/bucketlist">Bucket List</Link>
+              </li>
+              <li>
+                <Link href="/spotify">Spotify</Link>
+              </li>
+            </ul>
           </div>
         </div>
-      </header>
-    );
-  }
+      </div>
+    </header>
+  );
 }
