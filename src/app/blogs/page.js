@@ -1,11 +1,11 @@
-import { getAllBlogs, getSiteInformation } from '../../../lib/contentful'
+import { getAllBlogPosts, getSiteInformation } from '../../../lib/contentful'
 import Layout from '../../components/layout'
 import SEO from '../../components/seo'
 import Blogs from '../../components/blogs'
 
 export default async function BlogsPage() {
   const [blogs, siteInfo] = await Promise.all([
-    getAllBlogs(),
+    getAllBlogPosts(),
     getSiteInformation(),
   ])
 
