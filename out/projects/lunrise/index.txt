@@ -1,0 +1,127 @@
+1:"$Sreact.fragment"
+2:I[7555,[],""]
+3:I[1295,[],""]
+6:I[9665,[],"OutletBoundary"]
+8:I[4911,[],"AsyncMetadataOutlet"]
+a:I[9665,[],"ViewportBoundary"]
+c:I[9665,[],"MetadataBoundary"]
+d:"$Sreact.suspense"
+f:I[8393,[],""]
+:HL["/_next/static/media/e4af272ccee01ff0-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/css/931b179cff3131dc.css","style"]
+:HL["/_next/static/css/f56e075401be6041.css","style"]
+:HL["/_next/static/css/443cb84861a3a7b6.css","style"]
+:HL["/_next/static/css/b9c247a1f9d5af8a.css","style"]
+:HL["/_next/static/css/f055e431c58b907b.css","style"]
+0:{"P":null,"b":"KM_hFFm0m0RlUSYsVjYGn","p":"","c":["","projects","lunrise",""],"i":false,"f":[[["",{"children":["projects",{"children":[["slug","lunrise","d"],{"children":["__PAGE__",{}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/931b179cff3131dc.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/f56e075401be6041.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","link",null,{"rel":"stylesheet","href":"/style.css"}],["$","link",null,{"rel":"stylesheet","href":"/font-awesome.css"}]]}],["$","body",null,{"className":"__className_e8ce0c","children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":["$L4",[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/443cb84861a3a7b6.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/b9c247a1f9d5af8a.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]]}]]}],{"children":["projects",["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["slug","lunrise","d"],["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":["$L5",[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/443cb84861a3a7b6.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/b9c247a1f9d5af8a.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","2",{"rel":"stylesheet","href":"/_next/static/css/f055e431c58b907b.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L6",null,{"children":["$L7",["$","$L8",null,{"promise":"$@9"}]]}]]}],{},null,false]},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,[["$","$La",null,{"children":"$Lb"}],["$","meta",null,{"name":"next-size-adjust","content":""}]],["$","$Lc",null,{"children":["$","div",null,{"hidden":true,"children":["$","$d",null,{"fallback":null,"children":"$Le"}]}]}]]}],false]],"m":"$undefined","G":["$f",[]],"s":false,"S":true}
+b:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+7:null
+9:{"metadata":[["$","title","0",{"children":"Michael Lunzer"}],["$","meta","1",{"name":"description","content":"Personal Site"}],["$","meta","2",{"name":"author","content":"@michaellunzer"}],["$","meta","3",{"name":"robots","content":"index, follow"}],["$","meta","4",{"property":"og:title","content":"Michael Lunzer"}],["$","meta","5",{"property":"og:description","content":"Personal Site"}],["$","meta","6",{"property":"og:url","content":"https://www.michaellunzer.com/"}],["$","meta","7",{"property":"og:site_name","content":"Michael Lunzer"}],["$","meta","8",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","9",{"name":"twitter:title","content":"Michael Lunzer"}],["$","meta","10",{"name":"twitter:description","content":"Personal Site"}]],"error":null,"digest":"$undefined"}
+e:"$9:metadata"
+10:I[658,["778","static/chunks/778-f9403c0e33e1c074.js","63","static/chunks/63-b8ba2254fb9ac97a.js","231","static/chunks/231-25f0858d523e67a4.js","734","static/chunks/734-cce8ea5190692620.js","419","static/chunks/app/projects/%5Bslug%5D/page-e9b2fba7deab289a.js"],"default"]
+11:I[6874,["778","static/chunks/778-f9403c0e33e1c074.js","63","static/chunks/63-b8ba2254fb9ac97a.js","893","static/chunks/app/projects/page-cf2a42807b7322d4.js"],""]
+4:["$","$L10",null,{"siteInfo":{"metadata":{"tags":[],"concepts":[]},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"o4gibwve10tr"}},"id":"1vaZauN3G1LbRsJutH3AU9","type":"Entry","createdAt":"2020-05-28T21:29:56.813Z","updatedAt":"2022-04-19T07:19:17.934Z","environment":{"sys":{"id":"master","type":"Link","linkType":"Environment"}},"publishedVersion":45,"revision":18,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"siteInformation"}},"locale":"en-US"},"fields":{"siteName":"Michael Lunzer","siteUrl":"https://michaellunzer.com","logo":{"metadata":{"tags":[],"concepts":[]},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"o4gibwve10tr"}},"id":"7yHuAa09NVOcZ25POk7cbM","type":"Asset","createdAt":"2020-05-28T21:29:46.445Z","updatedAt":"2020-07-03T23:34:40.696Z","environment":{"sys":{"id":"master","type":"Link","linkType":"Environment"}},"publishedVersion":35,"revision":10,"locale":"en-US"},"fields":{"title":"ML-logo-white","file":{"url":"//images.ctfassets.net/o4gibwve10tr/7yHuAa09NVOcZ25POk7cbM/9b2cb1a82fcec0461a26b030df8ed159/ML-logo-white.png","details":{"size":31304,"image":{"width":319,"height":302}},"fileName":"ML-logo-white.png","contentType":"image/png"}}},"twiteerHandle":"@michaellunzer","siteDescription":"Personal Site","menus":["Blogs","Photos","About","Contact","Work","Map","Resume","Projects","Bucket List","Spotify"]}},"children":[null,["$","div",null,{"className":"site-container","children":["$","div",null,{"className":"container","children":["$","div",null,{"className":"row","children":["$","div",null,{"className":"col-sm-12 text-center","children":[["$","h1",null,{"children":"404 - Page Not Found"}],["$","p",null,{"children":"The page you're looking for doesn't exist."}],["$","$L11",null,{"href":"/","className":"btn btn-primary","children":"Go back home"}]]}]}]}]}]]}]
+12:I[3063,["778","static/chunks/778-f9403c0e33e1c074.js","63","static/chunks/63-b8ba2254fb9ac97a.js","231","static/chunks/231-25f0858d523e67a4.js","734","static/chunks/734-cce8ea5190692620.js","419","static/chunks/app/projects/%5Bslug%5D/page-e9b2fba7deab289a.js"],"Image"]
+13:I[2370,["778","static/chunks/778-f9403c0e33e1c074.js","63","static/chunks/63-b8ba2254fb9ac97a.js","231","static/chunks/231-25f0858d523e67a4.js","734","static/chunks/734-cce8ea5190692620.js","419","static/chunks/app/projects/%5Bslug%5D/page-e9b2fba7deab289a.js"],"default"]
+14:T1568,LunRise Artificial Sunrise in Action
+====================================
+
+##### Finished Product First:
+
+<div class="iframe-container">
+<iframe src="https://vine.co/v/id7Oq0a0zJO/embed/simple" width="600" height="600" frameborder="0"></iframe><script src="https://platform.vine.co/static/scripts/embed.js"></script>
+</div>
+<br>
+
+### LunRise Artificial Sunrise Alarm Clock
+
+I've been side tracked from my original alarm clock project, LunzPi, and focused on my latest obsession: the LunRise Artificial Sunrise Alarm Clock.
+
+It is a database driven alarm clock that controls a [60 LED strip](https://www.adafruit.com/products/346) as well as [Bluetooth light bulb](https://amzn.to/1G4uzNo).
+
+The bluetooth light bulb idea was started by this [Adafruit guide](https://learn.adafruit.com/reverse-engineering-a-bluetooth-low-energy-light-bulb). Using a [Bluetooth LE Sniffer](https://www.adafruit.com/product/2269), I was able to extract the unique identifier code that was embedded by the manufacturer. This code opens up communication between a device (a raspberry pi) and the bulb. The playbulb's secret code happens to be: **0x001b. **The code **0x001b** was the necessary piece missing to write a hex color to the bulb. Using the code on my [github page](https://github.com/michaellunzer/LunzPi/blob/master/BulbON.py) (adapted from [Tony Dicola](https://learn.adafruit.com/users/tdicola)'s code in the adafruit tutorial) I was able to get full control of my playbulb.
+
+Since the bulb has essentially 2 lights (one "normal"/florescent and the other is RGB) It also had a interesting format so the bulb knows which light to turn on. Here is a brief explanation:
+
+-   __FF000000__ --> this would turn on the normal light
+
+-   __00000000__ --> this would turn off all light
+
+-   __00FF0000__ --> produces a Red color
+
+-   __0000FF00__ --> produces a Green color
+
+-   __000000FF__ --> produces a Blue color
+
+
+![lunrise](//images.ctfassets.net/o4gibwve10tr/30t8d82V6kgs0HOjkr72lD/52c20c114b6e87ca981a8fb6c0f9e7be/lunrise.jpg)
+
+So, this seems like a bit overkill to run a database driven LED Strip, but it was a good opportunity to tie some of my skills together. I've found one of the best way to learn how to do something is using my desire to create something as fuel to learn what I need to accomplish my goals.
+
+This is a first gen Raspberry Pi hosting an LAMP [Linux, Apache, MySQL, PHP/Python] stack (well, it's using lighttp instead of Apache) connected to a 60 LED light strip. It runs very well, considering that the Pi only has 256mb of memory and 700MHz processor (not overclocked at the moment).
+
+I've been captivated by this because of a few reasons:
+
+1.  jQuery Mobile is easy to pick up and quickly produces something that works.
+
+2.  It was a good way to learn AJAX database inserts using PHP.
+
+3.  I'm feeling comfortable enough to build a python script and work reasonably well
+
+The user goes to the IP address of the Pi, adds an alarm of when they would like the LED strip to light up.
+
+![lunrise-app1](//images.ctfassets.net/o4gibwve10tr/3FdeBdULrtzV7CVZCtNyQE/29e851f3bbc39d2315a88a5ea6626e61/lunrise-app1.jpg)
+
+Meanwhile, on the Pi, there is a python script querying the database and waiting for the right day and time the user desired to occur.
+
+When it does, the script continues with a predefined LED light show for the desired duration inputted by the user. From there, it waits until the desired duration has finished before looking once again for the next time to run.
+
+### **Lighting Options:**
+
+-   **Change the color of the bulb**
+
+-   **Turn the LED strip on/off**
+
+![lunrise-app2](//images.ctfassets.net/o4gibwve10tr/44q5KpuqXDVoDLVJ5EvzpD/0b25f00046f050429c42f497fbf830b8/lunrise-app2.jpg)
+
+**Permanent Proto-Board:**
+--------------------------
+
+![lunrise-protoboard](//images.ctfassets.net/o4gibwve10tr/3joojAm0A6FJPYH1qoK2W3/1f52f61e91785e12d112728b5c16336e/lunrise-protoboard.jpg)
+
+### Turning off my PC remotely:
+
+I found out that if the Pi is running a Samba service and so is your windows machine, you can send it a short command to shut down the PC.
+
+This is helpful when you are watching some movie in bed off of your PC running a Plex server and don't want to get up.
+
+This is how I shutdown my PC from across the room
+
+I created a button <Turn PC Off> which sends this command via PHP:
+
+`net rpc SHUTDOWN -C "Goodbye from Lunrise Pi" -f -I Computer.IP.address -U Username%Password`
+
+Yes, the password is stored in plain text, so this probably isn't very secure. But, since it is all on my local network it will be OK.
+
+Also, I needed edit a file the the registry. How-To Geek provides a good walk-through [here](https://www.howtogeek.com/howto/windows-vista/enable-mapping-to-hostnamec-share-on-windows-vista/).
+
+![lunrise-windows-shutdown](//images.ctfassets.net/o4gibwve10tr/6jp7SqAP0xoZUKmnGiZKHG/974d1d4768730cc56c490e3d66cad9fa/lunrise-windows-shutdown.jpg)
+
+Windows Shutdown Prompt: "Goodbye from Lunrise Pi"
+
+**Work In Progress:**
+---------------------
+
+Integrate with Apple Homekit so Siri can control my light.
+
+I have basic light control (on/off) via Siri working.
+
+You can say, "Hey Siri, "make my light red" (and the lights turn red) or *"Netflix and Chill"* and having the lights dim low and the rainbow LED strip turn on!
+
+
+<div class="iframe-container">
+<iframe title="LunzBulb Tweet" src="https://twitframe.com/show?url=https%3A%2F%2Ftwitter.com%2FMichaelLunzer%2Fstatus%2F709635214016811008">
+</iframe>
+</div>5:["$","$L10",null,{"siteInfo":{"metadata":{"tags":[],"concepts":[]},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"o4gibwve10tr"}},"id":"1vaZauN3G1LbRsJutH3AU9","type":"Entry","createdAt":"2020-05-28T21:29:56.813Z","updatedAt":"2022-04-19T07:19:17.934Z","environment":{"sys":{"id":"master","type":"Link","linkType":"Environment"}},"publishedVersion":45,"revision":18,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"siteInformation"}},"locale":"en-US"},"fields":{"siteName":"Michael Lunzer","siteUrl":"https://michaellunzer.com","logo":{"metadata":{"tags":[],"concepts":[]},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"o4gibwve10tr"}},"id":"7yHuAa09NVOcZ25POk7cbM","type":"Asset","createdAt":"2020-05-28T21:29:46.445Z","updatedAt":"2020-07-03T23:34:40.696Z","environment":{"sys":{"id":"master","type":"Link","linkType":"Environment"}},"publishedVersion":35,"revision":10,"locale":"en-US"},"fields":{"title":"ML-logo-white","file":{"url":"//images.ctfassets.net/o4gibwve10tr/7yHuAa09NVOcZ25POk7cbM/9b2cb1a82fcec0461a26b030df8ed159/ML-logo-white.png","details":{"size":31304,"image":{"width":319,"height":302}},"fileName":"ML-logo-white.png","contentType":"image/png"}}},"twiteerHandle":"@michaellunzer","siteDescription":"Personal Site","menus":["Blogs","Photos","About","Contact","Work","Map","Resume","Projects","Bucket List","Spotify"]}},"children":[null,["$","div",null,{"className":"site-container project-post","children":["$","div",null,{"className":"container","children":[["$","div",null,{"className":"feature-img","children":["$","$L12",null,{"src":"https://images.ctfassets.net/o4gibwve10tr/3joojAm0A6FJPYH1qoK2W3/1f52f61e91785e12d112728b5c16336e/lunrise-protoboard.jpg","alt":"LunRise","width":1500,"height":800,"className":"img-fluid","style":{"objectFit":"cover","objectPosition":"50% 50%"}}]}],["$","div",null,{"className":"details","children":[["$","h1",null,{"className":"title","children":"LunRise"}],["$","span",null,{"className":"date","children":[["$","i",null,{"className":"fas fa-calendar-alt"}]," ","July 31, 2025"]}],["$","$L13",null,{"content":"$14"}]]}],"$L15"]}]}]]}]
+16:I[5183,["778","static/chunks/778-f9403c0e33e1c074.js","63","static/chunks/63-b8ba2254fb9ac97a.js","231","static/chunks/231-25f0858d523e67a4.js","734","static/chunks/734-cce8ea5190692620.js","419","static/chunks/app/projects/%5Bslug%5D/page-e9b2fba7deab289a.js"],"default"]
+15:["$","$L16",null,{"socialConfig":{"siteurl":"https://michaellunzer.com","twitterHandle":"@michaellunzer","config":{"url":"https://michaellunzer.com/projects/lunrise","title":"LunRise"}}}]

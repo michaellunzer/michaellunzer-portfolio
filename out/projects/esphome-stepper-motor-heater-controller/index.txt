@@ -1,0 +1,162 @@
+1:"$Sreact.fragment"
+2:I[7555,[],""]
+3:I[1295,[],""]
+6:I[9665,[],"OutletBoundary"]
+8:I[4911,[],"AsyncMetadataOutlet"]
+a:I[9665,[],"ViewportBoundary"]
+c:I[9665,[],"MetadataBoundary"]
+d:"$Sreact.suspense"
+f:I[8393,[],""]
+:HL["/_next/static/media/e4af272ccee01ff0-s.p.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/_next/static/css/931b179cff3131dc.css","style"]
+:HL["/_next/static/css/f56e075401be6041.css","style"]
+:HL["/_next/static/css/443cb84861a3a7b6.css","style"]
+:HL["/_next/static/css/b9c247a1f9d5af8a.css","style"]
+:HL["/_next/static/css/f055e431c58b907b.css","style"]
+0:{"P":null,"b":"KM_hFFm0m0RlUSYsVjYGn","p":"","c":["","projects","esphome-stepper-motor-heater-controller",""],"i":false,"f":[[["",{"children":["projects",{"children":[["slug","esphome-stepper-motor-heater-controller","d"],{"children":["__PAGE__",{}]}]}]},"$undefined","$undefined",true],["",["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/931b179cff3131dc.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/f56e075401be6041.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":[["$","head",null,{"children":[["$","link",null,{"rel":"stylesheet","href":"/style.css"}],["$","link",null,{"rel":"stylesheet","href":"/font-awesome.css"}]]}],["$","body",null,{"className":"__className_e8ce0c","children":["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":["$L4",[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/443cb84861a3a7b6.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/b9c247a1f9d5af8a.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"forbidden":"$undefined","unauthorized":"$undefined"}]}]]}]]}],{"children":["projects",["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":[["slug","esphome-stepper-motor-heater-controller","d"],["$","$1","c",{"children":[null,["$","$L2",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L3",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}],{"children":["__PAGE__",["$","$1","c",{"children":["$L5",[["$","link","0",{"rel":"stylesheet","href":"/_next/static/css/443cb84861a3a7b6.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","1",{"rel":"stylesheet","href":"/_next/static/css/b9c247a1f9d5af8a.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","link","2",{"rel":"stylesheet","href":"/_next/static/css/f055e431c58b907b.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]],["$","$L6",null,{"children":["$L7",["$","$L8",null,{"promise":"$@9"}]]}]]}],{},null,false]},null,false]},null,false]},null,false],["$","$1","h",{"children":[null,[["$","$La",null,{"children":"$Lb"}],["$","meta",null,{"name":"next-size-adjust","content":""}]],["$","$Lc",null,{"children":["$","div",null,{"hidden":true,"children":["$","$d",null,{"fallback":null,"children":"$Le"}]}]}]]}],false]],"m":"$undefined","G":["$f",[]],"s":false,"S":true}
+b:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+7:null
+9:{"metadata":[["$","title","0",{"children":"Michael Lunzer"}],["$","meta","1",{"name":"description","content":"Personal Site"}],["$","meta","2",{"name":"author","content":"@michaellunzer"}],["$","meta","3",{"name":"robots","content":"index, follow"}],["$","meta","4",{"property":"og:title","content":"Michael Lunzer"}],["$","meta","5",{"property":"og:description","content":"Personal Site"}],["$","meta","6",{"property":"og:url","content":"https://www.michaellunzer.com/"}],["$","meta","7",{"property":"og:site_name","content":"Michael Lunzer"}],["$","meta","8",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","9",{"name":"twitter:title","content":"Michael Lunzer"}],["$","meta","10",{"name":"twitter:description","content":"Personal Site"}]],"error":null,"digest":"$undefined"}
+e:"$9:metadata"
+10:I[658,["778","static/chunks/778-f9403c0e33e1c074.js","63","static/chunks/63-b8ba2254fb9ac97a.js","231","static/chunks/231-25f0858d523e67a4.js","734","static/chunks/734-cce8ea5190692620.js","419","static/chunks/app/projects/%5Bslug%5D/page-e9b2fba7deab289a.js"],"default"]
+11:I[6874,["778","static/chunks/778-f9403c0e33e1c074.js","63","static/chunks/63-b8ba2254fb9ac97a.js","893","static/chunks/app/projects/page-cf2a42807b7322d4.js"],""]
+4:["$","$L10",null,{"siteInfo":{"metadata":{"tags":[],"concepts":[]},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"o4gibwve10tr"}},"id":"1vaZauN3G1LbRsJutH3AU9","type":"Entry","createdAt":"2020-05-28T21:29:56.813Z","updatedAt":"2022-04-19T07:19:17.934Z","environment":{"sys":{"id":"master","type":"Link","linkType":"Environment"}},"publishedVersion":45,"revision":18,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"siteInformation"}},"locale":"en-US"},"fields":{"siteName":"Michael Lunzer","siteUrl":"https://michaellunzer.com","logo":{"metadata":{"tags":[],"concepts":[]},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"o4gibwve10tr"}},"id":"7yHuAa09NVOcZ25POk7cbM","type":"Asset","createdAt":"2020-05-28T21:29:46.445Z","updatedAt":"2020-07-03T23:34:40.696Z","environment":{"sys":{"id":"master","type":"Link","linkType":"Environment"}},"publishedVersion":35,"revision":10,"locale":"en-US"},"fields":{"title":"ML-logo-white","file":{"url":"//images.ctfassets.net/o4gibwve10tr/7yHuAa09NVOcZ25POk7cbM/9b2cb1a82fcec0461a26b030df8ed159/ML-logo-white.png","details":{"size":31304,"image":{"width":319,"height":302}},"fileName":"ML-logo-white.png","contentType":"image/png"}}},"twiteerHandle":"@michaellunzer","siteDescription":"Personal Site","menus":["Blogs","Photos","About","Contact","Work","Map","Resume","Projects","Bucket List","Spotify"]}},"children":[null,["$","div",null,{"className":"site-container","children":["$","div",null,{"className":"container","children":["$","div",null,{"className":"row","children":["$","div",null,{"className":"col-sm-12 text-center","children":[["$","h1",null,{"children":"404 - Page Not Found"}],["$","p",null,{"children":"The page you're looking for doesn't exist."}],["$","$L11",null,{"href":"/","className":"btn btn-primary","children":"Go back home"}]]}]}]}]}]]}]
+12:I[3063,["778","static/chunks/778-f9403c0e33e1c074.js","63","static/chunks/63-b8ba2254fb9ac97a.js","231","static/chunks/231-25f0858d523e67a4.js","734","static/chunks/734-cce8ea5190692620.js","419","static/chunks/app/projects/%5Bslug%5D/page-e9b2fba7deab289a.js"],"Image"]
+13:I[2370,["778","static/chunks/778-f9403c0e33e1c074.js","63","static/chunks/63-b8ba2254fb9ac97a.js","231","static/chunks/231-25f0858d523e67a4.js","734","static/chunks/734-cce8ea5190692620.js","419","static/chunks/app/projects/%5Bslug%5D/page-e9b2fba7deab289a.js"],"default"]
+14:T12ce,One of the challenges of building a smart home when you don't own a *home* is creating projects that work with the existing features of the home so it'll be easier when you eventually move out. 
+
+This is another project that I had dreamed up around 2013 from my first apartment. I had written a python script to control this stepper motor connected to a Raspberry Pi. Additionally, I learned how to use AutoDesk Fusion 360 and created a 3D model to hold the livestrong rubber band. I had printed at a hackerspace for about $20, which seemed a bit much for what it is, but that was in the "early" and exciting days of 3D printing lol. 
+
+I've since moved a few times and enhanced the setup. I've taken the stepper motor and connected it to an ESP8266 and used Home-Assistant to automate a baseboard heater. 
+
+I've used some screws (that are easily removable) to mount the stepper motor to the baseboard. I used a "livestrong" rubber band bracelet as a belt to control the heater knob by tension and friction.
+
+The code within ESPHome is pretty straightforward. It uses the stepper motor and the temperature sensor to make a "[bang-bang climate controller](https://esphome.io/components/climate/bang_bang.html?highlight=bang%20bang)". If you're wondering where the name "Bang-Bang" controller came from, check [wikipedia](https://en.wikipedia.org/wiki/Bang%E2%80%93bang_control). Basically, it switches between two states (on/off or up/down) to keep something between a desired state. 
+
+In this example, you set the desired temperature and the stepper motor will turn the heater on or off to maintain the heat at that desired temperature.
+
+Here are a couple pictures of what it looks like:
+
+![ESPHome Stepper Motor Heater Controller 1](//images.ctfassets.net/o4gibwve10tr/6WKiLnYFqdRaTg3ywC6SoY/633ac60bc2a7cccc12ea359dbbf67738/IMG_5014.jpeg)
+
+![Cover - ESPHome Stepper Motor Heater Controller](//images.ctfassets.net/o4gibwve10tr/JNDxnREUKujPCEvzEDrmr/f84547f3cf2e82d59d030c6dae096c02/IMG_5015.jpeg)
+
+![ESPHome Stepper Motor Heater Controller 2 Top](//images.ctfassets.net/o4gibwve10tr/2p0gk5N6oPFSuikdWlnzjC/b824dcaa110a985228129c96857f50d9/IMG_5016.jpeg)
+
+![ESPHome Stepper Motor Heater Controller 3 Right Side](//images.ctfassets.net/o4gibwve10tr/iJ5XsUL7rZXkbAhv31CIz/f04d06ee628a71d622917ffb9bd7a38e/IMG_5017.jpeg)
+
+![ESPHome Stepper Motor Heater Controller 4 Front](//images.ctfassets.net/o4gibwve10tr/6OFTIuzz73YiM6liy0oDD0/c3f859b90878b10a1e6e0cb8455926e0/IMG_5020.jpeg)
+
+# ESPHome Code:
+
+```yaml
+
+esphome:
+  name: heater
+  platform: ESP8266
+  board: nodemcuv2
+
+wifi:
+  ssid: 'Network_SSID'
+  password: 'Network_PW'
+
+# Enable logging
+logger:
+
+ota:
+
+api:
+  services:
+    - service: control_stepper
+      variables:
+        target: int
+      then:
+        - stepper.set_target:
+            id: my_stepper
+            target: !lambda 'return target;'
+
+stepper:
+  - platform: uln2003
+    id: my_stepper
+    pin_a: D1
+    pin_b: D2
+    pin_c: D3
+    pin_d: D4
+    max_speed: 150 steps/s
+    step_mode: HALF_STEP #WAVE_DRIVE # 
+
+sensor:
+  - platform: dht
+    pin: D5
+    temperature:
+      name: "Heater Temperature"
+      id: heater_temperature
+    humidity:
+      name: "Heater Humidity"
+      id: heater_humidity
+    model: AM2302
+
+climate:
+  - platform: bang_bang
+    id: heater_climate
+    name: climate
+    sensor: heater_temperature
+    default_target_temperature_low: 20 °C
+    default_target_temperature_high: 22 °C
+
+    heat_action:
+      # - switch.turn_on: heater
+      - stepper.set_target:
+          id: my_stepper
+          target: -5000
+    cool_action:
+      # - switch.turn_off: heater
+      - stepper.set_target:
+          id: my_stepper
+          target: 5000
+    idle_action:
+      - stepper.set_target:
+          id: my_stepper
+          target: 2500
+
+```
+
+# Home Assistant Configuation
+
+```yaml 
+# Home Assistant Configuration
+input_number:
+  stepper_control:
+    name: Stepper Control
+    initial: 0
+    min: -3000
+    max: 3000
+    step: 1
+    # mode: box
+
+```
+
+# Home Assistant Automation
+
+```yaml
+
+# Home Assistant Automation
+automation:
+  - alias: Write Stepper Value to ESP
+    trigger:
+      platform: state
+      entity_id: input_number.stepper_control
+    action:
+      # Replace livingroom with the name you gave the ESP
+      - service: esphome.heater_control_stepper
+        data_template:
+          target: '{{ trigger.to_state.state | int }}'
+
+```
+
+I've combined both sections of the Home Assistant side into a file called `Heater.yaml` that sits inside the Packages folder. Be sure to include   `packages: !include_dir_named packages` underneath the `homeassistant:` section at the beginning of your YAML config. 
+
+I've moved again, and this setup is no longer in use because my new place has central heating. Let me know if you have a good use-case for this stepper motor!
+5:["$","$L10",null,{"siteInfo":{"metadata":{"tags":[],"concepts":[]},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"o4gibwve10tr"}},"id":"1vaZauN3G1LbRsJutH3AU9","type":"Entry","createdAt":"2020-05-28T21:29:56.813Z","updatedAt":"2022-04-19T07:19:17.934Z","environment":{"sys":{"id":"master","type":"Link","linkType":"Environment"}},"publishedVersion":45,"revision":18,"contentType":{"sys":{"type":"Link","linkType":"ContentType","id":"siteInformation"}},"locale":"en-US"},"fields":{"siteName":"Michael Lunzer","siteUrl":"https://michaellunzer.com","logo":{"metadata":{"tags":[],"concepts":[]},"sys":{"space":{"sys":{"type":"Link","linkType":"Space","id":"o4gibwve10tr"}},"id":"7yHuAa09NVOcZ25POk7cbM","type":"Asset","createdAt":"2020-05-28T21:29:46.445Z","updatedAt":"2020-07-03T23:34:40.696Z","environment":{"sys":{"id":"master","type":"Link","linkType":"Environment"}},"publishedVersion":35,"revision":10,"locale":"en-US"},"fields":{"title":"ML-logo-white","file":{"url":"//images.ctfassets.net/o4gibwve10tr/7yHuAa09NVOcZ25POk7cbM/9b2cb1a82fcec0461a26b030df8ed159/ML-logo-white.png","details":{"size":31304,"image":{"width":319,"height":302}},"fileName":"ML-logo-white.png","contentType":"image/png"}}},"twiteerHandle":"@michaellunzer","siteDescription":"Personal Site","menus":["Blogs","Photos","About","Contact","Work","Map","Resume","Projects","Bucket List","Spotify"]}},"children":[null,["$","div",null,{"className":"site-container project-post","children":["$","div",null,{"className":"container","children":[["$","div",null,{"className":"feature-img","children":["$","$L12",null,{"src":"https://images.ctfassets.net/o4gibwve10tr/JNDxnREUKujPCEvzEDrmr/f84547f3cf2e82d59d030c6dae096c02/IMG_5015.jpeg","alt":"ESPHome Stepper Motor Heater Controller","width":1500,"height":800,"className":"img-fluid","style":{"objectFit":"cover","objectPosition":"50% 50%"}}]}],["$","div",null,{"className":"details","children":[["$","h1",null,{"className":"title","children":"ESPHome Stepper Motor Heater Controller"}],["$","span",null,{"className":"date","children":[["$","i",null,{"className":"fas fa-calendar-alt"}]," ","July 31, 2025"]}],["$","$L13",null,{"content":"$14"}]]}],"$L15"]}]}]]}]
+16:I[5183,["778","static/chunks/778-f9403c0e33e1c074.js","63","static/chunks/63-b8ba2254fb9ac97a.js","231","static/chunks/231-25f0858d523e67a4.js","734","static/chunks/734-cce8ea5190692620.js","419","static/chunks/app/projects/%5Bslug%5D/page-e9b2fba7deab289a.js"],"default"]
+15:["$","$L16",null,{"socialConfig":{"siteurl":"https://michaellunzer.com","twitterHandle":"@michaellunzer","config":{"url":"https://michaellunzer.com/projects/esphome-stepper-motor-heater-controller","title":"ESPHome Stepper Motor Heater Controller"}}}]

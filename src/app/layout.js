@@ -1,7 +1,5 @@
 import { Inter } from 'next/font/google'
 import 'bootstrap/dist/css/bootstrap.css'
-import '../css/style.css'
-import '../css/font-awesome.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -30,6 +28,10 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="stylesheet" href="/style.css" />
+        <link rel="stylesheet" href="/font-awesome.css" />
+      </head>
       <body className={inter.className}>
         {children}
       </body>
