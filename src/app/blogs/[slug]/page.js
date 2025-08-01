@@ -8,19 +8,25 @@ import moment from 'moment'
 import Image from 'next/image'
 
 export async function generateStaticParams() {
-  const blogs = await getAllBlogPosts()
-  return blogs.map((blog) => ({
-    slug: blog.fields.slug,
-  }))
+  try {
+    const blogs = await getAllBlogPosts()
+    return blogs.map((blog) => ({
+      slug: blog.fields.slug,
+    }))
+  } catch (error) {
+    console.error('Error generating static params for blogs:', error)
+    return []
+  }
 }
 
 export default async function BlogPost({ params }) {
   const resolvedParams = await params
   
-  const [blog, siteInfo] = await Promise.all([
-    getBlogPostBySlug(resolvedParams.slug),
-    getSiteInformation(),
-  ])
+  try {
+    const [blog, siteInfo] = await Promise.all([
+      getBlogPostBySlug(resolvedParams.slug),
+      getSiteInformation(),
+    ])
 
   if (!blog) {
     notFound()
@@ -93,4 +99,8 @@ export default async function BlogPost({ params }) {
       </div>
     </Layout>
   )
+  } catch (error) {
+    console.error('Error loading blog post:', error)
+    notFound()
+  }
 } 

@@ -1,0 +1,11 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/bucketlist/page": "/bucketlist",
+  "/blogs/page": "/blogs",
+  "/projects/page": "/projects",
+  "/spotify/page": "/spotify",
+  "/page": "/",
+  "/resume/page": "/resume",
+  "/projects/[slug]/page": "/projects/[slug]",
+  "/blogs/[slug]/page": "/blogs/[slug]"
+}
