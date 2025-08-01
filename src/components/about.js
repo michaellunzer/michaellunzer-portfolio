@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 const About = ({ data }) => (
   <div className="about section" id="About">
@@ -22,11 +23,7 @@ const About = ({ data }) => (
             <h2 className="sub-position">
               I'm a {data?.fields?.designation}.
             </h2>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: data?.fields?.description
-              }}
-            />
+            <MarkdownRenderer content={data?.fields?.description} />
             <ul className="details">
               <li>
                 <strong>Full Name</strong>

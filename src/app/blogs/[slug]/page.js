@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation'
 import Layout from '../../../components/layout'
 import SEO from '../../../components/seo'
 import Share from '../../../components/share'
+import MarkdownRenderer from '../../../components/MarkdownRenderer'
 import moment from 'moment'
 import Image from 'next/image'
 
@@ -70,11 +71,7 @@ export default async function BlogPost({ params }) {
               <i className="fas fa-calendar-alt"></i>{" "}
               {moment(blog.fields.createdAt).format("LL")}
             </span>
-            <div
-              dangerouslySetInnerHTML={{
-                __html: blog.fields.description
-              }}
-            />
+            <MarkdownRenderer content={blog.fields.description} />
           </div>
           
           <Share

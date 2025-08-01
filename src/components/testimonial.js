@@ -3,6 +3,7 @@
 import React from "react";
 import Slider from "react-slick";
 import Image from "next/image";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 var settings = {
   dots: true,
@@ -37,11 +38,7 @@ export default function Testimonial({ data }) {
                       style={{ objectFit: 'cover', objectPosition: '50% 50%' }}
                     />
                   )}
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: item.fields.description
-                    }}
-                  />
+                  <MarkdownRenderer content={item.fields.description} />
                   <h3 className="name">{item.fields.name}</h3>
                   <span className="sub-name">{item.fields.subTitle}</span>
                 </div>

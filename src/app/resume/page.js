@@ -1,13 +1,10 @@
-import { getAllResume, getSiteInformation } from '../../../lib/contentful'
+import { getSiteInformation } from '../../../lib/contentful'
 import Layout from '../../components/layout'
 import SEO from '../../components/seo'
-import Resume from '../../components/resume'
+import ResumeDownload from '../../components/ResumeDownload'
 
 export default async function ResumePage() {
-  const [resume, siteInfo] = await Promise.all([
-    getAllResume(),
-    getSiteInformation(),
-  ])
+  const siteInfo = await getSiteInformation()
 
   return (
     <Layout header="resume" siteInfo={siteInfo}>
@@ -20,8 +17,7 @@ export default async function ResumePage() {
         <div className="container">
           <div className="row">
             <div className="col-sm-12">
-              <h1>Resume</h1>
-              <Resume data={resume} />
+              <ResumeDownload />
             </div>
           </div>
         </div>

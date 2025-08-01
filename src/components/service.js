@@ -1,4 +1,5 @@
 import React from "react";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 export default function Service({ data }) {
   return (
@@ -13,11 +14,7 @@ export default function Service({ data }) {
               <div key={index} className="col-md-4 mb-3">
                 <div className="service-main">
                   <h3>{item.fields.title}</h3>
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: item.fields.description
-                    }}
-                  />
+                  <MarkdownRenderer content={item.fields.description} />
                 </div>
               </div>
             );

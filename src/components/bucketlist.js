@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import moment from "moment";
+import MarkdownRenderer from "./MarkdownRenderer";
 
 export default function BucketList({ data }) {
   const [activePopup, setActivePopup] = useState(false);
@@ -92,7 +93,7 @@ export default function BucketList({ data }) {
                     />
                   )}
                   <div className="description">
-                    {data[selectedItem].fields.description}
+                    <MarkdownRenderer content={data[selectedItem].fields.description} />
                   </div>
                 </div>
               </div>
