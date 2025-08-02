@@ -1011,53 +1011,439 @@ pre{margin-bottom:0}
 
 .spotify__now-playing-content {
   display: flex;
-  align-items: center;
-  gap: 1.5rem;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-.spotify__now-playing .spotify__album-cover {
+.spotify__current-status {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+}
+
+.spotify__status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.spotify__pulse {
+  width: 8px;
+  height: 8px;
+  background: #fff;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.7);
+  }
+  
+  70% {
+    transform: scale(1);
+    box-shadow: 0 0 0 10px rgba(255, 255, 255, 0);
+  }
+  
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
+  }
+}
+
+.spotify__status-text {
+  margin: 0;
+  font-size: 1rem;
+  opacity: 0.9;
+}
+
+.spotify__recent-tracks h3 {
+  color: white;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
+}
+
+.spotify__tracks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.spotify__track-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  transition: background 0.3s ease;
+}
+
+.spotify__track-item:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.spotify__album-cover {
   flex-shrink: 0;
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-.spotify__track-info h3 {
+.spotify__track-info h4 {
   margin-bottom: 0.5rem;
-  font-size: 1.25rem;
+  font-size: 1rem;
 }
 
-.spotify__track-info h3 a {
+.spotify__track-info h4 a {
   color: white;
   text-decoration: none;
 }
 
-.spotify__track-info h3 a:hover {
+.spotify__track-info h4 a:hover {
   text-decoration: underline;
 }
 
 .spotify__track-info .artist {
-  font-size: 1rem;
+  font-size: 0.875rem;
   margin-bottom: 0.25rem;
   opacity: 0.9;
 }
 
 .spotify__track-info .album {
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   opacity: 0.7;
   font-style: italic;
 }
 
+.spotify__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.spotify__profile-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  text-decoration: none;
+  border-radius: 25px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.spotify__profile-link:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+  color: white;
+  text-decoration: none;
+}
+
+.spotify__profile-link i {
+  font-size: 1.2rem;
+}
+
+.spotify__note {
+  margin: 0;
+  font-size: 0.875rem;
+  opacity: 0.8;
+  text-align: center;
+}
+
+/* Spotify Top Artists Styles */
+.spotify__top-artists {
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.spotify__top-artists h2 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.spotify__description {
+  color: #666;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+.spotify__artists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.spotify__artist-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.spotify__artist-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.spotify__artist-image {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.spotify__artist-image img {
+  border-radius: 50%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.spotify__artist-rank {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 24px;
+  height: 24px;
+  background: #1db954;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.spotify__artist-info h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.spotify__artist-info h3 a {
+  color: #333;
+  text-decoration: none;
+}
+
+.spotify__artist-info h3 a:hover {
+  color: #1db954;
+  text-decoration: underline;
+}
+
+.spotify__artist-followers {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.spotify__section-footer {
+  text-align: center;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+/* Spotify Monthly Playlists Styles */
+.spotify__monthly-playlists {
+  margin-bottom: 3rem;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.spotify__monthly-playlists h2 {
+  color: #333;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.spotify__playlists-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.spotify__playlist-item {
+  display: flex;
+  flex-direction: column;
+  background: #f8f9fa;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.spotify__playlist-item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.spotify__playlist-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotify__playlist-image img {
+  width: 100%;
+  height: auto;
+  transition: transform 0.3s ease;
+}
+
+.spotify__playlist-item:hover .spotify__playlist-image img {
+  transform: scale(1.05);
+}
+
+.spotify__playlist-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(29, 185, 84, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.spotify__playlist-item:hover .spotify__playlist-overlay {
+  opacity: 1;
+}
+
+.spotify__playlist-overlay i {
+  color: white;
+  font-size: 2rem;
+}
+
+.spotify__playlist-info {
+  padding: 1.5rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.spotify__playlist-info h3 {
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+}
+
+.spotify__playlist-info h3 a {
+  color: #333;
+  text-decoration: none;
+}
+
+.spotify__playlist-info h3 a:hover {
+  color: #1db954;
+  text-decoration: underline;
+}
+
+.spotify__playlist-description {
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  color: #666;
+  line-height: 1.5;
+  flex-grow: 1;
+}
+
+.spotify__playlist-tracks {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #1db954;
+  font-weight: 600;
+}
+
+.spotify__no-playlists {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  margin: 2rem 0;
+}
+
+.spotify__no-playlists p {
+  color: #666;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
 /* Responsive adjustments for Spotify */
 @media only screen and (max-width: 767px) {
-  .spotify__now-playing-content {
-    flex-direction: column;
-    text-align: center;
+  .spotify__now-playing,
+  .spotify__top-artists,
+  .spotify__monthly-playlists {
+    padding: 1.5rem;
   }
   
-  .spotify__now-playing .spotify__album-cover {
-    width: 150px;
-    height: 150px;
+  .spotify__now-playing-content {
+    gap: 1.5rem;
+  }
+  
+  .spotify__current-status {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.5rem;
+  }
+  
+  .spotify__tracks-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .spotify__track-item {
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .spotify__album-cover {
+    width: 120px;
+    height: 120px;
+  }
+  
+  .spotify__artists-grid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+  
+  .spotify__artist-item {
+    padding: 0.75rem;
+  }
+  
+  .spotify__artist-image img {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .spotify__playlists-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .spotify__playlist-info {
+    padding: 1rem;
+  }
+  
+  .spotify__profile-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
   }
 }
 

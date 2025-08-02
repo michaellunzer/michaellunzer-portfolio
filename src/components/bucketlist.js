@@ -6,9 +6,12 @@ import Link from "next/link";
 import moment from "moment";
 import MarkdownRenderer from "./MarkdownRenderer";
 
-export default function BucketList({ data }) {
+export default function BucketList({ data, isHomePage = false }) {
   const [activePopup, setActivePopup] = useState(false);
   const [selectedItem, setSelectedItem] = useState(0);
+
+  // If it's the homepage, only show 5 items
+  const displayData = isHomePage ? data.slice(0, 5) : data;
 
   return (
     <div className="blogs-section section" id="BucketList">
@@ -18,10 +21,10 @@ export default function BucketList({ data }) {
         </div>
         <ul
           className={`blogs-list ${
-            data.length < 5 ? "few-blogs" : ""
+            displayData.length < 5 ? "few-blogs" : ""
           }`}
         >
-          {data.map((item, index) => {
+          {displayData.map((item, index) => {
             return (
               <li key={index} className="item">
                 <div className={`accomplished${item.fields.accomplished}`}>
@@ -64,6 +67,15 @@ export default function BucketList({ data }) {
           })}
         </ul>
         
+        {/* Show "Full Bucket List" link only on homepage */}
+        {isHomePage && data.length > 5 && (
+          <div className="see-more">
+            <Link href="/bucketlist">
+              <span>Full Bucket List</span>
+            </Link>
+          </div>
+        )}
+        
         {activePopup && (
           <div className="rg-popup">
             <span
@@ -81,19 +93,19 @@ export default function BucketList({ data }) {
                 }}
               ></i>
               <div className="BucketListPopup">
-                <div className={`accomplished${data[selectedItem].fields.accomplished}`}>
+                <div className={`accomplished${displayData[selectedItem].fields.accomplished}`}>
                   <span className="name">
-                    <h2>{data[selectedItem].fields.title}</h2>
+                    <h2>{displayData[selectedItem].fields.title}</h2>
                   </span>
-                  {data[selectedItem].fields.featureImage && (
+                  {displayData[selectedItem].fields.featureImage && (
                     <img
-                      src={`https:${data[selectedItem].fields.featureImage.fields.file.url}`}
+                      src={`https:${displayData[selectedItem].fields.featureImage.fields.file.url}`}
                       alt="popup-img"
                       className="popup-image"
                     />
                   )}
                   <div className="description">
-                    <MarkdownRenderer content={data[selectedItem].fields.description} />
+                    <MarkdownRenderer content={displayData[selectedItem].fields.description} />
                   </div>
                 </div>
               </div>

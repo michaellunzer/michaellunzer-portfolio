@@ -104,9 +104,7 @@ export default function Header({ data, header }) {
               <li>
                 <Link href="/resume">Resume</Link>
               </li>
-              <li>
-                <Link href="/bucketlist">Bucket List</Link>
-              </li>
+
               <li>
                 <Link href="/spotify">Spotify</Link>
               </li>

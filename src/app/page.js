@@ -60,7 +60,7 @@ export default async function HomePage() {
       )}
 
       {siteInfo?.fields?.menus?.includes('Bucket List') && (
-        <BucketList data={bucketList} />
+        <BucketList data={bucketList} isHomePage={true} />
       )}
 
       {siteInfo?.fields?.menus?.includes('Contact') && (
