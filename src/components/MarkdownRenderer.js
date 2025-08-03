@@ -134,7 +134,7 @@ const MarkdownRenderer = ({ content }) => {
                 {children}
               </a>
             );
-
+          },
           // Custom styling for lists
           ul: ({ children }) => <ul className="markdown-ul">{children}</ul>,
           ol: ({ children }) => <ol className="markdown-ol">{children}</ol>,
