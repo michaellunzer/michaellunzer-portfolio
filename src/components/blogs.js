@@ -10,6 +10,9 @@ export default function Blogs({ data }) {
         <div className="section-head">
           <h2>Blog Posts</h2>
         </div>
+        
+
+        
         <ul
           className={`blogs-list ${data.length < 5 ? "few-blogs" : ""}`}
         >
