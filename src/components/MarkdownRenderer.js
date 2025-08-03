@@ -111,30 +111,41 @@ const MarkdownRenderer = ({ content }) => {
               );
             }
 
-            // Regular paragraph
-            return <p {...props}>{children}</p>;
-          },
-          // Custom styling for links - handle YouTube links in any context
-          a: ({ href, children }) => {
-            const videoId = getYouTubeVideoId(href);
-            
+            // Check if this paragraph contains only a YouTube URL as text
+            const paragraphText = childrenArray.map(child => {
+              if (typeof child === 'string') return child;
+              if (React.isValidElement(child) && child.type === 'a') return child.props.href;
+              return '';
+            }).join(' ');
+
+            const videoId = getYouTubeVideoId(paragraphText);
             if (videoId) {
               return (
-                <div className="youtube-link-container">
-                  <YouTubeEmbed videoId={videoId} />
-                  <a href={href} target="_blank" rel="noopener noreferrer" className="markdown-link youtube-link">
-                    {children}
-                  </a>
+                <div className="youtube-paragraph">
+                  <div className="youtube-link-container">
+                    <YouTubeEmbed videoId={videoId} />
+                    <a 
+                      href={paragraphText} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="markdown-link youtube-link"
+                    >
+                      {paragraphText}
+                    </a>
+                  </div>
                 </div>
               );
             }
-            
-            return (
-              <a href={href} target="_blank" rel="noopener noreferrer" className="markdown-link">
-                {children}
-              </a>
-            );
+
+            // Regular paragraph
+            return <p {...props}>{children}</p>;
           },
+          // Custom styling for links (regular links only)
+          a: ({ href, children }) => (
+            <a href={href} target="_blank" rel="noopener noreferrer" className="markdown-link">
+              {children}
+            </a>
+          ),
           // Custom styling for lists
           ul: ({ children }) => <ul className="markdown-ul">{children}</ul>,
           ol: ({ children }) => <ol className="markdown-ol">{children}</ol>,
