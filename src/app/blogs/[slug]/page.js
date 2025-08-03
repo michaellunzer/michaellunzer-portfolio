@@ -75,7 +75,7 @@ export default async function BlogPost({ params }) {
             <h1 className="title">{blog.fields.title}</h1>
             <span className="date">
               <i className="fas fa-calendar-alt"></i>{" "}
-              {moment(blog.fields.createdAt).format("LL")}
+              {moment(blog.fields.publishedDate).format("LL")}
             </span>
             <MarkdownRenderer content={blog.fields.description} />
           </div>

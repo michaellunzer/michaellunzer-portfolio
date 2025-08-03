@@ -75,7 +75,7 @@ export default async function ProjectPost({ params }) {
               <h1 className="title">{project.fields.title}</h1>
               <span className="date">
                 <i className="fas fa-calendar-alt"></i>{" "}
-                {moment(project.fields.createdAt).format("LL")}
+                {moment(project.fields.publishedDate).format("LL")}
               </span>
               <MarkdownRenderer content={project.fields.description} />
             </div>

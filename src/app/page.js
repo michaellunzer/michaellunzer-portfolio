@@ -67,7 +67,9 @@ export default async function HomePage() {
         <Contact data={aboutMe?.fields?.gmail} />
       )}
 
-      <Map />
+      {siteInfo?.fields?.menus?.includes('Map') && (
+        <Map />
+      )}
     </Layout>
   )
 } 

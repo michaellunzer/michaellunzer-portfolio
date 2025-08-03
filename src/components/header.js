@@ -95,6 +95,15 @@ export default function Header({ data, header }) {
                     </li>
                   );
                 })}
+              {data?.fields?.menus
+                ?.filter(item => item === "Map")
+                .map((t, index) => {
+                  return (
+                    <li key={index}>
+                      <Link href={`/#Map`}>Map</Link>
+                    </li>
+                  );
+                })}
 
               <li>
                 <Link href="/resume">Resume</Link>
