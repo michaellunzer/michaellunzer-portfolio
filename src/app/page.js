@@ -52,7 +52,7 @@ export default async function HomePage() {
       )}
 
       {siteInfo?.fields?.menus?.includes('Projects') && (
-        <Projects data={projects} />
+        <Projects data={projects} isHomePage={true} />
       )}
 
       {siteInfo?.fields?.menus?.includes('Testimonials') && (

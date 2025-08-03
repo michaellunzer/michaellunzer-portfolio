@@ -95,12 +95,7 @@ export default function Header({ data, header }) {
                     </li>
                   );
                 })}
-              <li>
-                <Link href="/blogs">Blogs</Link>
-              </li>
-              <li>
-                <Link href="/projects">Projects</Link>
-              </li>
+
               <li>
                 <Link href="/resume">Resume</Link>
               </li>
