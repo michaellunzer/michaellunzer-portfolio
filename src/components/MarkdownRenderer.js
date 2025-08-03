@@ -76,65 +76,54 @@ const MarkdownRenderer = ({ content }) => {
           p: ({ children, ...props }) => {
             // Convert children to array and check for YouTube links
             const childrenArray = React.Children.toArray(children);
-            let hasYouTubeLink = false;
-            let youtubeChild = null;
-
-            // Check if this paragraph contains a YouTube link
-            for (const child of childrenArray) {
+            
+            // Check if this paragraph contains only a YouTube link
+            if (childrenArray.length === 1) {
+              const child = childrenArray[0];
+              
+              // Check if it's a link element with YouTube URL
               if (React.isValidElement(child) && child.type === 'a' && child.props.href) {
                 const videoId = getYouTubeVideoId(child.props.href);
                 if (videoId) {
-                  hasYouTubeLink = true;
-                  youtubeChild = child;
-                  break;
+                  return (
+                    <div className="youtube-paragraph">
+                      <div className="youtube-link-container">
+                        <YouTubeEmbed videoId={videoId} />
+                        <a 
+                          href={child.props.href} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="markdown-link youtube-link"
+                        >
+                          {child.props.children}
+                        </a>
+                      </div>
+                    </div>
+                  );
                 }
               }
-            }
-
-            if (hasYouTubeLink && youtubeChild) {
-              // If it's a YouTube link, render it outside of a paragraph
-              const videoId = getYouTubeVideoId(youtubeChild.props.href);
-              return (
-                <div className="youtube-paragraph">
-                  <div className="youtube-link-container">
-                    <YouTubeEmbed videoId={videoId} />
-                    <a 
-                      href={youtubeChild.props.href} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="markdown-link youtube-link"
-                    >
-                      {youtubeChild.props.children}
-                    </a>
-                  </div>
-                </div>
-              );
-            }
-
-            // Check if this paragraph contains only a YouTube URL as text
-            const paragraphText = childrenArray.map(child => {
-              if (typeof child === 'string') return child;
-              if (React.isValidElement(child) && child.type === 'a') return child.props.href;
-              return '';
-            }).join(' ');
-
-            const videoId = getYouTubeVideoId(paragraphText);
-            if (videoId) {
-              return (
-                <div className="youtube-paragraph">
-                  <div className="youtube-link-container">
-                    <YouTubeEmbed videoId={videoId} />
-                    <a 
-                      href={paragraphText} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="markdown-link youtube-link"
-                    >
-                      {paragraphText}
-                    </a>
-                  </div>
-                </div>
-              );
+              
+              // Check if it's just a YouTube URL as text
+              if (typeof child === 'string') {
+                const videoId = getYouTubeVideoId(child);
+                if (videoId) {
+                  return (
+                    <div className="youtube-paragraph">
+                      <div className="youtube-link-container">
+                        <YouTubeEmbed videoId={videoId} />
+                        <a 
+                          href={child} 
+                          target="_blank" 
+                          rel="noopener noreferrer" 
+                          className="markdown-link youtube-link"
+                        >
+                          {child}
+                        </a>
+                      </div>
+                    </div>
+                  );
+                }
+              }
             }
 
             // Regular paragraph
