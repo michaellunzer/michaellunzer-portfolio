@@ -72,69 +72,29 @@ const MarkdownRenderer = ({ content }) => {
           h4: ({ children }) => <h4 className="markdown-h4">{children}</h4>,
           h5: ({ children }) => <h5 className="markdown-h5">{children}</h5>,
           h6: ({ children }) => <h6 className="markdown-h6">{children}</h6>,
-          // Custom styling for paragraphs - handle YouTube links specially
-          p: ({ children, ...props }) => {
-            // Convert children to array and check for YouTube links
-            const childrenArray = React.Children.toArray(children);
+          // Custom styling for paragraphs
+          p: ({ children, ...props }) => <p {...props}>{children}</p>,
+          // Custom styling for links - handle YouTube links specially
+          a: ({ href, children }) => {
+            const videoId = getYouTubeVideoId(href);
             
-            // Check if this paragraph contains only a YouTube link
-            if (childrenArray.length === 1) {
-              const child = childrenArray[0];
-              
-              // Check if it's a link element with YouTube URL
-              if (React.isValidElement(child) && child.type === 'a' && child.props.href) {
-                const videoId = getYouTubeVideoId(child.props.href);
-                if (videoId) {
-                  return (
-                    <div className="youtube-paragraph">
-                      <div className="youtube-link-container">
-                        <YouTubeEmbed videoId={videoId} />
-                        <a 
-                          href={child.props.href} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          className="markdown-link youtube-link"
-                        >
-                          {child.props.children}
-                        </a>
-                      </div>
-                    </div>
-                  );
-                }
-              }
-              
-              // Check if it's just a YouTube URL as text
-              if (typeof child === 'string') {
-                const videoId = getYouTubeVideoId(child);
-                if (videoId) {
-                  return (
-                    <div className="youtube-paragraph">
-                      <div className="youtube-link-container">
-                        <YouTubeEmbed videoId={videoId} />
-                        <a 
-                          href={child} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          className="markdown-link youtube-link"
-                        >
-                          {child}
-                        </a>
-                      </div>
-                    </div>
-                  );
-                }
-              }
+            if (videoId) {
+              return (
+                <div className="youtube-link-container">
+                  <YouTubeEmbed videoId={videoId} />
+                  <a href={href} target="_blank" rel="noopener noreferrer" className="markdown-link youtube-link">
+                    {children}
+                  </a>
+                </div>
+              );
             }
-
-            // Regular paragraph
-            return <p {...props}>{children}</p>;
+            
+            return (
+              <a href={href} target="_blank" rel="noopener noreferrer" className="markdown-link">
+                {children}
+              </a>
+            );
           },
-          // Custom styling for links (regular links only)
-          a: ({ href, children }) => (
-            <a href={href} target="_blank" rel="noopener noreferrer" className="markdown-link">
-              {children}
-            </a>
-          ),
           // Custom styling for lists
           ul: ({ children }) => <ul className="markdown-ul">{children}</ul>,
           ol: ({ children }) => <ol className="markdown-ol">{children}</ol>,
