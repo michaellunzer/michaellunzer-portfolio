@@ -69,3 +69,14 @@ yarn-error.log
 .yarn-integrity
 
 scratch.txt
+
+# Next.js
+.next/
+out/
+
+# Production
+/build
+
+# Misc
+*.tsbuildinfo
+next-env.d.ts
