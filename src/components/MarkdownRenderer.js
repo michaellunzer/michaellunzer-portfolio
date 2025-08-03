@@ -1,10 +1,47 @@
 "use client";
 
+import React from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import remarkGfm from 'remark-gfm';
 import 'highlight.js/styles/github.css';
+
+// Helper function to extract YouTube video ID from various YouTube URL formats
+const getYouTubeVideoId = (url) => {
+  if (!url) return null;
+  
+  const patterns = [
+    /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/,
+    /youtube\.com\/watch\?.*v=([^&\n?#]+)/,
+  ];
+  
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  
+  return null;
+};
+
+// YouTube video embed component
+const YouTubeEmbed = ({ videoId }) => {
+  if (!videoId) return null;
+  
+  return (
+    <div className="youtube-embed-container">
+      <iframe
+        width="100%"
+        height="315"
+        src={`https://www.youtube.com/embed/${videoId}`}
+        title="YouTube video player"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+      ></iframe>
+    </div>
+  );
+};
 
 const MarkdownRenderer = ({ content }) => {
   return (
@@ -35,12 +72,69 @@ const MarkdownRenderer = ({ content }) => {
           h4: ({ children }) => <h4 className="markdown-h4">{children}</h4>,
           h5: ({ children }) => <h5 className="markdown-h5">{children}</h5>,
           h6: ({ children }) => <h6 className="markdown-h6">{children}</h6>,
-          // Custom styling for links
-          a: ({ href, children }) => (
-            <a href={href} target="_blank" rel="noopener noreferrer" className="markdown-link">
-              {children}
-            </a>
-          ),
+          // Custom styling for paragraphs - handle YouTube links specially
+          p: ({ children, ...props }) => {
+            // Check if this paragraph contains only a YouTube link
+            const hasYouTubeLink = React.Children.toArray(children).some(child => {
+              if (React.isValidElement(child) && child.type === 'a') {
+                return getYouTubeVideoId(child.props.href);
+              }
+              return false;
+            });
+
+            if (hasYouTubeLink) {
+              // If it's a YouTube link, render it outside of a paragraph
+              return (
+                <div className="youtube-paragraph">
+                  {React.Children.map(children, child => {
+                    if (React.isValidElement(child) && child.type === 'a') {
+                      const videoId = getYouTubeVideoId(child.props.href);
+                      if (videoId) {
+                        return (
+                          <div className="youtube-link-container">
+                            <YouTubeEmbed videoId={videoId} />
+                            <a 
+                              href={child.props.href} 
+                              target="_blank" 
+                              rel="noopener noreferrer" 
+                              className="markdown-link youtube-link"
+                            >
+                              {child.props.children}
+                            </a>
+                          </div>
+                        );
+                      }
+                    }
+                    return child;
+                  })}
+                </div>
+              );
+            }
+
+            // Regular paragraph
+            return <p {...props}>{children}</p>;
+          },
+          // Custom styling for links (for non-paragraph contexts)
+          a: ({ href, children }) => {
+            const videoId = getYouTubeVideoId(href);
+            
+            if (videoId) {
+              return (
+                <div className="youtube-link-container">
+                  <YouTubeEmbed videoId={videoId} />
+                  <a href={href} target="_blank" rel="noopener noreferrer" className="markdown-link youtube-link">
+                    {children}
+                  </a>
+                </div>
+              );
+            }
+            
+            return (
+              <a href={href} target="_blank" rel="noopener noreferrer" className="markdown-link">
+                {children}
+              </a>
+            );
+          },
           // Custom styling for lists
           ul: ({ children }) => <ul className="markdown-ul">{children}</ul>,
           ol: ({ children }) => <ol className="markdown-ol">{children}</ol>,
