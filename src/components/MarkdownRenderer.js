@@ -74,39 +74,39 @@ const MarkdownRenderer = ({ content }) => {
           h6: ({ children }) => <h6 className="markdown-h6">{children}</h6>,
           // Custom styling for paragraphs - handle YouTube links specially
           p: ({ children, ...props }) => {
-            // Check if this paragraph contains only a YouTube link
-            const hasYouTubeLink = React.Children.toArray(children).some(child => {
-              if (React.isValidElement(child) && child.type === 'a') {
-                return getYouTubeVideoId(child.props.href);
-              }
-              return false;
-            });
+            // Convert children to array and check for YouTube links
+            const childrenArray = React.Children.toArray(children);
+            let hasYouTubeLink = false;
+            let youtubeChild = null;
 
-            if (hasYouTubeLink) {
+            // Check if this paragraph contains a YouTube link
+            for (const child of childrenArray) {
+              if (React.isValidElement(child) && child.type === 'a' && child.props.href) {
+                const videoId = getYouTubeVideoId(child.props.href);
+                if (videoId) {
+                  hasYouTubeLink = true;
+                  youtubeChild = child;
+                  break;
+                }
+              }
+            }
+
+            if (hasYouTubeLink && youtubeChild) {
               // If it's a YouTube link, render it outside of a paragraph
+              const videoId = getYouTubeVideoId(youtubeChild.props.href);
               return (
                 <div className="youtube-paragraph">
-                  {React.Children.map(children, child => {
-                    if (React.isValidElement(child) && child.type === 'a') {
-                      const videoId = getYouTubeVideoId(child.props.href);
-                      if (videoId) {
-                        return (
-                          <div className="youtube-link-container">
-                            <YouTubeEmbed videoId={videoId} />
-                            <a 
-                              href={child.props.href} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className="markdown-link youtube-link"
-                            >
-                              {child.props.children}
-                            </a>
-                          </div>
-                        );
-                      }
-                    }
-                    return child;
-                  })}
+                  <div className="youtube-link-container">
+                    <YouTubeEmbed videoId={videoId} />
+                    <a 
+                      href={youtubeChild.props.href} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="markdown-link youtube-link"
+                    >
+                      {youtubeChild.props.children}
+                    </a>
+                  </div>
                 </div>
               );
             }
@@ -116,19 +116,8 @@ const MarkdownRenderer = ({ content }) => {
           },
           // Custom styling for links (for non-paragraph contexts)
           a: ({ href, children }) => {
-            const videoId = getYouTubeVideoId(href);
-            
-            if (videoId) {
-              return (
-                <div className="youtube-link-container">
-                  <YouTubeEmbed videoId={videoId} />
-                  <a href={href} target="_blank" rel="noopener noreferrer" className="markdown-link youtube-link">
-                    {children}
-                  </a>
-                </div>
-              );
-            }
-            
+            // Only handle YouTube links in non-paragraph contexts
+            // Paragraph YouTube links are handled by the p component
             return (
               <a href={href} target="_blank" rel="noopener noreferrer" className="markdown-link">
                 {children}
