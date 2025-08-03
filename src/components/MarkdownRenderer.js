@@ -114,16 +114,27 @@ const MarkdownRenderer = ({ content }) => {
             // Regular paragraph
             return <p {...props}>{children}</p>;
           },
-          // Custom styling for links (for non-paragraph contexts)
+          // Custom styling for links - handle YouTube links in any context
           a: ({ href, children }) => {
-            // Only handle YouTube links in non-paragraph contexts
-            // Paragraph YouTube links are handled by the p component
+            const videoId = getYouTubeVideoId(href);
+            
+            if (videoId) {
+              return (
+                <div className="youtube-link-container">
+                  <YouTubeEmbed videoId={videoId} />
+                  <a href={href} target="_blank" rel="noopener noreferrer" className="markdown-link youtube-link">
+                    {children}
+                  </a>
+                </div>
+              );
+            }
+            
             return (
               <a href={href} target="_blank" rel="noopener noreferrer" className="markdown-link">
                 {children}
               </a>
             );
-          },
+
           // Custom styling for lists
           ul: ({ children }) => <ul className="markdown-ul">{children}</ul>,
           ol: ({ children }) => <ol className="markdown-ol">{children}</ol>,
