@@ -14,7 +14,7 @@ export default function ResumeDownload() {
     setMessage("");
 
     try {
-      const response = await fetch("/.netlify/functions/send-resume", {
+      const response = await fetch("/api/send-resume", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
