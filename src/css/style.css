@@ -72,7 +72,16 @@ form input,
 form textarea{display:block;width:100%;padding:10px 15px;box-sizing:border-box;outline:none;resize:none;background:#fafafe!important;z-index:2;position:relative;line-height:18px;font-size:16px;-webkit-transition:none 0s ease 0s;transition:none 0s ease 0s;border:1px solid hsla(0,0%,80%,.37);margin:10px 0 0}
 form textarea{height:100px}
 form button{text-indent:-10px;background:#333;color:#fff;box-shadow:0 10px 50px rgba(58,58,58,.26);line-height:1px;padding:23px;text-transform:capitalize;-webkit-transition:all .3s linear;transition:all .3s linear;min-width:186px;overflow:hidden;-webkit-border-radius:4px;-moz-border-radius:4px;font-size:15px;border:none;display:inline-block}
+form button:disabled{background:#666;cursor:not-allowed}
 form>div{margin-bottom:15px}
+
+/* Formspree validation error styles */
+form .formspree-error{color:#d32f2f;font-size:14px;margin-top:5px;display:block}
+form .formspree-error:before{content:"⚠ ";margin-right:5px}
+form input:invalid,
+form textarea:invalid{border-color:#d32f2f}
+form input:focus:invalid,
+form textarea:focus:invalid{box-shadow:0 0 5px rgba(211,47,47,0.3)}
 .section-head{margin-bottom:20px}
 .section:nth-child(odd) form input,
 .section:nth-child(odd) form textarea{background:#fff!important}
