@@ -1,10 +1,3198 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Michael Lunzer's Blog</title>
+    <title>Michael Lunzer's Blog & Projects</title>
     <link>https://www.michaellunzer.com</link>
-    <description>Personal blog of Michael Lunzer</description>
+    <description>Personal blog and projects of Michael Lunzer - Software Engineer and Developer</description>
     <language>en</language>
-    <lastBuildDate>2024-01-01T00:00:00.000Z</lastBuildDate>
+    <lastBuildDate>2025-08-08T01:49:32.605Z</lastBuildDate>
+    <pubDate>2025-08-08T01:49:32.606Z</pubDate>
+    <ttl>60</ttl>
+    
+    <item>
+      <title><![CDATA[ESPHome Cat Toy 433 MHz Controller]]></title>
+      <link>https://michaellunzer.com/projects/esphome-cat-toy-433-mhz-controller</link>
+      <guid>https://michaellunzer.com/projects/esphome-cat-toy-433-mhz-controller</guid>
+      <pubDate>Wed, 08 Nov 2023 00:00:00 GMT</pubDate>
+      <description><![CDATA[## **Goal**: 
+I'm trying to control this [cat toy](https://a.co/d/8aQW4k4) which works over 433 MHz.
+
+![cat toy](//images.ctfassets.net/o4gibwve10tr/TAnuhHmfYRWwNwYEbjlaA/bd054720fc56fb6d93236af3d1dd5f8f/cat_toy.jpeg)
+
+I thought it was IR when I bought it and realized after purchasing it that it doesn't need line of sight to work. 
+
+Something in [this thread](https://community.home-assistant.io/t/esphome-and-433mhz-superheterodyne-rf-receiver/311896/7?u=lunz) made me think it must be a 433 MHz device since it's not infrared. So I finally took it apart and saw the crystal oscillator that says 6.7458
+
+![cat toy pcb](//images.ctfassets.net/o4gibwve10tr/60AMKwfJGKhcfBym8DpQhs/d0609a09be9a7fdd0fb24ebf80624e8d/cat_toy_pcb.jpeg)
+
+So that led me down the rabbit hole looking for how to read the 433 MHz codes so I can automate the cat toy throughout the day. 
+
+![cat toy remote](//images.ctfassets.net/o4gibwve10tr/7JRYk31iuoBkTAJ0jLglpc/341786c6740c34174e08406b67d52ffe/cat_toy_remote.jpeg)
+
+First, I purchased the [WL-101 Receiver and WL-102 Transmitter combo on amazon](https://amzn.to/3sd5a31) because one of the reviews mentioned ESPHome :) 
+
+I was able to read the codes no problem, however I was having no luck getting the toy to react to the captured commands I was sending back -- so I created [this thread on the Home Assistant Community Forums](https://community.home-assistant.io/t/esphome-wl-102-transmitter-433mhz-solved/636409/4). As usual, the community came through and one user ([@Lainol](https://community.home-assistant.io/t/esphome-wl-102-transmitter-433mhz-solved/636409/5)) suggested using another firmware called Tasmota to read the firmware and use that to issue the commands over MQTT. I'm familiar with Tasmota and used to use it a few years ago. However, I've made the specific design decision to standardize only on ESPHome for my smarthome. So I decided it would just be a temporary firmware flash and back to ESPHome. 
+
+![Rick Morty](//images.ctfassets.net/o4gibwve10tr/5ZKZ9ZmWVJp3lloNVZ2OEe/3af6ae78f279cab51ac9f1607c9767ef/Rick_Morty.gif)
+
+# Tasmota Detour
+
+So I ended up flashing the ESP32 with Tasmota (using the web flasher) and configured the Rf Receiver on the right pin.
+
+When I pressed the Off button on the remote it returned the following on the tasmota console:
+
+`06:26:51.928 MQT: tele/tasmota_FB1A7D/RESULT = {"Time":"2023-11-08T06:26:51","RfReceived":{"Data":"0x452203","Bits":24,"Protocol":1,"Pulse":393}}`
+
+I took `"Data":"0x452203"` and passed it through a [hexadecimal to binary converter](https://www.rapidtables.com/convert/number/hex-to-binary.html) and the result was `010001010010001000001110` which was the same as the output from ESPHome -- so I knew I was on to something. The only difference was Tasmota showed the "Pulse" value and ESPHome did not. 
+
+I was able to send the command with Tasmota (from the command line) with this command:
+`RfSend {"Data":"0x452203","Bits":24,"Protocol":1,"Pulse":393}`
+
+Make sure the transmitter pin is configured in Tasmota before trying to send the command.
+
+So I followed the instructions from the post @lainol linked [[here](https://community.home-assistant.io/t/esphome-rf-receiver-transmitter-issues/222331/4?u=lunz)] and added the pulse to ESPHome and flashed it to the device. **To my surprise, it worked!** 
+
+# The Final ESPHome YAML on ESP8266
+
+```yaml
+esphome:
+  name: cat-toy-controller
+  friendly_name: cat-toy-controller
+
+esp8266:
+  board: d1_mini
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "123"
+
+ota:
+  password: "123"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Cat-Toy-Controller"
+    password: !secret wifi_password
+
+captive_portal:
+
+remote_receiver:
+  pin: D1 ### ESP8266
+  dump:
+    - rc_switch
+  # Settings to optimize recognition of RF devices
+  tolerance: 50%
+  filter: 250us
+  idle: 4ms
+  buffer_size: 2kb
+
+remote_transmitter:
+  pin: D2 #### ESP8266
+  # RF uses a 100% carrier signal
+  carrier_duty_percent: 100%
+
+button:
+#### RC Switch Raw
+  - platform: template
+    name: Power On Button
+    on_press:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '010001010010001000000001'
+          protocol: 
+            pulse_length: 393
+          repeat:
+            times: 25
+            wait_time: 0s
+  - platform: template
+    name: Power Off Button
+    on_press:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '010001010010001000000011'
+          protocol: 
+            pulse_length: 393
+          repeat:
+            times: 10
+            wait_time: 0s
+  - platform: template
+    name: Slow Speed Button
+    on_press:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '010001010010001000000111'
+          protocol: 
+            pulse_length: 393
+          repeat:
+            times: 10
+            wait_time: 0s
+  - platform: template
+    name: Random Speed Button
+    on_press:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '010001010010001000000101'
+          protocol: 
+            pulse_length: 393
+          repeat:
+            times: 10
+            wait_time: 0s
+  - platform: template
+    name: Middle Speed Button
+    on_press:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '010001010010001000001000'
+          protocol: 
+            pulse_length: 393
+          repeat:
+            times: 10
+            wait_time: 0s
+  - platform: template
+    name: Fast Speed Button
+    on_press:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '010001010010001000001001'
+          protocol: 
+            pulse_length: 393
+          repeat:
+            times: 10
+            wait_time: 0s
+  - platform: template
+    name: 20 Minute Timer Button
+    on_press:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '010001010010001000010000'
+          protocol: 
+            pulse_length: 393
+          repeat:
+            times: 10
+            wait_time: 0s
+  - platform: template
+    name: 30 Minute Timer Button
+    on_press:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '010001010010001000010001'
+          protocol: 
+            pulse_length: 393
+          repeat:
+            times: 10
+            wait_time: 0s
+  - platform: template
+    name: 40 Minute Timer Button
+    on_press:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '010001010010001000010010'
+          protocol: 
+            pulse_length: 393
+          repeat:
+            times: 10
+            wait_time: 0s
+  - platform: template
+    name: 60 Minute Timer Button
+    on_press:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '010001010010001000001111'
+          protocol: 
+            pulse_length: 393
+          repeat:
+            times: 10
+            wait_time: 0s
+  - platform: template
+    name: Timer Off Button
+    on_press:
+      - remote_transmitter.transmit_rc_switch_raw:
+          code: '010001010010001000001110'
+          protocol: 
+            pulse_length: 393
+          repeat:
+            times: 10
+            wait_time: 0s
+```
+
+# Home Assistant Dashboard:
+
+![Screenshot 2023-11-08 at 12.48.48 PM](//images.ctfassets.net/o4gibwve10tr/1bl9pprscUyH2jSqZvLjkZ/9672aebc667f10a5cd0cf9dc2ac1bedf/Screenshot_2023-11-08_at_12.48.48_PM.png)]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[PicoCart64]]></title>
+      <link>https://michaellunzer.com/blogs/picocart64</link>
+      <guid>https://michaellunzer.com/blogs/picocart64</guid>
+      <pubDate>Thu, 05 Oct 2023 00:00:00 GMT</pubDate>
+      <description><![CDATA[## Intro
+
+The [PicoCart64](https://www.hackster.io/news/konrad-beckmann-s-picocart64-is-a-raspberry-pi-pico-or-rp2040-stamp-powered-nintendo-64-flash-cart-a91607ec53a7) is a DIY flash cart for the Nintendo 64. It uses a [Raspberry Pi Pico](https://www.raspberrypi.com/products/raspberry-pi-pico/) to store the ROM and pretend to be a game cartridge.
+
+## More Info:
+
+Check out the [GitHub Repo](https://github.com/kbeckmann/PicoCart64) to find the instructions on how to build your own and how to use it!
+
+I was lucky enough to be sent the bare PCB from someone on the [PicoCart64 Discord](https://discord.gg/B8n57fGd) all the way in Sweden!
+
+When compared to more substantial commercial offerings like the [EverDrive64 x5](https://krikzz.com/our-products/cartridges/ed64x5.html) [$119] or [EverDrive 64 x7](https://krikzz.com/our-products/cartridges/ed64x7.html) [$199], there leaves a little bit to be desired.
+
+__Cons:__
+
+1.  It's a bare PCB, it looks dangerous to put into your N64
+
+2.  You can only flash 1 game at a time -- there is no game selection menu
+
+3.  It's limited to only games that equals the MB size of the Raspberry Pi Pico
+
+1.  For example, I had to buy a 3rd party Pico with 16mb of memory
+
+2.  Some games in the N64 library are 32mb, which there isn't an option for a ROM that large
+
+5.  Flashing a game can be slow
+
+6.  Did I mention it looks sketchy putting this flash cart into your N64? I'm really careful putting it into the N64 and worry that the controller cable will disrupt the cartridge in the slot without the support of the plastic case.
+
+__Pros:__
+
+1.  You can in theory play games that are extremely rare. 
+
+2.  One example of this is [NFL Blitz: Special Edition](https://www.pricecharting.com/game/nintendo-64/nfl-blitz-special-edition) -- which is different from NFL Blitz, NFL Blitz 2000, & NFL Blitz 2001. This was a Blockbuster exclusive available late in the N64 lifespan and copies only exist because people purchased them directly from Blockbuster. That being said, this particular ROM is too big to fit on the 16mb Raspberry Pi Pico. 
+
+3.  You can decide if you really want to buy an official used game -- kinda like GamePass for a Retro Console.
+
+4.  You can play ROM Hacks -- like [Smash Remix](https://n64squid.com/smash-remix/). This is an updated/improved version of Super Smash Bros with some new levels, new characters, and other quality of life improvements.
+
+### Pictures
+
+![PicoCart64-1](//images.ctfassets.net/o4gibwve10tr/4YKpBUuurxRbAp8pFgfnpu/be7145ae0a6699f27db9d15d460999cf/E0CCEEDE-9725-404F-B390-5B22DBB80D2A_1_105_c.jpeg)
+
+![PicoCart64-2](//images.ctfassets.net/o4gibwve10tr/1K2gt4e00OQflcjfJJ5dCr/16e29f61c0e094c205afc0f955a1cfe4/621FEB3A-23D5-4C42-80DE-2AAC323A57EC_1_105_c.jpeg)
+
+![PicoCart64-3](//images.ctfassets.net/o4gibwve10tr/1f59DaeD7Gkxhhp1eH9K9c/5831ddb7ba29d461ebed6b8cf355c37a/D4B644A5-6FB1-4485-A681-F2C539B56DA0_1_105_c.jpeg)
+]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>blog</category>
+    </item>
+    <item>
+      <title><![CDATA[ESPHome iPod Controller]]></title>
+      <link>https://michaellunzer.com/projects/esphome-ipod-controller</link>
+      <guid>https://michaellunzer.com/projects/esphome-ipod-controller</guid>
+      <pubDate>Wed, 13 Sep 2023 00:00:00 GMT</pubDate>
+      <description><![CDATA[# Video
+
+https://www.youtube.com/watch?v=zFaRxlVf5_4
+
+# Intro 
+I’ve been sitting on this project for a while. I had the basic commands (play / pause / next / previous / vol + / vol - ) complete for about 3 years. I had previously purchased the ipod breakout board in 2018 😅
+
+With the help of some folks on Discord, I was finally able to push this project over the finish line. I had a major breakthrough with the serial commands.
+
+There were a lot of legacy resources to sift through on the Wayback Machine along the way. A lot of these resources from iPod Linux, Make Magazine, and the arduino forums were from 2004 - 2011 – most of these websites aren’t functional anymore due to redesigns.
+
+I had also made the [ESPHome based iPod Dock IR Remote](https://michaellunzer.com/projects/esphome-ipod-dock-ir-remote). It’s useful but different. With this you can scroll through playlists and in theory automate selecting different playlists. I’m sure someone will think of something cool!
+
+### Hardware:
+
+* ESP32
+
+* [iPod 30 pin breakout board connector](https://elabbay.myshopify.com/products/apple-30m-bo-v1ac-apple-30-pin-male-plug-breakout-board-compact-type)
+
+* 500k ohm resistor
+
+**Please note:** while doing the research a while ago, I learned that using an ESP32 instead of ESP8266 was necessary due to the ESP32 being better at issuing the serial commands at a higher baud rate. I haven’t tried it since, let me know if you find otherwise.
+
+![ipod 30 pin breakout board](//images.ctfassets.net/o4gibwve10tr/7pYvracgkVTMwkgnzEvK0s/240c012cc054700a296d890c19379fa1/ipod_30_pin_breakout_board.png)
+
+### Connecting it up:
+
+|ESP32|connection|iPod 30 pin Breakout Board|
+| --- | --- | --- |
+|Ground|jumper wire|Pin 15|
+|RX2 [GPIO16]|jumper wire|Pin 10|
+|TX2 [GPIO17]|jumper wire|Pin 13|
+|x|500k ohm Resistor|Pin 11 to Pin 21 with resistor in between|
+
+Between Pin 11 and Pin 21 on the iPod breakout board, you need to add one 500k ohm resistor. I used two 250k ohm resistors in a series since it was hard to find one 500k ohm resistor. 
+
+### Baud Rate:
+
+19200
+
+### ESPHome YAML:
+
+```yaml
+
+esphome:
+  name: ipod_dock
+  platform: ESP32
+  board: esp32doit-devkit-v1
+
+wifi:
+  ssid: 'name'
+  password: 'password'
+
+api:
+
+# Enable logging
+logger:
+
+ota:
+
+uart:
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  baud_rate: 19200
+
+switch:
+
+  - platform: uart
+    name: "iPod Play/Pause Toggle"
+    data: [0xFF, 0x55, 0x03, 0x00, 0x01, 0x02, 0xFA, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x01, 0xFA, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x00, 0xFB] # from https://git.cbps.xyz/yuno/Open_Dock/src/branch/wifi-control/main.py
+
+  - platform: uart
+    name: "iPod Volume Up"
+    data: [0xFF, 0x55, 0x03, 0x00, 0x01, 0x02, 0xFA, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x02, 0xF9, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x00, 0xFB] # from https://git.cbps.xyz/yuno/Open_Dock/src/branch/master/opendock.py
+
+  - platform: uart
+    name: "iPod Volume Down"
+    data: [0xFF, 0x55, 0x03, 0x00, 0x01, 0x02, 0xFA, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x04, 0xF7, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x00, 0xFB] # from https://git.cbps.xyz/yuno/Open_Dock/src/branch/master/opendock.py
+
+  - platform: uart
+    name: "iPod Next Track"
+    data: [0xFF, 0x55, 0x03, 0x00, 0x01, 0x02, 0xFA, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x08, 0xF3, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x00, 0xFB] # from https://git.cbps.xyz/yuno/Open_Dock/src/branch/master/opendock.py
+
+  - platform: uart
+    name: "iPod Prev Track"
+    data: [0xFF, 0x55, 0x03, 0x00, 0x01, 0x02, 0xFA, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x10, 0xEB, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x00, 0xFB] # from https://git.cbps.xyz/yuno/Open_Dock/src/branch/master/opendock.py
+
+#### not working now
+  - platform: uart
+    name: "iPod - Turn Off"
+    data: [0xFF, 0x55, 0x03, 0x00, 0x01, 0x02, 0xFA, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x02, 0x00, 0x00, 0x00, 0x04, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x00, 0xFB]
+
+#### not working now
+  - platform: uart
+    name: "iPod - Turn On"
+    data: [0xFF, 0x55, 0x03, 0x00, 0x01, 0x02, 0xFA, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x02, 0x00, 0x00, 0x00, 0x08, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x00, 0xFB]
+
+# iPod Navigation Control
+  - platform: uart
+    name: "iPod Menu Button"
+    data: [0xFF, 0x55, 0x03, 0x00, 0x01, 0x02, 0xFA, 0xFF, 0x55, 0x5, 0x02, 0x00, 0x00, 0x00, 0x40, 0xB9, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x00, 0xFB]
+
+  - platform: uart
+    name: "iPod Select Button"
+    data: [0xFF, 0x55, 0x03, 0x00, 0x01, 0x02, 0xFA, 0xFF, 0x55, 0x5, 0x02, 0x00, 0x00, 0x00, 0x80, 0x79, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x00, 0xFB]
+
+  - platform: uart
+    name: "iPod Scroll Up"
+    data: [0xFF, 0x55, 0x03, 0x00, 0x01, 0x02, 0xFA, 0xFF, 0x55, 0x6, 0x02, 0x00, 0x00, 0x00, 0x00, 0x01, 0xF7, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x00, 0xFB]
+
+  - platform: uart
+    name: "iPod Scroll Down"
+    data: [0xFF, 0x55, 0x03, 0x00, 0x01, 0x02, 0xFA, 0xFF, 0x55, 0x6, 0x02, 0x00, 0x00, 0x00, 0x00, 0x02, 0xF6, 0xFF, 0x55, 0x03, 0x02, 0x00, 0x00, 0xFB]
+
+## voice recording ... only supported on certain iPods
+  - platform: uart
+    name: "iPod Voice Record 1"
+    data: [0xFF, 0x55, 0x03, 0x00, 0x01, 0x01, 0xFB]
+
+  - platform: uart
+    name: "iPod Voice Record 2"
+    data: [0xFF, 0x55, 0x03, 0x00, 0x01, 0x01, 0xFB]
+
+```
+
+## **Next Steps:**
+
+* Design and 3D print a dock
+* add a camera on top of it to view the screen remotely
+* design a great Home Assistant dashboard interface
+* There is an Advanced iPod Remote – like when you plug an iPod into a car and you can control it from a car stereo headunit. That is an interesting next step because you can pull all the data from the device to see what playlists are available or the currently playing song and pass the data into Home Assistant. It’d be cool to see this as a Media Player source in HA.
+  * Also In theory you could recreate the iPod interface in a web interface.
+
+# Inspiration & Research Sources:
+
+https://www.instructables.com/Simple-Ipod-Controller/
+
+https://github.com/finsprings/arduinaap/blob/e7e750573aaae81be38dfac5c0a54a7f98e0458b/iPodSerial.cpp
+
+https://web.archive.org/web/20060218061708/http://stud3.tuwien.ac.at/~e0026607/ipod_remote/ipod_ap.html
+
+https://makezine.com/article/technology/arduino/control-your-ipod-with-ease-using-t/
+
+https://finsprings.org/iPodSerial.pdf
+
+https://forum.arduino.cc/t/connecting-arduino-to-iphone-ipod-serial/21815
+
+http://www.ipodlinux.org/Apple_Accessory_Protocol/
+
+https://git.cbps.xyz/yuno/Open_Dock/src/branch/wifi-control/main.py]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[Downloading All of Wikipedia]]></title>
+      <link>https://michaellunzer.com/blogs/downloading-all-of-wikipedia</link>
+      <guid>https://michaellunzer.com/blogs/downloading-all-of-wikipedia</guid>
+      <pubDate>Mon, 28 Mar 2022 00:00:00 GMT</pubDate>
+      <description><![CDATA[# Why?
+
+I recently came across [this article](https://slate.com/technology/2022/03/russia-wikipedia-download-kiwix.html) explaining why people in Russia are downloading copies of Wikipedia “just in-case”.
+
+I thought it might be a good idea to capture all of the information on Wikipedia because... *gestures broadly around me*, sort of like a digital prepper. 
+
+https://www.youtube.com/watch?v=1VJdluLb_xg
+
+__Also, this is more of an exercise in “why not?” than anything else. I’ll probably delete the 87GB when this 14TB drive gets close to running out of space.__
+
+# Try It Out:
+
+Go to https://wikipedia.michaellunzer.com to test out what it's like browsing my offline copy of wikipedia. 
+
+# How: 
+
+This project leaned heavily on this webpage containing the docker-compose file instructing how to easily spin up the Kiwix server in a container:
+
+https://thehomelab.wiki/books/docker/page/setup-and-install-kiwix-serve-on-debian-systems
+
+The Homelab Wiki does a great job explaining each .zim file's contents:
+
+> What do mini, nopic and maxi mean in the Wikipedia zim files?
+> 
+> File size is always an issue when downloading such big content, so Kiwix produces each Wikipedia file in three flavours:
+> 
+> - __Mini__: only the introduction of each article, plus the infobox. Saves about 95% of space vs. the full version.
+> - __nopic__: full articles, but no images. About 75% smaller than the full version
+> - __Maxi__: the default full version.
+> 
+> 1. CD into your mapped data directory for the Docker container to download the zim files using wget.
+> 2. Add the name of each zim file to your stack.
+> 3. Start or deploy the docker stack and enjoy!
+
+## Zim Files:
+
+All of wikipedia is contained in a singular .zim file. Check them out here:
+
+http://download.kiwix.org/zim/wikipedia/
+
+*Please note that the Zim file that contains all of wikipedia was last updated in __December 2021__. I’m not sure of the update cadence but I’ll check it in a few months and update my file accordingly. I’m also unaware if there is a way to capture incremental changes rather than downloading an incremental change file.*
+
+## Docker Compose
+
+```yaml
+version: "3.9"
+services:
+  kiwix-serve:
+    image: kiwix/kiwix-serve
+    volumes:
+      - /srv/dev-disk-by-label-Atlantic14TB/wikipedia:/data
+    ports:
+      - '8411:80'
+    command:
+       wikipedia_en_top_mini_2022-02.zim
+       wikipedia_en_all_maxi_2021-12.zim
+```
+]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>blog</category>
+    </item>
+    <item>
+      <title><![CDATA[My Cat Gravy goes to Space!]]></title>
+      <link>https://michaellunzer.com/blogs/my-cat-gravy-goes-to-space</link>
+      <guid>https://michaellunzer.com/blogs/my-cat-gravy-goes-to-space</guid>
+      <pubDate>Fri, 19 Nov 2021 00:00:00 GMT</pubDate>
+      <description><![CDATA[At Twilio's annual developer conference (Signal 2021), there was a unique opportunity to send code to space. I decided to send a a simple web page with a picture of my cat! 
+
+Sending a high-altitude balloon to near-space is something that I've always wanted to do. This experience was like ~90% of the reward with like 1% of the effort 😁
+
+![gravy-in-space1](//images.contentful.com/o4gibwve10tr/6fFOXO6On23KhnlJ1viwkn/f983865447f9750a958f7f9af5de9147/gravy-in-space1.png)
+
+![gravy-in-space2](//images.contentful.com/o4gibwve10tr/3W7pvbAPphe2hjCMAzVLf1/6c96fdb965750ab673a0cfb925c1dfa4/gravy-in-space2.png)
+
+![gravy-in-space3](//images.contentful.com/o4gibwve10tr/qBP9CrjLeP7R9UrfGnaDh/5b2cf3459f646bad27ebe66ca3bc223e/gravy-in-space3.png)
+
+# Details:
+https://talon1.twil.io/
+
+# Gravy Video:
+https://youtu.be/VQcKr3YYGSk
+
+# Full Twilio Video Replay:
+[Twitch Replay at 9 hours, 44 minutes in](https://twitch.tv/videos/1182847208?t=09h43m59s) 
+
+# Twilio Talon GitHub Repo:
+https://github.com/TwilioQuest/talon
+
+# My Pull Request:
+https://github.com/TwilioQuest/talon/pull/91
+
+# My Fork:
+https://github.com/michaellunzer/talon
+
+![gravy-in-space-screenshot](//images.contentful.com/o4gibwve10tr/2nUCTe72BFDtD3qyad94ZN/22b6b4c55ac19408b3b625ac2d9c4b4e/gravy-in-space-screenshot.png)
+
+# Gravy's Instagram
+[@itsallgravy.cat](https://www.instagram.com/itsallgravy.cat/)]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>blog</category>
+    </item>
+    <item>
+      <title><![CDATA[Home-Assistant: Kindle Paperwhite ePaper Dashboard]]></title>
+      <link>https://michaellunzer.com/projects/home-assistant-kindle-paperwhite-epaper-dashboard</link>
+      <guid>https://michaellunzer.com/projects/home-assistant-kindle-paperwhite-epaper-dashboard</guid>
+      <pubDate>Sat, 05 Jun 2021 00:00:00 GMT</pubDate>
+      <description><![CDATA[![Kindle Home Assistant Dashboard Finished](//images.ctfassets.net/o4gibwve10tr/bmwWc7jlMY3VwxsahJpqH/b2e64c01f956de1dd93b2e58c24348ab/IMG_6330.jpeg)
+
+This project intersects with a lot of my interests. I saw on SlickDeals.net that Woot.com had a slick deal on refurbished first generation Amazon Kindle Paperwhite ereaders… for only $20. Like a digital garage sale, I couldn’t resist. Woot is actually owned by Amazon, so it ships free for Amazon Prime members lol. 
+
+Once I had the kindle, I read some books and then that was it. It sat on my nightstand, just sitting there, making me feel guilty about the books I wasn’t reading. These devices debuted in 2012, but the battery life was pretty great. The battery lasts for months if you don’t actually use it!
+
+I was searching for something else I could do with the device, so I saw that you could jailbreak it. The devices stopped receiving updates, so you don’t have to worry about new updates bricking it -- worst case, you can just restore it with the latest firmware. 
+
+[The MobileRead Forums](https://www.mobileread.com/forums/forumdisplay.php?f=150) feel like the last place on the internet with up-to-date information on the kindle jailbreak process -- so rather than outlining the process, I’ll encourage you to go there and find the right tutorial based on your device. Take a look at the [stickied posts](https://www.mobileread.com/forums/showthread.php?t=338268) for the most helpful resources. 
+
+For my specific device, I had to downgrade it from the firmware that it shipped to me with. It was as simple as plugging in the kindle to my Mac and copying the zip file over to the internal device storage. 
+
+Jailbreaking a device means that you can install *unauthorized* software on it. I used to [jailbreak my iPhones](http://reddit.com/r/jailbreak) back in the day (3GS, 5, 6s) and once you *jailbroke* it, it was stuck on that firmware and updating it would remove the jailbreak. On the kindle, you can downgrade → jailbreak → and then upgrade again while keeping the jailbreak. 
+
+After it was *jailbroken*, I explored what “new” features I could add. Check out this post to see what apps you can add [here](https://www.mobileread.com/forums/showthread.php?t=180113). 
+
+There are some basic things like changing the font sizes or margins. The most interesting one was the “[ScreenSavers Hack](https://www.mobileread.com/forums/showthread.php?t=195474)” when used in conjunction with the [Online Screensaver Extension](https://www.mobileread.com/forums/showthread.php?t=236104).
+
+It allows you to set a different image as the screensaver on the lockscreen. There are some cool configurations like using the current book cover, a random file you’ve added, but the best thing is pointing it at a remote file. 
+
+A clever dude named Sebastian (github username: [Sibbl](https://github.com/sibbl)) created a docker container that hosts an image that pulls in data from Home Assistant. [hass-kindle-screensaver repo](https://github.com/sibbl/hass-kindle-screensaver)
+
+I took his work and [forked his repo](https://github.com/michaellunzer/hass-kindle-screensaver) to convert it from Celcius to Farenheit. 
+
+![Home Assistant Kindle Dashboard - Hass screensaver v1](//images.ctfassets.net/o4gibwve10tr/6MBFFvQQwbLJiDcfOKWcCS/6ce397b574ce24863a976517512cb094/IMG_4092.jpeg)
+
+That was cool, but then after talking with Sebastian, he created another docker container that takes a screenshot of a Home Assistant Lovelace dashboard, generates an image, and serves it up on a local network address. You can point the Kindle Screensaver configuration to the url of the web server running in the docker container. It should be something similar to this format 192.168.x.xyz. [GitHub hass-lovelace-kindle-screensaver repo](https://github.com/sibbl/hass-lovelace-kindle-screensaver)
+
+Currently, I’ve created a second Home-Assistant Dashboard that has a select few lovelace cards that I want to show up on the kindle. 
+
+![Home Assistant Kindle Dashboard Screen Shot 2021-06-04 at 11.35.46 PM](//images.ctfassets.net/o4gibwve10tr/X7ZPv7mMmqwj2ObYziKtJ/f9266bb62f6fa6be67974f2af01f0f26/Screen_Shot_2021-06-04_at_11.35.46_PM.png)
+
+I have the docker container running on my OpenMediaVault VM with a little help from the portainer plugin. It’d be cool to see these running as a Home Assistant Addon, but we’re not sure that the raspberry pi has the capabilities to run hass-lovelace-kindle-screensaver. For now, this works for me.
+
+The best part about the project is that it’s an easy way to see high level information, like the weather, a graph of covid related deaths in the US, or a graph of my server processor load and free memory. 
+
+![kindle screensaver example](//images.ctfassets.net/o4gibwve10tr/2GPRxoAP1GENDYLUqBEeI9/231c59f611787c52e1943f2d52fcf187/kindle_screensaver_example.png)
+
+The screensaver updates automatically when it is plugged in or after you use it for a bit. There is an option to have it update every few minutes but often times I turn off the wifi to hold a library book longer -- don’t worry, the library takes back their digital copy after 3 weeks, but it is still cached locally on your kindle, so you can keep using reading it until you turn the wifi back on. Also, I don't want the battery to be depleted when I actually go to read a book. 
+
+![Kindle Home Assistant Dashboard Finished](//images.ctfassets.net/o4gibwve10tr/bmwWc7jlMY3VwxsahJpqH/b2e64c01f956de1dd93b2e58c24348ab/IMG_6330.jpeg)
+]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[Connecting a Grandstream HT80X (HT801 or HT802) to Twilio SIP]]></title>
+      <link>https://michaellunzer.com/blogs/connecting-a-grandstream-ht80x-ht801-or-ht802-to-twilio-sip</link>
+      <guid>https://michaellunzer.com/blogs/connecting-a-grandstream-ht80x-ht801-or-ht802-to-twilio-sip</guid>
+      <pubDate>Tue, 30 Mar 2021 00:00:00 GMT</pubDate>
+      <description><![CDATA[# The Inspiration
+
+I'm diving into all of Twilio's products and trying to learn as much as I can about them. The best way I learn is by actually doing it and trying to build it myself. My focus on this project was learning about [SIP Trunking](https://en.wikipedia.org/wiki/SIP_trunking). It seemed pretty straightforward, but as always the devil is in the details and there are always nuances to learn about everything. 
+
+# Future Goal
+I wanted to get an Analog Telephone Adapter, so I can hook up up an old landline telephone with an obnoxious bell and have it wake me up like an alarm clock ⏰. 
+
+# Picking The Hardware
+There's a bunch of Analog Telephone Adatpers (ATA) out there. I was also looking at the Cisco ATA 191 but ultimately settled on the Grandstream HT801 because it was less than $20 from someone on eBay and I found these [instructions from Nick Busey](https://nickbusey.com/article/2020-05-04-twilio-grandstream/) on how to set up the device specifically with Twilio SIP. I thought that because it was a recent post, that I wouldn't have much difficulty trying to configure it. Here's the [Amazon link](https://amzn.to/3eh0pvG).
+
+# Getting Started
+
+I had orginally followed Nick's instructions but there were some drawbacks. I had trouble with inbound calls and also triggering calls with the REST API.
+
+![Twilio SIP ht801](//images.ctfassets.net/o4gibwve10tr/5vMqmyuNhvIWo9EVLcHc6T/89c752338f4640dbdba1307449d94a67/ht801.jpeg)
+
+# Steps
+1. [Open ports in your router's firewall](https://www.twilio.com/docs/sip-trunking/ip-addresses)
+2. Configure Outbound Calls
+3. Configure Inbound Calls
+4. Configure the Grandstream device
+
+Unfortunately, in Nick's use-case, he only needed outbound calling, which made the phone only half as useful for me haha. I recognized his name as the creator/maintainer of the [HomeLabOS project](https://homelabos.com/). So I knew I could find him on the [HomeLabOS Zulip Chat](https://homelabos.zulipchat.com/login/) and asked him a few questions on if he was able to get outbound AND inbound calling working. He graciously answered a few of my questions. Unfortunately, he doesn't use the device anymore and didn't look into getting inbound calls more. 
+
+So, at this point I was able to configure the device and have outbound calling going, but I needed more. So, I logged a Service Ticket with Twilio. Again, this was a good excuse to learn more about Twilio by using the products like Customer Support. 
+
+A customer service rep was able to help me troubleshoot the issue and taught me a few things along the way, like this... ~~
+
+## __Pro Tip__: 
+You can download the PCAP file and explore it with WireShark to explore the headers and see what's going on during the connection process. 
+
+![Twilio SIP Console PCAP Download](//images.ctfassets.net/o4gibwve10tr/4CU6J6FmWG9p1htwpLGfnd/555cdcb916537e24e7d5a20b42f1420c/Screen_Shot_2021-03-06_at_9.36.52_PM.png)
+
+During the connection process for incoming calls, he explained that the Contact section in the Header was trying to return the local IP address of the ATA box instead of my public IP address of my home internet connection -- so something was literally getting lost in translation, well the *Network Address Translation* (NAT). 
+
+![Twilio SIP Support Screen Shot](//images.ctfassets.net/o4gibwve10tr/1PRNejlAqqLlX72Rw3h1Pm/90a77a6889ef174c0dd1148ba8548923/Twilio_SIP_Support_Screen_Shot.png)
+
+At first, I ended up hard-coding my public IP address in this section of the Grandstream configuration like this:
+
+`Use NAT IP: 123.456.78.90`
+
+<br />
+
+However, there were some issues if you put in your Public IP address -- better hope it doesn't change! This "hack" overrides the internal IP address that was being returned in the Header and allows incoming calls to come in. I tried to use a Dynamic DNS address but the field only allowed enough digits for an IP address. 
+
+With the first configuration, I was having trouble receiving calls via a REST API command. Investigating into the PCAP file helped me troubleshoot. After taking a step back, I ended up figuring the right configuration!
+
+# Create a SIP Trunk
+
+Name it something and add an `Origination URL`: `sip:username@your_domain.sip.us1.twilio.com`
+
+# Configure a SIP Domain in Twilio Programmable Voice
+
+make the `SIP URI` something easy for you to remember. This will be the url of the `Primary SIP Server` on your Grandstream box. With that, you'll have to add a value to the `IP Access Control List` and a `Credential List`. The username/password you put in your `Credential List` will be the `SIP User ID` and the `Authenticate ID` on your Grandstream box.
+
+![twilio wake up call - SIP domain configuration](//images.ctfassets.net/o4gibwve10tr/3PhjpqA93wUNsZuwtAYRq7/2e955afcc78a2f6b8936d2936f79d5ef/twilio_wake_up_call_-_SIP_domain_configuration.png)
+
+# Create a Credential
+
+![Twilio Wake Up Call - Create a Credential](//images.ctfassets.net/o4gibwve10tr/6UFXmIFSYs9UWA5NHyxBXH/3c430249d1de1494a0cecf8950381116/Twilio_Wake_Up_Call_-_Create_a_Credential.png)
+
+# Configure Outgoing Calls with a TwiML Bin
+While you're here, scroll down and add a TwiML Bin for when `A Call Comes In` so you can make outgoing calls.
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Dial callerId="+14151234567">{{#e164}}{{To}}{{/e164}}</Dial>
+</Response>
+```
+
+![Twilio Wake Up Call - Outgoing Call Configuration](//images.ctfassets.net/o4gibwve10tr/2lskbw5hNGL8krdI7eycXh/cdca8645356f3265124beac269f06ed2/Twilio_Wake_Up_Call_-_Outgoing_Call_Configuration.png)
+
+# SIP Registration
+
+![Twilio Wake Up Call - SIP Registration](//images.ctfassets.net/o4gibwve10tr/4rMReu6moj5v0qwb3zgy5B/e6216b1238527be6ea04706f2ae011c7/Twilio_Wake_Up_Call_-_SIP_Registration.png)
+
+# Screenshot of Grandstream Configuration
+
+When I was looking for help on the configuration, I kept seeing sections but wanted the FULL image. So, here's mine, in its entirety. 
+
+Update the following fields:
+- Primary SIP Server: your_domain.sip.us1.twilio.com
+- SIP User ID
+- Authenticate ID
+- Authenticate Password
+- SIP REGISTER Contact Uses: WAN Address
+- Check SIP User ID for incoming INVITE
+- Dial Plan Prefix: +
+
+![Grandstream Device Configuration Updated](//images.ctfassets.net/o4gibwve10tr/53eDJwKJymDedxUyHBJq8R/5103801c7ec19c344e1718770a41daa6/Grandstream_Device_Configuration_Updated.png)
+
+# Confirm SIP Registration
+
+You'll see your username and "Registered" on the Port Status line.
+
+![Twilio Wake Up Call - Confirm Registration](//images.ctfassets.net/o4gibwve10tr/6GJlfNCyE6VFwjFgMvF0vN/397a23d05568bc620bbd799fb8b59ea7/Screen_Shot_2021-03-30_at_8.48.33_PM.png)
+
+# Configure Incoming Calls With a TwiML Bin
+
+As outlined [here](https://www.twilio.com/docs/voice/api/sip-registration#receiving-calls-on-your-registered-sip-endpoint)
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+  <Dial answerOnBridge="true">
+    <Sip>username@your_domain.sip.twilio.com</Sip>
+  </Dial>
+</Response>
+```
+
+Go to your phone number in the Numbers Tab and click on it.
+`When a Comes In`: run the TwiML Bin you just created above.
+
+# Next Steps
+It'd be fun to setup a PBX server and have IP Phones with different extensions for each room in my house, but it's probably extreme overkill for what I need. Here's how I incorporate the ATA landline into a new type of [Wake Up Call Alarm project](https://michaellunzer.com/projects/home-assistant-wake-up-alarm-with-a-phone-call).]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>blog</category>
+    </item>
+    <item>
+      <title><![CDATA[Sending SMS Messages with Twilio on ESPHome]]></title>
+      <link>https://michaellunzer.com/blogs/sending-sms-messages-with-twilio-on-esphome</link>
+      <guid>https://michaellunzer.com/blogs/sending-sms-messages-with-twilio-on-esphome</guid>
+      <pubDate>Tue, 16 Mar 2021 00:00:00 GMT</pubDate>
+      <description><![CDATA[Sending SMS messages from a microcontroller isn't new. There's a bunch of examples on the Twilio blog on how to accomplish this -- like this [one](https://www.twilio.com/blog/sms-doorbell-micropython-twilio) or [this one](https://www.twilio.com/blog/2017/06/build-a-smart-doorbell-with-twilio-and-android-things.html) and many more around the internet.
+
+Where this is different is by using ESPHome to program the esp8266 instead of micropython or the arduino IDE. As you can probably tell from the Projects section of this website, I've really enjoyed using ESPHome to quickly program devices and set up sensors using YAML. 
+
+Ultimately, I'm hoping to add this to my existing doorbell, giving it SMS capabilities -- more to come soon on that. Here's a quick breadboard prototype with a few buttons that trigger an SMS when pressed. 
+
+![twilio doorbell prototype](//images.ctfassets.net/o4gibwve10tr/5SUlANTSunajcJ6oDPFALu/120d33f01bedfd2def7af1e61be3571e/IMG_5305.jpeg)
+
+I'm posting my code below and have commented exactly what you need to do to accomplish this yourself! 
+
+One section to highlight is the `authorization` section in the `Header`. I figured out that for Basic Authorization, you need to encode your AccountSID and API key in base64.
+
+Take your <Account_SID>:<API_KEY> (make sure to put a colon in between the Account SID and API Key) take it and paste it on [this page](https://www.base64encode.org/)  and put the resulting string into this form (replacing the xxxxxxxxx with the resulting output from the base64encode website):
+    `Authorization: "Basic xxxxxxxxx"`
+
+```yaml
+
+esphome:
+  name: twilio_doorbell
+  platform: ESP8266
+  board: huzzah
+
+wifi:
+  ssid: "network_name"
+  password: "network_password"
+
+    # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Twilio Doorbell Fallback Hotspot"
+    password: "random_password"
+
+captive_portal:
+
+# Enable logging
+logger:
+  # level: VERBOSE  ## not needed anymore
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+http_request:
+  useragent: esphome/device
+  timeout: 10s
+
+#### Button 1
+binary_sensor:
+  - platform: gpio
+  ### debounce on the button press
+    filters:
+    - delayed_on: 10ms
+    - delayed_off: 10ms
+    pin:
+      number: GPIO14
+      mode: INPUT_PULLUP
+      inverted: TRUE
+    name: "twilio_doorbell_michael"
+    device_class: moving
+    on_click:
+      - http_request.post: 
+          url: https://api.twilio.com/2010-04-01/Accounts/AC_twilio_account_SID/Messages
+          headers:
+            authorization: "Basic QUM3MT_random_numbers_and_letters_NTVkNWZlZjVjZjE1Yg==" 
+            ### I read on some random blog that Basic Auth needs to be in base64 and it worked! 
+            ##### Take your <Account_SID>:<API_KEY> (make sure to put a colon in between the Account SID and API Key) take it and paste it on this page https://www.base64encode.org/  
+            ####### Take the output and paste it in like this: 
+            ############# Authorization: "Basic xxxxxxxxx"
+
+            Content-Type: "application/x-www-form-urlencoded" # this is the Content-Type they used in this example:    https://www.twilio.com/blog/send-test-http-requests-twilio-sms-postman
+          body:
+            "To=+16505551234&From=+14155551234&Body=Ding Dong! Someone's at your front door!"
+            ##### The body needs to be a string in key=value format separated by & signs: "key1=value1&key2=value2&key3=value3"
+          verify_ssl: false
+          #### this is a verification of SSL on the device side (not the Twilio side)
+
+```
+
+Let me know if you incorporate this into one of your projects! I can see this being useful for water detection sensors and provide urgent SMS notifications if it detects a leak! ]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>blog</category>
+    </item>
+    <item>
+      <title><![CDATA[Home-Assistant: Wake Up Alarm with a Phone Call]]></title>
+      <link>https://michaellunzer.com/projects/home-assistant-wake-up-alarm-with-a-phone-call</link>
+      <guid>https://michaellunzer.com/projects/home-assistant-wake-up-alarm-with-a-phone-call</guid>
+      <pubDate>Tue, 09 Mar 2021 00:00:00 GMT</pubDate>
+      <description><![CDATA[# Video Demo:
+
+https://youtu.be/FxJ2FqBKSSE
+
+# Update 2/25/2022
+
+I put together the video above and presented the project during the Twilio Services Kickoff Demo Jam competition -- I got 3rd place! Woohoo🥉
+
+![Twilio 3rd Place (Front)](//images.ctfassets.net/o4gibwve10tr/24A6jFFrZV4iIwCblSEOvA/358fbf5e0421fe5b4fcedc97a649334b/Twilio_3rd_Place__Front_.png)
+
+![Twilio 3rd Place (Back)](//images.ctfassets.net/o4gibwve10tr/2OmKMuuU65yFlvtSEJnxB7/e5541c82fd19a97c5d4fc94275b81ec6/Twilio_3rd_Place__Back_.png)
+
+# Motivation:
+
+Sometimes it's hard for me to get out of bed in the morning. I've tried a ton of things: 
+- Waking up to music
+- Automations that turn the lights on gently to simulate a sunrise
+- Setting multiple alarms across the room
+- An [Accountability Buddy](https://www.reddit.com/r/GetMotivatedBuddies/) / Internet Stranger to check in with each other in the morning to make sure we're up
+- [Apps that ask me to do math problems](https://freeappsforme.com/alarm-clock-apps-with-math-challenges/)
+
+But I always enjoyed getting the wake up call on business trips. Going off of that idea, I set up a landline in my house and acquired a really ~~annoying~~ loud phone with an actual bell to call me in the morning and wake me up with a quick math problem to get my brain activity going. 
+
+If this doesn’t work, I’ll have to look into making an ejector bed lol 
+
+![Twilio Wake Up Call ejector bed gif](//images.ctfassets.net/o4gibwve10tr/6RXjg2TqWnkgjZG04mZeQ8/bfc8980ccf076899a5006012805775bd/_u_http_3A_2F_2Fi.giphy.com_2F3og0ISQyRWLAkOvg6A.gif_f_1_nofb_1)
+
+# Try it out yourself:
+__Call this number:__ (415) 358-6870
+
+It will ask you a simple math question and tell you if you’re right or wrong. If you get scared talking to people on the phone, don’t be. It’s just a robot on the other side.
+
+# Getting Started on the Twilio Console
+
+First, I pulled up the Twilio Console and purchased a phone number ($1/mo)
+
+Next, I navigated into Twilio Studio and built a Studio Flow that calls you when you hit the Studio Flow URL with a request from Home-Assistant.
+
+![Twilio Wake Up Call Studio Flow](//images.ctfassets.net/o4gibwve10tr/31Li8fctiN6m1gZfoXyaFl/6a524701c1a2647899ebb20e2c03ee63/Screen_Shot_2021-03-09_at_9.25.00_PM.png)
+
+I've glossed over how I created the Flow, but it went through a couple iterations. Basically, I built a function that picks a random, whole, positive number in a simple equation that always returned a whole and positive number as an answer. It's running in a Twilio Function that is run during the call, so there is sometimes a longer pause because it has to run the function a few times if one of the conditions isn't met. I'm sure there are better ways to accomplish it, but this works for me. The entire interaction is less than 30 seconds. 
+
+After that I needed a way in Home-Assistant to trigger the REST command and ultimately in an automation.
+
+# Home-Assistant REST Command:
+
+This REST command triggers a phone call to the number specified in it. 
+
+```yaml
+
+rest_command:
+  twilio_alarm:
+    url: "https://studio.twilio.com/v2/Flows/FW79cc6cc54bddc17e431f9e3d27fe8da1/Executions"
+    method: POST
+    headers:
+      Content-Type: "application/x-www-form-urlencoded"
+    username: ACxxxxxxxxxx9918e978bdb60ca6a90f5c
+    password: bxxxxxxxxxxxaf5cc3d655d5fef5cf15b
+    payload: "To=+16501234567&From=+14153586870"
+# replace the To Number with yours. Leave the From Number as is -- this is the number you’ll get a call from!
+# keep the URL the same to use my Flow!
+```
+
+# Home-Assistant Automation:
+
+I’m using Node-Red to trigger my wake up automation. It looks like there’s a lot going on, but basically I only trigger the the alarm based on certain conditions:
+1. A switch on the dashboard is turned on (for example, I turn it off during a holiday)
+2. I’m physically home
+3. It’s a work day at 7am
+
+![Twilio Wake Up Call Node Red Automation](//images.ctfassets.net/o4gibwve10tr/7MbCZsJ4Wh8h9shAFWXmnE/315e516bf3c96483d1cb3fb3f10972a3/Screen_Shot_2021-03-09_at_11.46.22_PM.png)
+
+You can also trigger the REST command with a normal automation within Home-Assistant.
+
+# Triggering a Test Call
+During the testing phase, I wanted a button on my dashboard that I could press and trigger the phone call. Unfortunately, it’s never that easy lol -- I had to use a [custom button-card](https://github.com/custom-cards/button-card) so I could call a service (the REST command) from the button. You can’t trigger a service from a normal button card!
+
+![Twilio Wake Up Call Button Card](//images.ctfassets.net/o4gibwve10tr/5AhKmNQxvgtI5cfSmly3T2/11fce0bea74e1cbfe41765fdb149a99f/Screen_Shot_2021-03-09_at_11.15.03_PM.png)
+
+# Bonus: Get a landline to connect a “old” telephone
+
+Last thing is I needed a landline. I bought a Grandstream HT801 Analog Telephone Adapter and set it up with Twilio SIP. You can read more about how I set that up in this [blog post](https://michaellunzer.com/blogs/connecting-a-grandstream-ht80x-ht801-or-ht802-to-twilio-sip). I plugged it in, configured it, and then connected it to my home phone network.
+
+Once I did that, I was able to have an old landline telephone connected to the Telephone network with a phone number. 
+
+Now every morning, I get a wake up call and it asks me to do a simple math question. Nothing peaks my anxiety like trying to solve mental math questions on the spot early in the morning! 
+
+![Twilio Wake Up Call phone meme guy picture](//images.ctfassets.net/o4gibwve10tr/1xAIGpLRMafoFJio0ZPMIJ/56eea041fdb2c448df2ddade8b1fda2b/_u_https_3A_2F_2Fd2rd7etdn93tqb.cloudfront.net_2Fwp-content_2Fuploads_2F2018_2F09_2Fhide-your-pain-harold-meme-ph.jpg_f_1_nofb_1)
+
+# Future Ideas
+
+~~It'd be fun to see if I can pull a Quote of the Day from an API to provide morning motivation to users getting ready to wake up.~~
+
+This was added!
+
+# Setting it up for yourself
+If you're interested in setting this up for yourself, please contact me. I'm happy to help you set this up and we might be able to set up a way where you can use my Studio Flow and Phone Number. 
+]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[ESPHome Stepper Motor Heater Controller]]></title>
+      <link>https://michaellunzer.com/projects/esphome-stepper-motor-heater-controller</link>
+      <guid>https://michaellunzer.com/projects/esphome-stepper-motor-heater-controller</guid>
+      <pubDate>Sun, 07 Feb 2021 00:00:00 GMT</pubDate>
+      <description><![CDATA[One of the challenges of building a smart home when you don't own a *home* is creating projects that work with the existing features of the home so it'll be easier when you eventually move out. 
+
+This is another project that I had dreamed up around 2013 from my first apartment. I had written a python script to control this stepper motor connected to a Raspberry Pi. Additionally, I learned how to use AutoDesk Fusion 360 and created a 3D model to hold the livestrong rubber band. I had printed at a hackerspace for about $20, which seemed a bit much for what it is, but that was in the "early" and exciting days of 3D printing lol. 
+
+I've since moved a few times and enhanced the setup. I've taken the stepper motor and connected it to an ESP8266 and used Home-Assistant to automate a baseboard heater. 
+
+I've used some screws (that are easily removable) to mount the stepper motor to the baseboard. I used a "livestrong" rubber band bracelet as a belt to control the heater knob by tension and friction.
+
+The code within ESPHome is pretty straightforward. It uses the stepper motor and the temperature sensor to make a "[bang-bang climate controller](https://esphome.io/components/climate/bang_bang.html?highlight=bang%20bang)". If you're wondering where the name "Bang-Bang" controller came from, check [wikipedia](https://en.wikipedia.org/wiki/Bang%E2%80%93bang_control). Basically, it switches between two states (on/off or up/down) to keep something between a desired state. 
+
+In this example, you set the desired temperature and the stepper motor will turn the heater on or off to maintain the heat at that desired temperature.
+
+Here are a couple pictures of what it looks like:
+
+![ESPHome Stepper Motor Heater Controller 1](//images.ctfassets.net/o4gibwve10tr/6WKiLnYFqdRaTg3ywC6SoY/633ac60bc2a7cccc12ea359dbbf67738/IMG_5014.jpeg)
+
+![Cover - ESPHome Stepper Motor Heater Controller](//images.ctfassets.net/o4gibwve10tr/JNDxnREUKujPCEvzEDrmr/f84547f3cf2e82d59d030c6dae096c02/IMG_5015.jpeg)
+
+![ESPHome Stepper Motor Heater Controller 2 Top](//images.ctfassets.net/o4gibwve10tr/2p0gk5N6oPFSuikdWlnzjC/b824dcaa110a985228129c96857f50d9/IMG_5016.jpeg)
+
+![ESPHome Stepper Motor Heater Controller 3 Right Side](//images.ctfassets.net/o4gibwve10tr/iJ5XsUL7rZXkbAhv31CIz/f04d06ee628a71d622917ffb9bd7a38e/IMG_5017.jpeg)
+
+![ESPHome Stepper Motor Heater Controller 4 Front](//images.ctfassets.net/o4gibwve10tr/6OFTIuzz73YiM6liy0oDD0/c3f859b90878b10a1e6e0cb8455926e0/IMG_5020.jpeg)
+
+# ESPHome Code:
+
+```yaml
+
+esphome:
+  name: heater
+  platform: ESP8266
+  board: nodemcuv2
+
+wifi:
+  ssid: 'Network_SSID'
+  password: 'Network_PW'
+
+# Enable logging
+logger:
+
+ota:
+
+api:
+  services:
+    - service: control_stepper
+      variables:
+        target: int
+      then:
+        - stepper.set_target:
+            id: my_stepper
+            target: !lambda 'return target;'
+
+stepper:
+  - platform: uln2003
+    id: my_stepper
+    pin_a: D1
+    pin_b: D2
+    pin_c: D3
+    pin_d: D4
+    max_speed: 150 steps/s
+    step_mode: HALF_STEP #WAVE_DRIVE # 
+
+sensor:
+  - platform: dht
+    pin: D5
+    temperature:
+      name: "Heater Temperature"
+      id: heater_temperature
+    humidity:
+      name: "Heater Humidity"
+      id: heater_humidity
+    model: AM2302
+
+climate:
+  - platform: bang_bang
+    id: heater_climate
+    name: climate
+    sensor: heater_temperature
+    default_target_temperature_low: 20 °C
+    default_target_temperature_high: 22 °C
+
+    heat_action:
+      # - switch.turn_on: heater
+      - stepper.set_target:
+          id: my_stepper
+          target: -5000
+    cool_action:
+      # - switch.turn_off: heater
+      - stepper.set_target:
+          id: my_stepper
+          target: 5000
+    idle_action:
+      - stepper.set_target:
+          id: my_stepper
+          target: 2500
+
+```
+
+# Home Assistant Configuation
+
+```yaml 
+# Home Assistant Configuration
+input_number:
+  stepper_control:
+    name: Stepper Control
+    initial: 0
+    min: -3000
+    max: 3000
+    step: 1
+    # mode: box
+
+```
+
+# Home Assistant Automation
+
+```yaml
+
+# Home Assistant Automation
+automation:
+  - alias: Write Stepper Value to ESP
+    trigger:
+      platform: state
+      entity_id: input_number.stepper_control
+    action:
+      # Replace livingroom with the name you gave the ESP
+      - service: esphome.heater_control_stepper
+        data_template:
+          target: '{{ trigger.to_state.state | int }}'
+
+```
+
+I've combined both sections of the Home Assistant side into a file called `Heater.yaml` that sits inside the Packages folder. Be sure to include   `packages: !include_dir_named packages` underneath the `homeassistant:` section at the beginning of your YAML config. 
+
+I've moved again, and this setup is no longer in use because my new place has central heating. Let me know if you have a good use-case for this stepper motor!
+]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[ESPHome Sniffer AQI Sensor]]></title>
+      <link>https://michaellunzer.com/projects/esphome-sniffer-aqi-sensor</link>
+      <guid>https://michaellunzer.com/projects/esphome-sniffer-aqi-sensor</guid>
+      <pubDate>Tue, 03 Nov 2020 00:00:00 GMT</pubDate>
+      <description><![CDATA[San Francisco and the rest of the Bay Area were severely impacted by major forest fires this summer. The air quality restricted people to go outside (even in a pandemic) to exercise or even just open up our windows to get a cool breeze. Here's an [interactive map](https://data.visaliatimesdelta.com/fires/) to see all current fires going on in the country. 
+
+I came across the "Sniffer" project on the [Home Assistant Forums](https://community.home-assistant.io/t/sniffer-air-quality-sensor-using-esp32-with-lcd-pmsa003-bme680/226870) this summer and knew I wanted to build this project to get more insight into my environment around me and also do something productive with my free time. 
+
+## This was the view outside my house:
+![orange-skies-sf](//images.ctfassets.net/o4gibwve10tr/2sCKF2ynllpYbRa4D2vu6t/ff802665e90aab3dff4545fc4a351abd/IMG_3890.jpeg)
+
+This project wouldn't be possible without [Kyle Manna](https://blog.kylemanna.com/hardware/sniffer-air-quality-monitor-aqi-using-esp32-pmsa003-bme680/) -- he actually reached out to me directly after seeing that I starred his [GitHub Repo](https://github.com/kylemanna/sniffer) noticed that I was local. We had a nice phone conversation and chatted about Home-Assistant and ESPHome. Ultimately, we met up briefly and he gave me two PCBs so I could make two air quality sensors.
+
+Please check out his website and GitHub for more information! I just wanted to show how easy it was to follow along with his instructions. 
+
+## Pictures of the Build Process:
+
+![esphome-sniffer-aqi-2](//images.ctfassets.net/o4gibwve10tr/3qIUs2yLSZu2BK0G6zrrGq/f2a666638cd5beb4676dfebc006d07b7/IMG_4331.jpeg)
+
+![esphome-sniffer-aqi-1](//images.ctfassets.net/o4gibwve10tr/2HqSR0Ebk4SMPE2GmCFS8P/752d3305f7c4a8bd38ed58cb855c6dac/IMG_4167.jpeg)
+
+![esphome-sniffer-aqi-3](//images.ctfassets.net/o4gibwve10tr/4kfe3FLNKWToq7nNlP2aF/4c23d2db5edbb60d9af1f5127c46ac08/IMG_4163.jpeg)
+
+![esphome-sniffer-aqi-cover](//images.ctfassets.net/o4gibwve10tr/6aL5T6NKeIoctmTYmEB23h/7e2ac1dd677c2e8f0962c3aa00f6ba25/IMG_4165.jpeg)]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[ESPHome Oracle Code Card ePaper Display]]></title>
+      <link>https://michaellunzer.com/projects/esphome-oracle-code-card-epaper-display</link>
+      <guid>https://michaellunzer.com/projects/esphome-oracle-code-card-epaper-display</guid>
+      <pubDate>Tue, 20 Oct 2020 00:00:00 GMT</pubDate>
+      <description><![CDATA[I'm a big fan of ePaper displays - it's easier on the eyes compared to LED based displays and is great for low powered devices like Pebble Watches and Kindle eBook readers. 
+
+I'm using an [Oracle Code Card](https://hackaday.com/2018/10/31/corporate-badgelife-oracles-code-card/) badge [I got at a conference](https://learncodeshare.net/2019/09/24/you-went-to-oracle-open-world-19-and-got-a-code-card-now-what/). It has a 2.7 inch display and is based on [the $29 badgy](https://www.tindie.com/products/squarofumi/badgy-iot-badge/) if you want to do this project yourself.
+
+# Finished Product:
+![codecard](//images.ctfassets.net/o4gibwve10tr/3Ry5sZT37UtzGqutwEQ9w8/3e65e7a82360037de701fc37d9dbbc35/IMG_4272.jpeg)
+
+# The Setup:
+
+You need to add a couple sensors to home assistant first. You can find the specific file [here](https://github.com/fredrike/esphome-nodes/blob/master/homeassistant-config/package-display_node.yaml) in @fredrike's github page. Add this file to your packages folder inside your config folder. (here: `~/config/packages`). If you don't already have a packages folder, make sure to include this line under the `homeassistant:` header like so:
+
+ ```yaml
+ homeassistant:
+   packages: !include_dir_named packages
+ ```
+
+# Home Assistant Configuration:
+the blank " " squares you see in the config are [Material Design Icons](https://cdn.materialdesignicons.com/5.4.55/). Sometimes the icons get lost in translation when copy/pasting them.  
+
+If you're unable to copy/paste the code below and retain the Material Design Icons, try copying/pasting from here: 
+
+https://github.com/fredrike/esphome-nodes/blob/master/homeassistant-config/package-display_node.yaml
+
+If that doesn't work, most of them are commented, so you can copy/paste each individual one from here: [Material Design Icons](https://cdn.materialdesignicons.com/5.4.55/).
+
+`~/config/packages/display_node.yaml`
+
+```yaml
+sensor:
+  - platform: moon
+  - platform: template
+    sensors:
+      moon_tpl:
+        entity_id: sensor.moon
+        value_template: >-
+          {% set map = {
+            "new_moon": "󰽤",
+            "waxing_crecent": "󰽧",
+            "first_quarter": "󰽡",
+            "waxing_gibbous": "󰽨",
+            "full_moon": "󰽢",
+            "waning_gibbous": "󰽦",
+            "last_quarter": "󰽣",
+            "waning_crescent": "󰽥"
+          } %}
+          {{- map[states('sensor.moon')] -}}
+  - platform: template
+    sensors:
+      forecast_today:
+        entity_id: sensor.time
+        value_template: >-
+          {% set weather = {
+            "clear-day": "󰖙", 
+            "clear-night": "󰖔", 
+            "cloudy": "󰖐", 
+            "rain": "󰖖", 
+            "sleet": "󰙿", 
+            "snow": "󰼶", 
+            "wind": "󰖞", 
+            "fog": "󰖑", 
+            "partly-cloudy-day": "󰖕", 
+            "partly-cloudy-night": "󰼱" 
+          } %}
+          {% set base = 'sensor.dark_sky_forecast_' %}
+
+          {{- weather[states('{}icon_{}d'.format(base, 0))] -}};
+          {{- states('{}apparent_temperature'.format(base)) -}}°;
+          {{- states('{}precip_probability_{}d'.format(base, 0))|int -}}
+  - platform: darksky #https://pastebin.com/iX7u4ZSg
+    api_key: !secret darksky_api_key
+    name: dark_sky_forecast
+    scan_interval: '00:10'
+    forecast:
+      - 0
+      - 1
+      - 2
+      - 3
+      - 4
+    monitored_conditions:
+      - icon
+      - temperature
+      - apparent_temperature
+      - temperature_high
+      - temperature_low
+      - precip_probability
+      - precip_intensity
+  - platform: template
+    sensors:
+      forecast:
+        entity_id: sensor.time
+        value_template: >-
+          {% set dow = {
+           0: "Mon",
+           1: "Tue",
+           2: "Wed",
+           3: "Thu",
+           4: "Fri",
+           5: "Sat",
+           6: "Sun"
+          } %}
+
+          {% set weather = {
+            "clear-day": "mdi:weather-sunny",
+            "clear-night": "mdi:weather-night",
+            "cloudy": "mdi:weather-cloudy",
+            "rain": "mdi:weather-pouring",
+            "sleet": "mdi:weather-snowy-rainy",
+            "snow": "mdi:weather-snowy",
+            "wind": "mdi:weather-windy",
+            "fog": "mdi:weather-fog",
+            "partly-cloudy-day": "mdi:weather-partly-cloudy",
+            "partly-cloudy-night": "mdi:weather-night-partly-cloudy"
+          } %}
+          {% set weather = {
+            "clear-day": "󰖙", 
+            "clear-night": "󰖔", 
+            "cloudy": "󰖐", 
+            "rain": "󰖖", 
+            "sleet": "󰙿", 
+            "snow": "󰼶", 
+            "wind": "󰖞", 
+            "fog": "󰖑", 
+            "partly-cloudy-day": "󰖕", 
+            "partly-cloudy-night": "󰼱" 
+          } %}
+
+          {% set base = 'sensor.dark_sky_forecast_' %}
+
+          {%- for i in [ 1, 2, 3, 4] -%}
+            {{ dow[(now().weekday() + i) % 7]  }};
+            {{- weather[states('{}icon_{}d'.format(base, i))] -}};
+            {{- states('{}daytime_high_temperature_{}d'.format(base, i))|int
+            -}}°/
+            {{- states('{}overnight_low_temperature_{}d'.format(base, i))|int -}}°;
+            {{- states('{}precip_probability_{}d'.format(base, i))|int -}}%
+            {%- if not loop.last %};{% endif %}
+          {%- endfor %}
+```
+
+# ESPHome Code: 
+
+If you're unable to copy/paste the code below and retain the Material Design Icons, try copying/pasting from here: 
+
+https://gist.github.com/michaellunzer/37f29462ee9a17f22978e672c59e440c
+
+```yaml
+esphome:
+  name: codecard3
+  platform: ESP8266
+  board: esp12e
+  # on_boot:
+  #     - output.turn_off: onboard_led
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+
+ota:
+
+spi:
+  clk_pin: GPIO14
+  mosi_pin: GPIO13
+
+# s= '@!"%()+,-_.:°0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ abcdefghijklmnopqrstuvwxyz.'
+# print([','.join(_) for _ in s])
+
+font:
+  - file: 'fonts/Google_Sans_Bold.ttf'
+    id: clock_font
+    size: 45
+    glyphs:
+      ['&', '@', '!', ',', '.', '"', '%', '(', ')', '+', '-', '_', ':', '°', '0',
+       '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+       'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+       'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
+       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+       'u', 'v', 'w', 'x', 'y', 'z','å', 'ä', 'ö', '/']
+  - file: 'fonts/Google_Sans_Medium.ttf'
+    id: temp_font
+    size: 32
+    glyphs:
+      ['&', '@', '!', ',', '.', '"', '%', '(', ')', '+', '-', '_', ':', '°', '0',
+       '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+       'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+       'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
+       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+       'u', 'v', 'w', 'x', 'y', 'z','å', 'ä', 'ö', '/']
+  - file: 'fonts/Google_Sans_Bold.ttf'
+    id: status_font
+    size: 18
+    glyphs:
+      ['&', '@', '!', ',', '.', '"', '%', '(', ')', '+', '-', '_', ':', '°', '0',
+       '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+       'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+       'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
+       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+       'u', 'v', 'w', 'x', 'y', 'z', 'å', 'ä', 'ö', '/']
+  - file: 'fonts/Google_Sans_Medium.ttf'
+    id: aqi_font
+    size: 18
+    glyphs:
+      ['&', '@', '!', ',', '.', '"', '%', '(', ')', '+', '-', '_', ':', '°', '0',
+       '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E',
+       'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S',
+       'T', 'U', 'V', 'W', 'X', 'Y', 'Z', ' ', 'a', 'b', 'c', 'd', 'e', 'f',
+       'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't',
+       'u', 'v', 'w', 'x', 'y', 'z', 'å', 'ä', 'ö', '/']
+  - file: 'fonts/materialdesignicons-webfont.ttf'
+    id: icon_font
+    size: 32
+    glyphs: [
+      '󰢙', # mdi-account-heart
+      '󰔏', # mdi-thermometer
+      '󱄷', # mdi-fire-hydrant
+      "󰕊", # mdi-umbrella
+      "󰽕", # mdi-home-thermometer-outline
+      "󰽔", # mdi-home-thermometer
+      "󰵃", # mdi-air-filter
+      # Wifi
+      '󰤯', # mdi-wifi-strength-outline
+      '󰤟', # mdi-wifi-strength-1
+      '󰤢', # mdi-wifi-strength-2
+      '󰤥', # mdi-wifi-strength-3
+      '󰤨', # mdi-wifi-strength-4
+      # Weather
+      "󰖙", # mdi-weather-sunny
+      "󰖔", # mdi-weather-night
+      "󰖐", # mdi-weather-cloudy
+      "󰖖", # mdi-weather-pouring
+      "󰙿", # mdi-weather-snowy-rainy
+      "󰼶", # mdi-weather-snowy-heavy
+      "󰖞", # mdi-weather-windy-variant
+      "󰖑", # mdi-weather-fog
+      "󰼱", # mdi-weather-night-partly-cloudy
+      "󰖕", # mdi-weather-partly-cloudy
+      # Moon
+      "󰽤", # new_moon
+      "󰽧", # waxing_crecent
+      "󰽡", # first_quarter
+      "󰽨", # waxing_gibbous
+      "󰽢", # full_moon
+      "󰽦", # waning_gibbous
+      "󰽣", # last_quarter
+      "󰽥", # waning_crescent
+      # Sun
+      "󰖛", # mdi-weather-sunset-down
+      "󰖜", # mdi-weather-sunset-up
+      ]
+  - file: 'fonts/materialdesignicons-webfont.ttf'
+    id: weather_font
+    size: 50
+    glyphs: [
+      '󰢙', # mdi-account-heart
+      '󰔏', # mdi-thermometer
+      '󱄷', # mdi-fire-hydrant
+      "󰕊", # mdi-umbrella
+      "󰽕", # mdi-home-thermometer-outline
+      "󰽔", # mdi-home-thermometer
+      "󰵃", # mdi-air-filter
+      # Wifi
+      '󰤯', # mdi-wifi-strength-outline
+      '󰤟', # mdi-wifi-strength-1
+      '󰤢', # mdi-wifi-strength-2
+      '󰤥', # mdi-wifi-strength-3
+      '󰤨', # mdi-wifi-strength-4
+      # Weather
+      "󰖙", # mdi-weather-sunny
+      "󰖔", # mdi-weather-night
+      "󰖐", # mdi-weather-cloudy
+      "󰖖", # mdi-weather-pouring
+      "󰙿", # mdi-weather-snowy-rainy
+      "󰼶", # mdi-weather-snowy-heavy
+      "󰖞", # mdi-weather-windy-variant
+      "󰖑", # mdi-weather-fog
+      "󰼱", # mdi-weather-night-partly-cloudy
+      "󰖕", # mdi-weather-partly-cloudy
+      # Moon
+      "󰽤", # new_moon
+      "󰽧", # waxing_crecent
+      "󰽡", # first_quarter
+      "󰽨", # waxing_gibbous
+      "󰽢", # full_moon
+      "󰽦", # waning_gibbous
+      "󰽣", # last_quarter
+      "󰽥", # waning_crescent
+      # Sun
+      "󰖛", # mdi-weather-sunset-down
+      "󰖜", # mdi-weather-sunset-up
+      ]
+  - file: 'fonts/materialdesignicons-webfont.ttf'
+    id: current_weather_font
+    size: 80
+    glyphs: [
+      '󰢙', # mdi-account-heart
+      '󰔏', # mdi-thermometer
+      '󱄷', # mdi-fire-hydrant
+      "󰕊", # mdi-umbrella
+      "󰽕", # mdi-home-thermometer-outline
+      "󰽔", # mdi-home-thermometer
+      "󰵃", # mdi-air-filter
+      # Wifi
+      '󰤯', # mdi-wifi-strength-outline
+      '󰤟', # mdi-wifi-strength-1
+      '󰤢', # mdi-wifi-strength-2
+      '󰤥', # mdi-wifi-strength-3
+      '󰤨', # mdi-wifi-strength-4
+      # Weather
+      "󰖙", # mdi-weather-sunny
+      "󰖔", # mdi-weather-night
+      "󰖐", # mdi-weather-cloudy
+      "󰖖", # mdi-weather-pouring
+      "󰙿", # mdi-weather-snowy-rainy
+      "󰼶", # mdi-weather-snowy-heavy
+      "󰖞", # mdi-weather-windy-variant
+      "󰖑", # mdi-weather-fog
+      "󰼱", # mdi-weather-night-partly-cloudy
+      "󰖕", # mdi-weather-partly-cloudy
+      # Moon
+      "󰽤", # new_moon
+      "󰽧", # waxing_crecent
+      "󰽡", # first_quarter
+      "󰽨", # waxing_gibbous
+      "󰽢", # full_moon
+      "󰽦", # waning_gibbous
+      "󰽣", # last_quarter
+      "󰽥", # waning_crescent
+      # Sun
+      "󰖛", # mdi-weather-sunset-down
+      "󰖜", # mdi-weather-sunset-up
+      ]
+
+# 264 x 176 display
+display:
+  - platform: waveshare_epaper
+    id: epaper
+    cs_pin: GPIO2
+    busy_pin: GPIO5
+    reset_pin: GPIO4
+    dc_pin: GPIO0
+    model: 2.70in
+    rotation: 270°
+    # full_update_every: 30
+    # 264 x 176 display
+    update_interval: 3600s
+    lambda: |
+      int x, y;
+      ESP_LOGI("display", "Updating..");
+
+      /* Print time in HH:MM format */
+      it.strftime(0, -10, id(clock_font), TextAlign::TOP_LEFT, "%I:%M", id(current_time).now());
+      /* Print AM/PM */
+      it.strftime(120, 15, id(status_font), TextAlign::TOP_LEFT, "%P", id(current_time).now());
+      it.strftime(65, 40, id(status_font), TextAlign::TOP_LEFT, "%b %e, %Y", id(current_time).now());
+
+      // it.line(259, -10, 259, 200);it.line(261, 0, 261, 200);it.line(260, 0, 260, 200);
+      // it.line(0, 200, 259, 200);it.line(0, 201, 261, 201);it.line(0, 202, 260, 202);
+      /*
+      it.print(125, 120, id(temp_font), TextAlign::BASELINE_CENTER, "HELLO SUNSHINE!");
+      it.print(125, 160, id(icon_font), TextAlign::BASELINE_CENTER, "󰢙");
+      it.print(125, 182, id(temp_font), TextAlign::BASELINE_CENTER, "Lea & Emma"); // 400 - ((400 - 260)/2)
+      */
+      /* Moon icon - used to be y = 155, x = 230 */
+      if(id(moon_icon).has_state()) {
+        y = 165, x = 20;
+        ESP_LOGI("Moon icon", "%s", id(moon_icon).state.c_str());
+        it.printf(x, y, id(icon_font), TextAlign::BASELINE_CENTER, "%s", id(moon_icon).state.c_str());
+      }
+      /* WiFi Signal Strenght          x = 398, y = 298; */
+      if(id(wifisignal).has_state()) {
+        x = 175, y = 30;
+        if (id(wifisignal).state >= -50) {
+            //Excellent
+            it.print(x, y, id(icon_font), TextAlign::BOTTOM_RIGHT, "󰤨");
+            ESP_LOGI("WiFi", "Exellent");
+        } else if (id(wifisignal).state  >= -60) {
+            //Good
+            it.print(x, y, id(icon_font), TextAlign::BOTTOM_RIGHT, "󰤥");
+            ESP_LOGI("WiFi", "Good");
+        } else if (id(wifisignal).state  >= -67) {
+            //Fair
+            it.print(x, y, id(icon_font), TextAlign::BOTTOM_RIGHT, "󰤢");
+            ESP_LOGI("WiFi", "Fair");
+        } else if (id(wifisignal).state  >= -70) {
+            //Weak
+            it.print(x, y, id(icon_font), TextAlign::BOTTOM_RIGHT, "󰤟");
+            ESP_LOGI("WiFi", "Weak");
+        } else {
+            //Unlikely working signal
+            it.print(x, y, id(icon_font), TextAlign::BOTTOM_RIGHT, "󰤯");
+            ESP_LOGI("WiFi", "Unlikely");
+        }
+      }
+
+      // Current weather
+      if(id(weather_forecast_today).has_state()) {
+        std::string str = id(weather_forecast_today).state;
+        ESP_LOGI("Weather", "%s", str.c_str());
+        std::size_t current, previous = 0;
+        char delim = ';';
+        current = str.find(delim);
+        int y = 100, x = 5;
+        for (int i=0; i<3; i++) {
+            if(i == 0) {
+              it.printf(x - 15, y, id(current_weather_font),
+                TextAlign::BASELINE_LEFT,
+                "%s", str.substr(previous, current - previous).c_str());
+            } else if (i == 1) {
+              ESP_LOGD("weather","%dx%d %s", (i % 1 ? 270 : 320), x,
+                str.substr(previous, current - previous).c_str());
+              /* it.printf(y, x, id(status_font),
+                TextAlign::TOP_LEFT,
+                "%s", str.substr(previous, current - previous).c_str());
+              */
+            } else if (i == 2) { // Chance for rain
+              it.printf(x, y + 2, id(icon_font), TextAlign::TOP_LEFT, "󰕊"); // Umbrella
+              it.printf(x + 30, y + 10, id(status_font),
+                TextAlign::TOP_LEFT,
+                "%s%%", str.substr(previous, current - previous).c_str());
+            }
+            // y += 100;
+            previous = current + 1;
+            current = str.find(delim, previous);
+        }
+      }
+
+      // Print inside temperature (from homeassistant sensor)
+      y = 135, x = 100;
+      if (id(inside_temperature).has_state()) {
+        it.print(x, y, id(icon_font), TextAlign::BOTTOM_RIGHT, "󰽕");
+        it.printf(x, y + 4, id(temp_font), TextAlign::BOTTOM_LEFT , "%5.1f°", id(inside_temperature).state);
+      }
+      // Print outside temperature (from homeassistant sensor)
+      if (id(outside_temperature).has_state()) {
+        it.print(x, y + 4, id(icon_font), TextAlign::TOP_RIGHT, "󰽔"); 
+        it.printf(x, y, id(temp_font), TextAlign::TOP_LEFT, "%5.1f°", id(outside_temperature).state);
+      }
+
+      // Print sniffer0 air quality index sensor (from homeassistant sensor)
+      if (id(sniffer0_aqi).has_state()) {
+         x = 91, y = 60;
+        it.print(x + 10, y + 4, id(icon_font), TextAlign::TOP_RIGHT, "󰵃"); 
+        it.printf(x - 4, y, id(temp_font), TextAlign::TOP_LEFT, "%5.0f", id(sniffer0_aqi).state);
+        it.print(x + 87, y + 16, id(aqi_font), TextAlign::TOP_RIGHT, "AQI"); 
+
+      }
+
+      /*// Print consumer
+      if (id(top_consumer).has_state()) {
+        it.printf(0, 295, id(status_font), TextAlign::BOTTOM_LEFT , "Total: %.0f W, %s W", id(sparsnas).state, id(top_consumer).state.c_str());
+      }
+      */
+
+      it.line(180, 0, 180, 176);
+      it.line(0, 103, 180, 103);
+
+      // std::string str = "mon:cloud:12.1:30%:tue:rain:10.2:40%:wed:sunny:18.0:0%:thu:snow:-12.2:10%";
+      // Mon;;65°/53°;12%;Tue;;70°/56°;7%;Wed;;73°/55°;2%;Thu;;73°/55°;1%
+      if(id(weather_forecast).has_state()) {
+        std::string str = id(weather_forecast).state;
+        ESP_LOGI("Weather", "%s", str.c_str());
+        std::size_t current, previous = 0;
+        char delim = ';';
+        current = str.find(delim);
+        int x = 240, y = 0;
+        // changed from x = 340, y = 4
+        for (int i=0; i<4; i++) {
+          ESP_LOGI("t", "%d", i);
+          for (int j=0; j<4; j++) {
+            if(j == 1) {  // Weather icon.
+              it.printf(x - 65, y + 25, id(weather_font),
+                TextAlign::BASELINE_LEFT,
+                "%s", str.substr(previous, current - previous).c_str());
+            } else {
+              ESP_LOGD("weather","%dx%d %s", (j % 1 ? 270 : 320), x,
+                str.substr(previous, current - previous).c_str());
+              it.printf((j == 0 ? x - 15 : 390), y,
+                id(status_font),
+                (j == 0 ? TextAlign::TOP_LEFT : TextAlign::TOP_RIGHT),
+                "%s", str.substr(previous, current - previous).c_str());
+              y += 16;
+            }
+            previous = current + 1;
+            current = str.find(delim, previous);
+          }
+          y += 2;
+        }
+      }
+
+# output:
+#   - platform: gpio
+#     id: onboard_led
+#     pin:
+#       number: 2
+#       inverted: False
+
+# light:
+#   - platform: binary
+#     name: "Onboard LED"
+#     output: onboard_led
+
+time:
+  - platform: homeassistant
+    id: current_time
+    timezone: America/Los_Angeles
+    on_time:
+      # Every 1 minutes
+      - seconds: 0
+        then:
+          - component.update: epaper
+
+sensor:
+  - platform: homeassistant
+    id: inside_temperature
+    entity_id: sensor.sn1_temperature
+    internal: true
+
+  - platform: homeassistant
+    id: sniffer0_aqi
+    entity_id: sensor.sniffer0_pm_2_5_aqi
+    internal: true
+
+  - platform: homeassistant
+    id: outside_temperature
+    entity_id: sensor.openweathermap_forecast_temperature
+    internal: true
+
+  # - platform: homeassistant
+  #   entity_id: sensor.sparsnas_energy_consumption_momentary
+  #   id: sparsnas
+  #   internal: true
+
+  - platform: homeassistant
+    entity_id: sensor.dark_sky_precip_probability
+    id: precip_probability
+    internal: true
+
+  - platform: wifi_signal
+    name: "WiFi Signal Sensor"
+    id: wifisignal
+    update_interval: 60s
+
+text_sensor:
+  # - platform: homeassistant
+  #   id: top_consumer
+  #   entity_id: sensor.iotawatt_top_consumer
+  #   internal: true
+
+  - platform: homeassistant
+    name: forecast
+    id: weather_forecast
+    entity_id: sensor.forecast
+    internal: true
+
+  - platform: homeassistant
+    name: forecast
+    id: weather_forecast_today
+    entity_id: sensor.forecast_today
+    internal: true
+
+  - platform: homeassistant
+    id: moon_icon
+    entity_id: sensor.moon_tpl
+```
+
+This was based heavily on [@fredrike's code](https://github.com/fredrike/esphome-nodes/blob/f7a3a225c417d651b4a3937708ea4d4b2d0827ed/homeassistant-config/package-display_node.yaml) and so there are still some vestigal structures of his code commented out in my code. @Fredrike, if you see this, thanks for your inspiration!
+
+# Future hardware:
+
+I realize that I'm pretty lucky to get ahold of a limited run piece of hardware specially made for a conference. I was hoping that I was watching YouTube while writing this post and saw [a new product from Adafruit](https://www.adafruit.com/product/4777) that this code could potentially work on in the future.
+
+Also, [the badgy](https://www.tindie.com/products/squarofumi/badgy-iot-badge/) looks like a great alternative. 
+
+# Display Iterations
+
+![codecard_hello_world](//images.ctfassets.net/o4gibwve10tr/3PcSeOOy7f392aqflN7OWA/7c3d493bbb5d22174e2add6b7d0d2601/IMG_3933.jpeg)
+
+![IMG 4021](//images.ctfassets.net/o4gibwve10tr/2mI1QQSiyIa2cT3zhRbmkh/2b8374addd74ab5cbae35cf7012755a5/IMG_4021.jpeg)
+
+![codecard_version2](//images.ctfassets.net/o4gibwve10tr/62B49eLAgctXUbm4v1qeRW/47efa2121977eb7b2891f8377f812d06/IMG_4026.jpeg)
+
+![codecard_version3](//images.ctfassets.net/o4gibwve10tr/56sBNoSNsXQZ5XdocjSGNK/39764ddc581f2447ce04bc205985e8d1/IMG_4193.jpeg)
+
+![codecard_version5](//images.ctfassets.net/o4gibwve10tr/6ZeUg2gEs2LKliWUxQe7b3/6c96e666f76321dc95f1c46e98ac6990/IMG_4254.jpeg)
+
+![codecard_version4](//images.ctfassets.net/o4gibwve10tr/1xUfwFWDIH753ct1OQAhk4/b5ecc1d21a15c4ea568602509eb55b7d/IMG_4269.jpeg)
+
+![codecard](//images.ctfassets.net/o4gibwve10tr/3Ry5sZT37UtzGqutwEQ9w8/3e65e7a82360037de701fc37d9dbbc35/IMG_4272.jpeg)]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[Fortnite Home-Assistant Custom Component]]></title>
+      <link>https://michaellunzer.com/projects/fortnite-home-assistant-custom-component</link>
+      <guid>https://michaellunzer.com/projects/fortnite-home-assistant-custom-component</guid>
+      <pubDate>Tue, 15 Sep 2020 00:00:00 GMT</pubDate>
+      <description><![CDATA[![fortnite-logo](//images.contentful.com/o4gibwve10tr/1GLxhHyYdvh0dI0JG53Zmk/c81faa93aafde77b62e24eb3db4cfcd5/fortnite-logo.png)
+
+# Fortnite Home-Assistant Custom Component
+_This is a Custom Component to integrate with [fortnite][fortnite]._
+
+![Project Maintenance][maintenance-shield] | [![BuyMeCoffee][buymecoffeebadge]][buymecoffee]
+:-- | :-- 
+[![GitHub Release][releases-shield]][releases] | [![GitHub Activity][commits-shield]][commits]
+[![License][license-shield]](LICENSE) | [![hacs][hacsbadge]][hacs]
+[![Discord][discord-shield]][discord] | [![Community Forum][forum-shield]][forum]
+
+# Fortnite Stats
+
+This 'fortnite' component is a Home Assistant custom sensor which shows you various stats accumulated while playing the very popular F2P game, [Fortnite: Battle Royale](https://www.epicgames.com/fortnite/en-US/home). 
+
+## Why?
+
+It can show you how well you're playing the game with stats like:
+- How many kills you've earned
+- Kill/Death Ratio
+- Kills Per Game
+- Total Matches Played Per Mode
+- Your Fortnite Score
+- Your Score Earned Per Match
+- Your Win Ratio
+
+And how many times you finish in the:
+- Top 1
+- Top 3
+- Top 5
+- Top 6
+- Top 10
+- Top 12
+- Top 25
+
+## Purpose
+
+This is my first Home-Assistant Custom Component, so it's been a fun learning experience for me contributing to Open Source Software! This wouldn't been possible without the help from @xcodinas for building the fortnite-python library and from @clyra for helping refine my initial script and idea by further developing it towards a more finished product. From there I've added some extra tweaks, wrote the documentation, and published it in the Home-Assistant Community Store (HACS).
+
+## Screenshots
+![Fortnite-Stats-Overview-Kills-Screenshot](//images.contentful.com/o4gibwve10tr/6csrD6DS2l7p5lfM1EJBVG/ec80fd7f9aeb9315af86378c154f14e1/Fortnite-Stats-Overview-Kills-Screenshot.png)
+
+![Fortnite-Stats-Solo-Screenshot](//images.contentful.com/o4gibwve10tr/6C0Sm15Cb665FW1o0TIIVJ/2555badb376d3b9c8ec866f1c0dec475/Fortnite-Stats-Solo-Screenshot.png)
+
+![Fortnite-Stats-Duo-Screenshot](//images.contentful.com/o4gibwve10tr/5ohtjFhWmlRxt5MjIDIswv/fb99748496bf7f0d2085865e639b3401/Fortnite-Stats-Duo-Screenshot.png)
+
+![Fortnite-Stats-Squads-Screenshot](//images.contentful.com/o4gibwve10tr/2FuG0wXONvJcnhZIm7dBpz/0f8afbf363328384080eb8f45e28b4c3/Fortnite-Stats-Squads-Screenshot.png)
+
+**This component will set up the following platforms:**
+
+Platform | Description
+-- | --
+`sensor` | Show stats pulled from fortnite API on https://fortnitetracker.com
+
+## Manual Installation
+
+Download the fortnite.zip file from the latest release.
+Unpack the release and copy the custom_components/fortnite directory into the custom_components directory of your Home Assistant installation.
+Configure the fortnite sensor.
+Restart Home Assistant.
+
+## Installation via HACS (Preferred Method)
+Ensure that HACS is installed.
+Search for and install the "fortnite" integration.
+Configure the fortnite sensor in `configuration.yaml`.
+Restart Home Assistant.
+
+## Configuration is done in YAML -> `configuration.yaml` 
+
+My username is Captain_Crunch88 and I play on the Nintendo Switch (use "GAMEPAD" in the config) if you want to test out the sensor. You'll need to register for an api key at https://fortnitetracker.com/site-api
+
+<!---->
+
+````yaml
+sensor:
+  - platform: fortnite
+    name: Fortnite Solo Stats
+    api_key: 12345678-90ab-cdef-ghij-lmnopqrstuvw
+    player_id: Captain_Crunch88
+    game_platform: "GAMEPAD"
+    game_mode: "SOLO"
+  - platform: fortnite
+    name: Fortnite Duo Stats
+    api_key: 12345678-90ab-cdef-ghij-lmnopqrstuvw
+    player_id: Captain_Crunch88
+    game_platform: "GAMEPAD"
+    game_mode: "DUO"
+  - platform: fortnite
+    name: Fortnite Squads Stats
+    api_key: 12345678-90ab-cdef-ghij-lmnopqrstuvw
+    player_id: Captain_Crunch88
+    game_platform: "GAMEPAD"
+    game_mode: "SQUAD"
+````
+
+If you play on multiple platforms, you'll need to create multiple sensors for each platform you play on. For example if you play on the PC and Nintndo Switch, you'd use `PC` in one sensor and `GAMEPAD` in the other sensor. At this time there is no aggregate sensor, but you can always use a template sensor in home assistant to aggregate the values or submit a pull request!
+
+Game Platform | Config Value (ALL CAPS!)
+-- | --
+PC | `PC`
+Xbox | `XBOX`
+PlayStation | `PSN`
+iPad & iPhone | `TOUCH`
+Nintendo Switch | `GAMEPAD`
+KBM | `KBM`
+
+## This custom-component (v0.1.2) was last tested on version 2021.10.6 of Home-Assistant
+
+[Full Changelog & Releases](https://github.com/michaellunzer/Home-Assistant-Custom-Component-Fortnite/releases)
+
+## Contributions are welcome!
+
+If you want to contribute to this please read the [Contribution guidelines](https://github.com/michaellunzer/Home-Assistant-Custom-Component-Fortnite/blob/master/CONTRIBUTING.md)
+
+***
+
+[fortnite]: https://github.com/michaellunzer/Home-Assistant-Custom-Component-Fortnite
+[buymecoffee]: https://www.buymeacoffee.com/michaellunzer
+[buymecoffeebadge]: https://img.shields.io/badge/buy%20me%20a%20coffee-donate-yellow.svg?style=for-the-badge
+[commits-shield]: https://img.shields.io/github/commit-activity/y/michaellunzer/Home-Assistant-Custom-Component-Fortnite.svg?style=for-the-badge
+[commits]: https://github.com/michaellunzer/Home-Assistant-Custom-Component-Fortnite/commit/master
+[hacs]: https://github.com/custom-components/hacs
+[hacsbadge]: https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge
+[discord]: https://discord.gg/Qa5fW2R
+[discord-shield]: https://img.shields.io/discord/330944238910963714.svg?style=for-the-badge
+[fortnite-logo-img]: custom_components/fortnite/docs/fortnite-logo.png
+[forum-shield]: https://img.shields.io/badge/community-forum-brightgreen.svg?style=for-the-badge
+[forum]: https://community.home-assistant.io/
+[license-shield]: https://img.shields.io/github/license/michaellunzer/Home-Assistant-Custom-Component-Fortnite.svg?style=for-the-badge
+[maintenance-shield]: https://img.shields.io/badge/maintainer-Michael%20Lunzer%20%40michaellunzer-blue.svg?style=for-the-badge
+[releases-shield]: https://img.shields.io/github/release/michaellunzer/Home-Assistant-Custom-Component-Fortnite.svg?style=for-the-badge
+[releases]: https://github.com/michaellunzer/Home-Assistant-Custom-Component-Fortnite/releases
+]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[Digital Picture Frame]]></title>
+      <link>https://michaellunzer.com/projects/digital-picture-frame</link>
+      <guid>https://michaellunzer.com/projects/digital-picture-frame</guid>
+      <pubDate>Sat, 05 Sep 2020 00:00:00 GMT</pubDate>
+      <description><![CDATA[This project is 14 years in the making. In 2006, I partially disassembled an old Windows XP laptop (that my Dad had retired when he upgraded) by rotating the display and folding it back over on top of the keyboard. The entire package was put into a shadow box.
+
+Now, I've revived the project after all these years by taking a old laptop display, added a display driver board, a chromecast, and neatly packaged it into the shadow box picture frame I bought in 2006.
+
+# Previously
+On the software side of things, I had Windows automatically download photos from flickr based on photos I uploaded and certain 'tags' that I follow. This was the Web 2.0 era, so I'm not sure they had #hashtags yet. The computer would set these pictures as the background and rotate through them every minute. 
+
+Also, I had desktop widgets that would show the weather and system resources. 
+
+There was another app which scheduled when the computer would turn on and turn off, so the light wouldn't light up the room at night.
+
+__Everything worked!__ *But....*
+
+1. One of the reasons my Dad retired the laptop is the bottom inch of display would sometimes turn a solid color until you tapped the screen or adjusted it. Basically, it was already broken, which is why I got the go-ahead to tear it apart. 
+2.  The laptop would run __HOT__ and there was no airflow inside the shadow box picture frame. It didn't help that I used Styrofoam to hold everything in place, further insulating the heat. Every now and then, the system would shut down automatically due to the heat.
+3.   The whole package was heavy. One time, the nail ripped out of the drywall and fell about 6 feet to the ground. It still worked but not a great situation 😅
+4.   The laptop didn't have built-in wifi, so I had to use the matching dock to plug in the PCIMCA wifi card for internet access. I think it was 802.11__b__ wifi, which is kinda slow by today's standards, but was enough to get online back then. 
+
+# Now 
+
+I had another old laptop that my sister had given to me after she upgraded to another laptop. I bought a display driver board on eBay and plugged in my first-generation Chromecast. Voilà - instant picture frame!
+
+Chromecasts have a cool feature that will pull pictures from a specific Google Photos album (along with the time and weather) when nothing is being casted to it. 
+
+> __Pro Tip:__ Search on eBay for "display driver board" and try and find a board that meets your criteria. I needed an HDMI Port and wanted to buy a power supply bundled with it. Some display driver boards have an IR remote to change the input. Lastly, you need to message the seller before you click "Buy It Now" and tell them the model number of your laptop display. This is because they have to flash the boards with a specific firmware which depends on the make/model of your LCD display.
+
+![Digital Picture Frame - eBay](//images.ctfassets.net/o4gibwve10tr/1uGoRed82V2rrmziokmfJx/252cc14f2308f6e4f54fce19d1870573/Screen_Shot_2020-09-05_at_11.05.24_PM.png)
+
+# Build Process:
+## Cut the Cardboard
+![Digital Picture Frame - Cut Cardboard](//images.ctfassets.net/o4gibwve10tr/5azCGc4Ilv8QnYUOcuB8Pq/17698aa35c7923b37233c1c210ba258d/IMG_3805.jpeg)
+
+## Measure (Best Effort)
+![Digital Picture Frame - Measure](//images.ctfassets.net/o4gibwve10tr/1rcL9SDMm6VzXvgK5Aa5kZ/6329ccaf5f5321b8759a66dec9005b19/IMG_3804.jpeg)
+
+## Center the Display
+![Digital Picture Frame - Center the Display](//images.ctfassets.net/o4gibwve10tr/tch9tw3xZmojW4G5d8DZ7/d53f2474e9f8c7aed45e47864fa61cf5/IMG_3806.jpeg)
+
+## Fit All the Components
+![Digital Picture Frame - Fit All the Components](//images.ctfassets.net/o4gibwve10tr/G6DejofTIUSPqeA6lnd0c/4b55d755aebe1475b11da18eabdbc2fb/IMG_3809.jpeg)
+
+## Tie a Knot to Prevent the Cable From Pulling the Chromecast Around in the Shadowbox 
+![Digital Picture Frame - Tie A Knot](//images.ctfassets.net/o4gibwve10tr/618y4qwEpPIQh6kYiLbUPh/da9a04ee2f5d008f4dc7bb75ab191b70/IMG_3810.jpeg)
+
+## Voilà!
+![Digital Picture Frame - Voilà](//images.ctfassets.net/o4gibwve10tr/24020BPFYxY2QiMvhyQRbm/6fae1d553c66b9b76552b66febdbf604/IMG_3812.jpeg)
+
+# Project Costs
+
+| __Item__                 | __Cost__ |
+|--------------------------|------|
+| Shadow Box Picture Frame (in 2006 dollars)| $25  |
+| Old Laptop Display       | Free |
+| Display Driver Board     | $25  |
+
+# Lessons Learned
+
+__There's no such thing as a free lunch:__ If I could do the project over again, I would've picked a different display. The one I used is a narrower image - if I had to guess, I think it's a 16:9 display.
+
+Also, it has poor viewing angles and inaccurate color. If I had to guess, it looks like a [TN panel](https://blogs.umass.edu/Techbytes/2016/04/04/tn-or-ips-monitors-whats-the-difference/). The laptop was already not working by the time I got ahold of it and the system couldn't POST. If you get a chance before you disassemble the display, try and see what the display looks like. I think a 4:3 display would have less margin on the top/bottom of the frame.
+
+# Finished Product
+
+![Digital Picture Frame - Cover 3](//images.ctfassets.net/o4gibwve10tr/ptRkMGVWO0LZD8USfwe9b/09405f3cf62fa37daf5c1bf49c21e223/Digital_Picture_Frame_-_Cover_3.jpeg)]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[My Digital Backup Strategy]]></title>
+      <link>https://michaellunzer.com/blogs/my-digital-backup-strategy</link>
+      <guid>https://michaellunzer.com/blogs/my-digital-backup-strategy</guid>
+      <pubDate>Thu, 27 Aug 2020 00:00:00 GMT</pubDate>
+      <description><![CDATA[It's August 2020, so it looks like the world is falling apart - COVID-19, [fires in california](https://www.nytimes.com/2020/08/20/us/ca-fires.html), [ice in Greenland melting and causing the rising ocean tides](https://www.nytimes.com/2020/08/20/climate/greenland-ice-loss-climate-change.html), [oiltanker spilled in the pristine waters off of Mauritius](https://www.msn.com/en-us/news/world/photos-tanker-oil-spill-catastrophe-in-mauritius/ar-BB18cRYp), and [Hurricane Laura](https://weather.com/storms/hurricane/news/2020-08-26-hurricane-laura-forecast-rapid-intensification-texas-louisiana) is bringing 150 mph winds and 15 foot floods to the . Hopefully you're reading this in the future and know that everything turned out alright. I was watching the local news and someone said they only had 30 seconds to get out of their house before the wildfire. This is why offsite backups are important!
+
+As our lives become more *digital*, our data becomes more valuable. Avoiding data loss and a long Time-to-Recovery (TTL) are paramount. 
+
+__[Experts](https://www.backblaze.com/blog/the-3-2-1-backup-strategy/) recommend a solid 3-2-1 backup strategy:__
+- 3 copies of your data
+- 2 local copies (on two different hard drives or mediums)
+- 1 offsite copy
+
+# Backup Overview
+
+![Backup-Strategy-Diagram v2](//images.ctfassets.net/o4gibwve10tr/358sNUkRTl3J8pu8Lnxs2Q/6c059b575057aa70876f74384f165ac8/Backup-Strategy-Diagram_v2__1_.png)
+
+# Windows 10 Desktop PC
+## Offsite Backup
+For my main Windows 10 Desktop PC, I use Backblaze. For $6/month, I can upload *unlimited* amounts of data. This is my main gaming machine, Plex server, and go-to for "heavy" workloads. 
+
+I use this PC as a "catch-all" for other devices to back up to, giving me an instant offsite backup for those other devices too.
+
+The best feature of Backblaze is the ability to physically mail a hard drive to you. In 2017, I was cleaning my PC and re-arranging some of the drives and accidentally broke of the SATA connector of my main data drive! The plastic must've become brittle and also I was using a weird right-angle with lock SATA cable connector that put some extra stress on the connector when taking it off. Notice in the picture below that the pins are floating unsupported by any plastic!!
+
+![HDD Broken SATA Connector](//images.ctfassets.net/o4gibwve10tr/6IQDQbci1YnSwZnOUZx1or/ee24a424dd7d76d4bf48342587eb746e/IMG_7591.JPG)
+
+Backblaze was quick to ship out a hard drive with all of my data, and I was able to copy it over to a new drive immediately. At the time, I had Sonic Internet as my ISP. They were only able to provide 35 mb/s down (that's mega*bits*, which is incredibly slow) -- Backblaze has an estimated amount of time it would take to restore based on your connection and it was something rediculous like 90 years. I'm glad they had the mail option. 
+
+__Pro tip:__ You have 30 days to return the drive or else you're responsible for the cost of the drive! 
+
+> Never underestimate the bandwidth of a station wagon full of tapes hurtling down the highway.
+> — Andrew S. Tanenbaum
+
+## Local Backup Hardware
+14TB USB Western Digital Easystore HDD. 
+
+## Software:
+
+Western Digital has backup software that backs up every file. What's great is you don't need any software to explore the file system, extract, or restore the files.
+
+I also use Veeam Backup to create a backup image of the boot drive. This helps lower the Time-to-Recovery because there is an always up-to-date copy to restore from.
+
+# Apple Devices
+
+## iCloud
+For $3/month (for 200gb), I have complete peace-of-mind that my iPhone backs up to iCloud every night when it's charging. Time-to-Recovery is extremely important to my for my phone. If I ever lose, break, or have my phone stolen, I know I can get another one and restore from yesterday's iCloud backup. For me, $3/month is well worth it.
+
+__Pro tip:__ go on slickdeals.net and set a deal alert for iTunes/App Store giftcards. Apple now allows you to use iTunes giftcards to purchase iCloud storage. On slickdeals, you can typically find them below their face value -- like $25 for $20. Congrats! You've just bought ~2 years of iCloud Storage. 
+
+## iPhone
+In addition to iCloud, I back up my phone periodically to my Windows 10 Desktop PC. 
+__Pro tip:__ if you encrypt the backups in iTunes, in the event of a iPhone restore, it will keep you logged in to all your apps and Safari Website
+
+## iPhone Photos
+__iCloud__: All Photos are uploaded here in original quality.
+__Google Photos__: All photos are uploaded here in "high quality". Google Photos has great searching ability. So I can type in "BMW car" and it allows me to quickly pull up a photo of that rare BMW I took a photo of a few years ago as the memory pops into my head.
+__NextCloud__: All photos are uploaded here in original quality. This is the self-hosted local version. I know where my data physically is and don't have to worry about Google/Apple harvesting the information. Eventually the goal is to remove one of the cloud providers listed above to keep everything simple.
+
+## Macbook Pro
+This gets backed up to a Time Machine share hosted on VM on my proxmox Server. My MBP has a 1TB SSD, so I just pass through the whole 1TB USB disk drive... 1TB SSD ==> 1TB HDD.
+
+# Homelab Servers
+
+## OpenMediaVault5 NAS
+
+I've passed through a USB port to a dedicated 1TB drive directly to an instance running OpenMediaVault. OMV makes it easy to format the disk, setup the share, and create a reliable system. Remember -- when it comes to your data, you want something easy, reliable, and resilient. 
+
+This is WAY easier than setting up a vanilla debian instance with the right version of Samba, making sure that it is configured to advertise itself as a TimeMachine on the network, etc. 
+
+## NextCloud - iPhone Local Photo Backup
+NextCloud is running on Docker (hosted on the OMV5 VM) and saving the data to my 1TB SSD. This enables me to save photos locally. 
+
+## Home-Assistant VM
+### Snapshots to GDrive
+I use [this add-on](https://github.com/sabeechen/hassio-google-drive-backup) to schedule, create, and upload nightly snapshots of my Home-Assistant Instance. Additionally, I also create manual snapshots in Proxmox before every upgrade, so I can quickly roll back a change in the event that something is broken and I just want the old system to work in the meantime until I have some time to troubleshoot the issue.
+]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>blog</category>
+    </item>
+    <item>
+      <title><![CDATA[Markdown vs Rich Text & the Contentful Data Model]]></title>
+      <link>https://michaellunzer.com/blogs/markdown-vs-rich-text-and-the-contentful-data-model</link>
+      <guid>https://michaellunzer.com/blogs/markdown-vs-rich-text-and-the-contentful-data-model</guid>
+      <pubDate>Thu, 13 Aug 2020 00:00:00 GMT</pubDate>
+      <description><![CDATA[# TL;DR: 
+## ... Use Markdown
+
+---
+
+When I first started building this website, I spent some time reasearching the best tools to make the site. 
+
+I decided on:
+- GatsbyJS as a React Framework to build the site
+- Contentful as a "Headless" CMS
+
+Gatsby takes the content from Contenftul, builds the website, and creates "flat" html webpages. In this build process, you need to decide to use Markdown or Rich Text in the CMS. I saw a few things online, but it seemed like there were options for both.
+
+### __Reasons to use Rich Text:__
+If you have a team of content creators or editors, Rich text is nice because what you see is what you get (WYSIWYG).
+
+### __Reasons not to use Rich Text:__
+Handling images, iframes, YouTube videos, tweets, code blocks, and other types of embedded content can be difficult -- not impossible, but still more work than markdown. Basically, you need to add a custom renderer for each type of content. 
+
+### __Here is an example for rendering an image in Rich Text:__
+
+```js
+export default class workPost extends Component {
+  render() {
+    const data = this.props.data.contentfulWorks;
+    const options = {
+      renderNode: {
+          "embedded-asset-block": (node) => {
+              const alt = node.data.target.fields.title['en-US']
+              const url = node.data.target.fields.file['en-US'].url
+              return <img alt={alt} src={url} />
+          }
+      }
+  };  
+```
+
+I started building out a way to render an iframe and had a feeling that there must be a better way to do this. I did some more research and found the gatsby plugin [embedded-remark-embedder](https://github.com/MichaelDeBoey/gatsby-remark-embedder), added it to my ```gatsby-config.js``` file by adding the code below, and off I went.
+
+```js
+          {
+            resolve: `gatsby-remark-embedder`,
+            options: {
+              customTransformers: [
+                // Your custom transformers
+              ],
+              services: {
+                // The service-specific options by the name of the service
+              },
+            },
+          }
+```
+
+## __Reasons to use Markdown__
+- it's straightforward to learn
+- it's easy to render embedded content. Just insert it into the markdown field and you're usually good to go.
+- you can write HTML in the content and it will be passed along
+
+
+## __Reasons not to use Markdown__
+- it looks "weird" - not WYSIWYG
+- editing a large table can get out of control quickly
+
+
+Overall, markdown has been an easier experience even if it looks weird while editing the content.
+
+# __Okay, but what about Contentful?__
+
+So after coming up to speed with Contentful, I learned about the "Content Model". Basically, this is like a database schema with each column datatype defined.
+
+### __Here's what it looks like:__
+![Contentful Data Model](//images.ctfassets.net/o4gibwve10tr/4VY3TsN0hJZsa6FymReGfR/f3e33ca45d4cd63ac2e97d3d86e05a40/Screen_Shot_2020-08-13_at_7.36.08_PM.png)
+
+
+### __Title:__
+This is just a title. Short text has a limit to the number of characters.
+
+### __Slug:__
+Short text is the data type. A slug is basically a primary key and a unique identifier for that piece of content. It is required as it will probably be part of the URL.
+
+### __Feature Image:__
+This is a Media data type. Self explanatory
+
+### __Description:__
+This is a long text field and you can specify to use it as Markdown field, a defined dropdown list, or radio buttons. 
+
+On my bucket list page, I felt pretty clever using a radio button to set the green/red frame around each item (if I've accomplished it or not). This was used to create a true/false CSS Class using the following method:
+
+```js
+<div className={"accomplished" + data.allContentfulBucketList.edges[this.state.selectedItem].node.accomplished}>
+```
+]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>blog</category>
+    </item>
+    <item>
+      <title><![CDATA[2020 Pandemic TP Analysis]]></title>
+      <link>https://michaellunzer.com/blogs/2020-pandemic-tp-analysis</link>
+      <guid>https://michaellunzer.com/blogs/2020-pandemic-tp-analysis</guid>
+      <pubDate>Wed, 12 Aug 2020 00:00:00 GMT</pubDate>
+      <description><![CDATA[In March of 2020, the world came to a screeching halt due to COVID-19 and everyone had an "oh *shit*" moment. Many people's first reaction to this was to prepare for the absolute worst and stockpile resources, including Toilet Paper (TP). 
+
+There were videos posted online of people from all around the world fighting for TP -- here's one:
+
+https://www.youtube.com/watch?v=Y1nEnOmC6IQ
+
+Fortunately, I didn't have an immediate need for any, as I had just bought a 30 pack before the pandemic. Unfortunately, I was unable to find any in stock, and was concerned that there would be a day that I would need to replenish my inventory.
+
+I thought back to my days working in Supply Chain and remembered a framed quote that was above one of the manager's desk:
+
+## *"If it can be measured, it can be improved"*
+
+So, I decided to *get down to business* and *create a log*.
+
+After gathering the data, I needed to graph it:
+
+![Quarantine 2020 TP Consumption](//images.ctfassets.net/o4gibwve10tr/JI3liX7pnBU1DCW7O4D39/525df93a1b3ffc4b6df95b18f4fdb824/Quarentine_2020_TP_Consumption.png)
+
+If you just calculate the difference between the dates of each roll (how long each roll lasted) you get an average of __4.96 days__. 
+
+There are a bunch of other ways to [calculate safety stock](https://abcsupplychain.com/en/safety-stock-formula-calculation/), *butt* I'm not sure we need to invest that much thought into it. 
+
+There are a number of contributing factors impacting the average lifespan of a TP roll like:
+- number of users
+- what brand (and therefore size of roll)
+- amount of time spending at the house
+- if you're lactose intolerant
+
+Anyways, that's a huge *dump* of information and probably more than enough for a while! It just made me feel better knowing that how many days of TP I had available. Now, I can count how many rolls I have, do some back of the napkin calculations and multiply that by 5 to quickly figure out how many days I can without buying more inventory. 
+
+For example, 26 rolls x 5 = 130 days. Ask yourself, "will I be able to buy TP in the next 130 days?" -- I'm sure knowing that will be *a huge relief*! ]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>blog</category>
+    </item>
+    <item>
+      <title><![CDATA[New Portfolio Website built on a JAMstack Architecture]]></title>
+      <link>https://michaellunzer.com/blogs/new-website</link>
+      <guid>https://michaellunzer.com/blogs/new-website</guid>
+      <pubDate>Sat, 25 Jul 2020 00:00:00 GMT</pubDate>
+      <description><![CDATA[Since April 2020, I've had a *bit* of free time. So, I decided this was a great time to rebuild my personal website from pure HTML to a JAMstack based website. After spending a few days evaluating the options and decided on building a JAMstack based website. 
+
+### Priorities:
+1. No cost -- I didn't want to have a wordpress install on a VPS
+2. I wanted to brush up on my web development skills and learn ReactJS
+3. I wanted it easy to maintain in the future with a CMS
+
+![JAMstack Ecosystem](//images.ctfassets.net/o4gibwve10tr/KguP0d5aaLRUAHGmvrs1y/b9872b419a3ee44c94cc68f4eed0e1a1/1_TdRFV0LAG7TG3US2YJMALA.jpeg)
+
+There's quite a few articles that explain the benefits of a JAMstack but here's a few that helped clarify things for me:
+- https://www.netlify.com/jamstack/
+- https://www.learnwithjason.dev/blog/wtf-is-jamstack/
+
+It took about 3 weeks from the start to finish for the project to go-live in in production. There are a few things I need to fix (like adding more blog posts) but that will come with time.]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>blog</category>
+    </item>
+    <item>
+      <title><![CDATA[ESPHome iPod Dock IR Remote]]></title>
+      <link>https://michaellunzer.com/projects/esphome-ipod-dock-ir-remote</link>
+      <guid>https://michaellunzer.com/projects/esphome-ipod-dock-ir-remote</guid>
+      <pubDate>Sat, 20 Jun 2020 00:00:00 GMT</pubDate>
+      <description><![CDATA[Apple IR Remote (A1156) to control an iPod Dock
+===============================================
+
+In this example I have used a Wemos D1 Mini and an infrared shield to control an iPod dock from Home Assistant. Comment below if you still use your iPod in 2020!!!
+
+I enjoy listening to [Soulection Radio](https://soundcloud.com/soulection) on my iPod as background music while I work. Each show is two hours, so it's nice to not think about what songs to play next like on Spotify and also automate things with Home Assistant that don't have an internet connection, like an iPod.
+
+I've added this to the cookbook because the iPod remote codes were getting hard to find and wanted to document this use-case for others to enjoy.
+
+[I've created a pull-request](https://github.com/esphome/esphome-docs/pull/652) for the ESPHome.io documentation, so hopefully this will get added to the [cookbook](https://esphome.io/#cookbook) soon!
+
+This is the Apple White Remote model A1156 that we are replacing:
+-----------------------------------------------------------------
+
+![iPod White Remote](https://images.ctfassets.net/o4gibwve10tr/2S6IDbbMTKKgGCkHK9e8S3/0760b1c40ed6eea96815adfe02a66e14/18ba528da727206688077e8681f8380658f4951b.jpeg)
+
+Hardware configuration
+----------------------
+
+Hardware is easy! Just solder the shield or wire up a IR transmitter LED using the Wemos D1 mini pins below:
+
+Only four connections are needed:
+
+- __VCC__ - Power
+
+- __GND__ - Ground
+
+- __D3__ - GPIO for Receiver
+
+- __D4__ - GPIO for Transmitter
+
+Hardware Procurement
+--------------------
+
+I bought the Wemos D1 Mini IR Shield by searching on Aliexpress and eBay for <$4 USD. I couldn't find any links on Amazon but I'm sure it's always changing.
+
+Software Configuration
+----------------------
+
+We are emulating a 6 button remote so the configuration is simple:
+
+Dumping Other IR Codes
+----------------------
+
+This is only required if you want to add other codes for other remotes.
+
+```yaml 
+remote_receiver:
+  pin: D4
+  dump: all
+```
+
+The Configuration
+-----------------
+```yaml
+remote_transmitter:
+  pin: D3
+  # Infrared remotes use a 50% carrier signal
+  carrier_duty_percent: 50%
+  
+switch:
+  - platform: template
+    name: Apple Remote Volume Up Button
+    turn_on_action:
+      - remote_transmitter.transmit_nec:
+          address: 0x77E1
+          command: 0xD04E
+  - platform: template
+    name: Apple Remote Volume Down Button
+    turn_on_action:
+      - remote_transmitter.transmit_nec:
+          address: 0x77E1
+          command: 0xB04E
+  - platform: template
+    name: Apple Remote Previous Button
+    turn_on_action:
+      - remote_transmitter.transmit_nec:
+          address: 0x77E1
+          command: 0x104E
+  - platform: template
+    name: Apple Remote Next Button
+    turn_on_action:
+      - remote_transmitter.transmit_nec:
+          address: 0x77E1
+          command: 0xE04E
+  - platform: template
+    name: Apple Remote Play/Pause Button
+    turn_on_action:
+      - remote_transmitter.transmit_nec:
+          address: 0x77E1
+          command: 0x2000
+          # address: 0x77E1
+          # command: 0xBA4E
+  - platform: template
+    name: Apple Remote Menu Button
+    turn_on_action:
+      - remote_transmitter.transmit_nec:
+          address: 0x77E1
+          command: 0x404E
+```
+
+Fast Forward and Rewind
+-----------------------
+
+Fast Forward and Rewind (by holding the Next/Previous buttons on the remote) aren't available in this configuration yet but maybe someone can add it by adding in a button press duration.
+
+Lovelace Button Card Configuration
+----------------------------------
+
+![Lovelace iPod IR Remote Card](https://images.ctfassets.net/o4gibwve10tr/2M5IJtQJ8nMUZzOaoJ4Ldq/8452ac64c43a1d0bbddcbff8caf99daa/edfbda4a47b65b051e7454bb286d1e9ba83d26b8.png)
+
+PS: the Menu button doesn't do anything to the iPod when it's playing music but it might for a Mac or if you were for some reason watching a video off of your iPod. It's just added here for symmetry but might be useful for others who have an appleTV or old Mac with an IR port.
+
+```yaml 
+cards:
+  - cards:
+      - action: toggle
+        color: 'rgb(253,216,53)'
+        color_off: 'rgb(68,115,158)'
+        entity: switch.apple_remote_previous_button
+        icon: 'mdi:skip-previous'
+        name: Previous
+        show_state: false
+        size: 80%
+        type: 'custom:button-card'
+      - action: toggle
+        color: 'rgb(253,216,53)'
+        color_off: 'rgb(68,115,158)'
+        entity: switch.apple_remote_play_pause_button
+        icon: 'mdi:play-pause'
+        name: Play/Pause
+        show_state: false
+        size: 80%
+        type: 'custom:button-card'
+      - action: toggle
+        color: 'rgb(253,216,53)'
+        color_off: 'rgb(68,115,158)'
+        entity: switch.apple_remote_next_button
+        icon: 'mdi:skip-next'
+        name: Next
+        show_state: false
+        size: 80%
+        type: 'custom:button-card'
+    type: horizontal-stack
+  - cards:
+      - action: toggle
+        color: 'rgb(253,216,53)'
+        color_off: 'rgb(68,115,158)'
+        entity: switch.apple_remote_volume_down_button
+        icon: 'mdi:minus'
+        name: Volume Down
+        show_state: false
+        size: 80%
+        type: 'custom:button-card'
+      - action: toggle
+        color: 'rgb(253,216,53)'
+        color_off: 'rgb(68,115,158)'
+        entity: switch.apple_remote_menu_button
+        icon: 'mdi:dots-horizontal-circle-outline'
+        name: Menu
+        show_state: false
+        size: 80%
+        type: 'custom:button-card'
+      - action: toggle
+        color: 'rgb(253,216,53)'
+        color_off: 'rgb(68,115,158)'
+        entity: switch.apple_remote_volume_up_button
+        icon: 'mdi:plus'
+        name: Volume Up
+        show_state: false
+        size: 80%
+        type: 'custom:button-card'
+    type: horizontal-stack
+title: iPod IR Remote
+type: vertical-stack
+```
+
+Sources of IR Codes
+-------------------
+
+https://github.com/brackendawson/Appleceiver/blob/357a0a16013d9e35f1119530399aba55b7030bab/Appleceiver.ino
+
+https://github.com/anton-semeniak/Esphome-TTGO-T-Display-Remote/blob/1fc4c736232d157e59fa6d84e27e8c18915b4b61/ttgo_menu.yaml
+]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[ESPHome Stereo]]></title>
+      <link>https://michaellunzer.com/projects/esphome-stereo</link>
+      <guid>https://michaellunzer.com/projects/esphome-stereo</guid>
+      <pubDate>Sat, 20 Jul 2019 00:00:00 GMT</pubDate>
+      <description><![CDATA[## Finished Product:
+
+
+![ESPHome Stereo Finished](//images.ctfassets.net/o4gibwve10tr/15P2hiQ2pXnQg78cZKihg3/a64bfb9276979298c832492874032f0a/EC114CA5-49E1-4EAF-8628-F203BD1B8599_1_105_c.jpeg)
+
+## Background
+
+My Dad is really into stereos and he's an engineer, so naturally he passed his love and appreciation for music and electronics down to me. We've attended [Burning Amp](http://www.burningamp.org/) from 2016 - 2019 together and after the event is usually the beginning of a new project. If you've never been before, it's a giant show-and-tell and they have a big parts lottery at the show where people donate extra components from their projects. Often times, you get one piece (like a PCB for an amplifier) that sparks the idea to build a new amplifier.
+
+## Pass Labs Amp Camp Amp
+
+In 2018, we picked up the Pass Labs "Amp Camp Amp" PCB. This was designed by Nelson Pass and made for people to assemble during a one-day Amp Camp. Here's a quick picture of the PCB populated with all the components and completing a successful "spark test". The first time you add electricity to the project is often called that because you'll *quickly* find out if you assembled everything correctly. In this situation, the green LED turned on and there weren't any issues.
+
+![ESPHome Stereo Spark Test](//images.ctfassets.net/o4gibwve10tr/5brSndJeprLYGE8mS5Irgg/032dbed005592affd8fca918d1b54b13/Screen_Shot_2020-07-23_at_11.24.39_PM.png)
+
+Putting the Amp together and soldering the components wasn't extremely difficult -- that's not the main point of this post. If you're looking for a video with all the details, check out this video from Patrick Norton over at TekThing:
+
+## TekThing Amp Camp Amp Build
+https://www.youtube.com/embed/watch?v=RjqJeF34adk
+
+The next step was to assemble the case.
+
+## So what?
+
+The part of the project that I want to highlight and what makes unique is I added an esp8266 microprocessor running ESPHome. With this, I can control a relay (and therefore the stereo) as well as the LEDs with Home-Assistant. I also changed the switch to a relay button with a green LED.
+
+![ESPHome Stereo Green LED Button](//images.ctfassets.net/o4gibwve10tr/46zaEJcicZLcxx2e7WIOh2/9a642798a78e28a1486b24ef95e59adb/IMG_6909.JPG)
+
+These amplifiers give off a lot of heat, so I can add automations like "turn off the amplifier when I'm not home" or "turn off the LEDs if I'm listening to music in a dark room and later turn off the amplifier after I fall asleep". An additional feature I added was a temperature sensor, because I was really curious about how hot the stereo gets and thought it'd be interesting to keep track of in a database.
+
+![ESPHome Stereo Home Assistant Dashboard](//images.ctfassets.net/o4gibwve10tr/5jrQ5rHyE1IYYrI3bvqkop/84652112acff50b435e4a12303c9caff/Screen_Shot_2020-07-24_at_2.19.27_PM.png)
+
+Here's a picture of the insides. Unfortunately, I don't have a schematic available at the moment.
+
+
+![ESPHome Stereo Top Off](//images.ctfassets.net/o4gibwve10tr/303tFCvCkP1mXXVQlfAonB/f9bbb8d05b75b2d9b31afb9fd8b55e39/FCB165F5-0601-4D3E-90B7-35252D10B0B8_1_105_c.jpg)
+
+![ESPHome Stereo PCB 1](//images.ctfassets.net/o4gibwve10tr/OeZPnUwbGs6qWeGgoKhQf/ec54abdfa0929bf1cbd8923391b577d5/2A61AE1C-C993-408C-8BF2-A55970346744_1_105_c.jpeg)
+
+![ESPHome Stereo PCB 2](//images.ctfassets.net/o4gibwve10tr/7sHbl1dVOmbNx9jq2kv5Ab/fcc8ccbf8e479934aec87de628e90afc/DC70411F-FAF1-44E9-88A3-DF69BBE2F3CD_1_105_c.jpeg)
+
+## ESPHome YAML Config
+
+```yaml
+esphome:
+  name: stereo
+  platform: ESP8266
+  board: nodemcuv2
+wifi:
+  ssid: "Network_SSID"
+  password: "wifi_password"
+# Enable logging
+logger:
+# Enable Home Assistant API
+api:
+ota:
+light:
+  # ... and then make a light out of it.
+  - platform: monochromatic
+    name: "Stereo Power Button LED"
+    output: green_led_power
+    id: light_green_led_power
+  - platform: monochromatic
+    name: "Stereo Left LED"
+    output: green_led_left
+    id: light_green_led_left
+  - platform: monochromatic
+    name: "Stereo Right LED"
+    output: green_led_right
+    id: light_green_led_right
+output:
+  # Register the green LED as a dimmable output ....
+  - platform: esp8266_pwm
+    id: green_led_power
+    pin: D1
+    # inverted: True
+  # Register the green LED as a dimmable output ....
+  - platform: esp8266_pwm
+    id: green_led_left
+    pin: D5
+    # inverted: True
+  # Register the green LED as a dimmable output ....
+  - platform: esp8266_pwm
+    id: green_led_right
+    pin: D6
+    # inverted: True
+switch:
+  - platform: gpio
+    name: "Stereo Relay"
+    id: relay1
+    pin: 
+      number: D3
+      inverted: yes
+    on_turn_on:
+      then: 
+        - light.turn_on: light_green_led_power
+        - light.turn_on: light_green_led_left
+        - light.turn_on: light_green_led_right
+        # - binary_sensor.turn_on: id_relay1_binary
+    on_turn_off:
+      then:
+        - light.turn_off: light_green_led_power
+        - light.turn_off: light_green_led_left
+        - light.turn_off: light_green_led_right
+        # - binary_sensor.turn_off: id_relay1_binary
+# This is the front button on the stereo amplifier. pressing it should turn the relay on/off
+binary_sensor:
+  - platform: gpio
+    pin: 
+      number: D2
+      mode: INPUT_PULLUP
+    filters:
+      - delayed_on: 100ms
+      - delayed_off: 100ms
+    name: "Stereo Power Button"
+    id: id_relay1_binary
+    on_press:
+      then:
+        - switch.toggle: relay1
+sensor:
+  - platform: dht
+    pin: D0
+    temperature:
+      name: "Stereo Amp Temperature"
+    humidity:
+      name: "Stereo Amp Humidity"
+    model: AM2302
+```
+
+## Bonus Burning Amp Video
+https://www.youtube.com/embed/watch?v=VEinkCKq7Xw
+
+
+]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[ESPHome Spotify OLED Display]]></title>
+      <link>https://michaellunzer.com/projects/esphome-spotify-oled-display</link>
+      <guid>https://michaellunzer.com/projects/esphome-spotify-oled-display</guid>
+      <pubDate>Mon, 08 Jul 2019 00:00:00 GMT</pubDate>
+      <description><![CDATA[Background
+==========
+
+I've created an OLED Display that cycles through the time, what's playing on Spotify, and the current temperature based on other ESP8266 sensors in the room. All of this is possible with [ESPHome](https://esphome.io/) to program the ESP8266 microcontroller (in this case a [Wemos D1 Mini](https://amzn.to/30qNZJk)) connected to [Home-Assistant](https://www.home-assistant.io/).
+
+I later added a feature to make the screen turn blank when a switch on the Home-Assistant Dashboard is flipped, so the screen wouldn't illuminate my room at night. Please check the code for the Template Switch at the bottom.
+
+Instructions
+============
+
+-   upload the **.tff** fonts like **arial.tff** and the others into the ***esphome*** directory on your Home-Assistant instance.
+
+    -   they can be pulled from your windows font directory or downloaded from the internet.
+
+-   create **sensor.spotify_song** and **sensor.spotify_artist** sensors using this yaml and your already configured [spotify media player integration](https://www.home-assistant.io/components/spotify/).
+
+Spotify Sensor YAML Code:
+-------------------------
+
+```yaml
+spotify_song:
+  friendly_name: "Spotify Song"
+  value_template: "{{ state_attr('media_player.spotify', 'media_title') }}"
+```
+
+```yaml
+spotify_artist:
+  friendly_name: "Spotify Artist"
+  value_template: "{{ state_attr('media_player.spotify', 'media_artist') }}"
+```
+
+### ESPHome YAML Code
+
+```yaml
+wifi:
+  ssid: "wifi_network"
+  password: "wifi_password"
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "OLED Display01 Fallback Hotspot"
+    password: "password"
+captive_portal:
+# Enable logging
+logger:
+# Enable Home Assistant API
+api:
+ota:
+time:
+  - platform: homeassistant
+    id: time1
+text_sensor:
+  - platform: homeassistant
+    id: spotify_song
+    entity_id: sensor.spotify_song
+    internal: true
+ 
+  - platform: homeassistant
+    id: spotify_artist
+    entity_id: sensor.spotify_artist
+    internal: true
+   
+sensor:
+### temp sensors
+  - platform: homeassistant
+    id: room_temperature
+    entity_id: sensor.sn1_temperature
+    internal: true
+  - platform: homeassistant
+    id: stereo_temperature
+    entity_id: sensor.stereo_amp_temperature
+    internal: true
+ 
+switch:
+  - platform: template
+    name: "OLED_Display01 Screen"
+    id: oled_display01_dnd
+    optimistic: True
+    # inverted: True
+    on_turn_on:
+      - logger.log: "Switch Turned On!"
+      # - delay: 2s
+      - display.page.show: page4
+      # - delay: 2s
+      - component.update: my_display
+font:
+  - file: 'arial.ttf' #'slkscr.ttf'
+    id: font1
+    size: 12
+ 
+  - file: 'BebasNeue-Regular.ttf'
+    id: font2
+    size: 48
+ 
+  - file: 'arial.ttf'
+    id: font3
+    size: 18
+   
+  - file: 'arialbd.ttf'
+    id: font4
+    size: 14
+   
+  - file: 'arial.ttf'
+    id: font5
+    size: 20
+ 
+i2c:
+  # sda: D1
+  # scl: D2
+  # scan: False
+  # swap for Wemos D1 Mini
+  sda: D2
+  scl: D1
+  scan: False
+ 
+display:
+  - platform: ssd1306_i2c
+    model: "SSD1306 128x64"
+    reset_pin: D0
+    address: 0x3C
+    id: my_display
+    pages:
+      - id: page1
+        lambda: |-
+          // Print time in HH:MM format
+          it.strftime(0, 60, id(font2), TextAlign::BASELINE_LEFT, "%l:%M", id(time1).now());
+          // Print AM/PM
+          it.strftime(127, 60, id(font5), TextAlign::BASELINE_RIGHT, "%P", id(time1).now());
+      - id: page2
+        lambda: |-
+          // it.print(0, 10, id(font1), "This is page 2!");
+          // Print "Spotify Song" in top center.
+          if (id(spotify_artist).has_state()) {
+            it.printf(0, 8, id(font5), TextAlign::TOP_LEFT, "%s", id(spotify_artist).state.c_str());
+          }
+          if (id(spotify_song).has_state()) {
+            it.printf(0, 55, id(font5), TextAlign::BASELINE_LEFT, "%s", id(spotify_song).state.c_str());
+          }
+      - id: page3
+        lambda: |-
+          // it.print(0, 10, id(font1), "This is page 3!");
+          // Print room temperature (from homeassistant sensor)
+          if (id(room_temperature).has_state()) {
+            it.printf(0, 15, id(font5), TextAlign::TOP_LEFT, "Room: %.1f°", id(room_temperature).state);
+          }
+          // Print stereo temperature (from homeassistant sensor)
+          if (id(stereo_temperature).has_state()) {
+            it.printf(0, 60, id(font5), TextAlign::BASELINE_LEFT, "Stereo: %.1f°", id(stereo_temperature).state);
+          }
+      - id: page4
+        lambda: |-
+          it.print(0, 10, id(font1), "");
+ 
+interval:
+  - interval: 3s
+    then:
+      if:
+        condition:
+          lambda: return !id(oled_display01_dnd).state;
+        then:
+          - display.page.show: !lambda |-
+              static int pagenum = 0;
+              static display::DisplayPage* pages[] = {id(page1), id(page2), id(page3)};
+              auto page = pages[pagenum++];
+              if (pagenum >= 3)
+                pagenum = 0;
+              return page;
+          - component.update: my_display
+```
+
+### Template Sensor
+
+This template sensor inverses the ESPHome Switch. I couldn't find a way to invert it natively in ESPHome, so I went this route. Please let me know if you've figured out a better way!
+
+```yaml
+### template switch to reverse the oled_display01 switch
+  - platform: template
+    switches:
+      oled_display01_inverted:
+        friendly_name: "OLED Display"
+        value_template: "{{ is_state('switch.oled_display01_screen', 'off') }}"
+        turn_on:
+          service: switch.turn_off
+          data:
+            entity_id: switch.oled_display01_screen
+        turn_off:
+          service: switch.turn_on
+          data:
+            entity_id: switch.oled_display01_screen
+        icon_template: "{% if is_state('switch.oled_display01_screen', 'on') %}mdi:flash-outline{% else %}mdi:flash{% endif %}"
+```
+
+### Final Product
+
+
+![ESPHome OLED Display - Temperature](//images.ctfassets.net/o4gibwve10tr/1JpyQhlA3m5hPsj6JX4tj7/744137bc901738f373ca9a53d8f95ebb/IMG_3382.jpg)
+
+![ESPHome OLED Display - Spotify](//images.ctfassets.net/o4gibwve10tr/2OpQhH13GK0tMQ9U0Qnu7i/e6073675434e247e70ac3530b0e22302/IMG_3381.jpg)
+]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[LunzPi Alarm Clock]]></title>
+      <link>https://michaellunzer.com/projects/lunzpi</link>
+      <guid>https://michaellunzer.com/projects/lunzpi</guid>
+      <pubDate>Sun, 04 Jun 2017 00:00:00 GMT</pubDate>
+      <description><![CDATA[Finished Product First:
+=======================
+
+![lunzpi finished](//images.ctfassets.net/o4gibwve10tr/Za8idzU6YuLzvWA5W4gjH/469e6183f2187a628908a7ad40baa1f4/lunzpi_finished.jpg)
+
+
+LunzPi Alarm Clock in Action
+============================
+
+Here is a quick video of everything working before I built the case
+
+<div class="iframe-container">
+
+https://www.youtube.com/embed/watch?v=hTHq2mPqIF0
+  
+</div>
+
+<br>
+
+
+LunzPi: Raspberry Pi Alarm Clock
+--------------------------------
+
+**Story**:
+
+Have you ever thought about something for TWO and a half years? I mean, there were some breaks in there. I had other things in life come up, career goals to focus on, and even moved states! But, from the first idea to the last bit of glue drying on this project... it's been on my mind. Some technological advances greatly helped me finish this project. It was really nice going from a Raspberry Pi B+ to the Pi 2 and enjoying the speed boost!
+
+What started as a quick sketch to one of my coworkers became a two and a half year journey. I've learned a lot of new skills that I would not have pursued if it was not for this project like:
+
+-   becoming a lot better at coding in python
+
+-   problem solving
+
+-   Creating CAD Designs
+
+-   using a table saw and other woodworking tools for complex joinery
+
+-   using a bench grinder
+
+-   project management and prioritization
+
+
+![lunzpi sketch](//images.ctfassets.net/o4gibwve10tr/4STqyaUkLiW3yIBzgsISzN/c444c7fd181f114345aca79e9b95cae3/lunzpi_sketch.jpg)
+
+
+
+**Objective**: Create an alarm clock which gets me out of bed as pleasantly as possible. LunzPi
+
+**Requirements**:
+
+-   Wake up to a Spotify playlist
+
+-   This way, I can edit the playlist on my phone or computer anywhere in the world -- not relying on FTPing local files and connections to the Pi
+
+-   Set the alarm from a webpage
+
+-   Screen is viewable from across the room
+
+-   Ideally, I can use the bright LEDs as a sunrise alarm clock (gradually increasing brightness)
+
+Enclosure 3D Model:
+-------------------
+
+<div class="iframe-container">
+
+<iframe title="Enclosure 3D Model" src="https://myhub.autodesk360.com/ue29cdd69/shares/public/SHabee1QT1a327cf2b7a48e7b8a78632b6d8?mode=embed" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+  
+</div>
+
+
+
+Fusion 360 CAD Models:
+======================
+
+Here are a few models created using AutoDesk Fusion 360
+
+
+![lunzpi model](//images.ctfassets.net/o4gibwve10tr/1W9GX21OUIKmpLCkQoRGM7/51be5b0368f9e1c7194e070e78e6a5bd/lunzpi_model.png)
+
+![lunzpi 1](//images.ctfassets.net/o4gibwve10tr/4z9SsmI2SiOeK0iGPXgxx6/77d84dc2eef88fbc0d6ad1f89066bc84/lunzpi_1.jpg)
+
+![LunzPi-Front-no-buttons](//images.ctfassets.net/o4gibwve10tr/1C6j1Z6tEQhsKvrALOrtVr/fe18a0352f204be8c0d53652024bc81b/LunzPi-Front-no-buttons.png)
+
+![LunzPi-Front-no-right-wall-no-buttons](//images.ctfassets.net/o4gibwve10tr/4y4MFKDdfmDifoi4genucZ/494b45f7bf7297a765e852399df6d495/LunzPi-Front-no-right-wall-no-buttons.png)
+
+![shelf-in-action-1](//images.ctfassets.net/o4gibwve10tr/5Kfqx1v1loBL1rS6Je0Q3S/ecdca74f4f31c1579dc9568043845f44/shelf-in-action-1.png)
+
+![shelf-in-action-2](//images.ctfassets.net/o4gibwve10tr/3egnpdO5w8iRh0sotrja4x/ff6f9dae6275a1561a81b258c3b3fd4f/shelf-in-action-2.png)
+
+Work In progress:
+=================
+
+Here are photos of the initial stages of the project.
+
+![lunzpi 2](//images.ctfassets.net/o4gibwve10tr/6RPgP0g7qEa4kgOje3fElk/0b96b76da4d7be586579228641e76c02/lunzpi_2.jpg)
+
+![lunzpi adafruit](//images.ctfassets.net/o4gibwve10tr/32ltbFwF4AU4oXgFFv2YOM/7ae58d39a39ba31200e9345ebc01bfef/lunzpi_adafruit.jpg)
+
+![lunzpi fritzing](//images.ctfassets.net/o4gibwve10tr/1YgzDUaEEwlnL9mLAwrpLE/796472828d85349a0ded5fdde5f84adf/lunzpi_fritzing.png)
+
+I used fritzing to map out the connections between the Pi Hat, the GPIO expander, Photocell (to control the dimming), and the touch capacitive buttons.
+
+![lunzpi circuit](//images.ctfassets.net/o4gibwve10tr/5gAzK4wbCIiLUbosK5Z7Sj/71224dfb579167f1c978c518093bdd45/lunzpi_circuit.jpg)
+
+Things aren't always as neat in real life.
+
+![lunzpi face1](//images.ctfassets.net/o4gibwve10tr/21Z6YinUd7pPGa3oaL8EkN/db6a31fab6db891a205f9660855ef7e1/lunzpi_face1.jpg)
+
+This was an experimental display -- extremely bright!!
+
+![lunzpi face2](//images.ctfassets.net/o4gibwve10tr/2fo6ps3nk43bNTX3Yqr5eh/0c6d6cbeeaa6ff48970f19ef0c4fc393/lunzpi_face2.jpg)
+
+This one displayed the weather (by drawing clouds) and the temperature.
+
+![lunzpi face3](//images.ctfassets.net/o4gibwve10tr/6P4YkqC1QgGrNeY6AST9Ti/be9173c924e32957d527e51d00ab16bc/lunzpi_face3.jpg)
+
+It rains a lot in Portland, Oregon.
+
+![lunzpi holes](//images.ctfassets.net/o4gibwve10tr/17WsOLHRaTyu19dCrSlysV/7e14dae15a6d6e841837c3378e33d086/lunzpi_holes.jpg)
+
+There were some initial miscalculations when aligning the holes to the ones in the copper. I improved tremendously as I went on.
+
+![lunzpi dryfit1](//images.ctfassets.net/o4gibwve10tr/1lHI7txuDeG9vxGUzTzfWm/324756962437ca62eec73ea36dcdf7e9/lunzpi_dryfit1.jpg)
+
+I did a "dry fit" of the case to make sure everything fit before applying the glue.
+
+![lunzpi dryfit2](//images.ctfassets.net/o4gibwve10tr/2CIE8rQ6t7fVEjnFDNiXbY/c8dce304f4845d099be6355e9f19da7d/lunzpi_dryfit2.jpg)
+
+Here it is held together with blue tape (and hopes/dreams) during the dry fit.
+
+![lunzpi clamps](//images.ctfassets.net/o4gibwve10tr/3OVyjFvLm7Uhm2tDwW4DFA/7da876fc8a31e0e5198d2e1118e01995/lunzpi_clamps.jpg)
+
+While I was clamping it all together and watching glue dry, I turned it on and it booted right up!
+
+## Finished Product!
+![lunzpi finished](//images.ctfassets.net/o4gibwve10tr/Za8idzU6YuLzvWA5W4gjH/469e6183f2187a628908a7ad40baa1f4/lunzpi_finished.jpg)
+
+<br>
+
+## Bill of Materials:
+
+| Item     | Qty   | Per Unit Price | Total Price |
+| --- | --- | --- | --- |
+| [Medium 16x32 RGB LED matrix panel](http://www.adafruit.com/product/420) | 1 | 24.95 | 24.95 |
+| [5V 2A (2000mA) switching power supply - UL Listed](http://www.adafruit.com/products/276) | 1 | 7.95 | 7.95 |
+| [Premium Female/Female Jumper Wires - 40 x 6"](http://www.adafruit.com/products/266) | 1 | 3.95 | 3.95 |
+| [Female DC Power adapter - 2.1mm jack to screw terminal block](http://www.adafruit.com/products/368) | 1 | 2 | 2 |
+| [Premium Male/Male Jumper Wires - 40 x 6" (150mm)](http://www.adafruit.com/products/758) | 1 | 3.95 | 3.95 |
+| [DS1307 Real Time Clock breakout board kit](http://www.adafruit.com/product/264) | 1 | 9 | 9 |
+| [Raspberry Pi 2 - Model B - ARMv7 with 1G RAM](http://www.adafruit.com/product/2358) | 1 | 39.95 | 39.95 |
+| [Panel Mount USB Cable - B Female to Micro-B Male](http://www.adafruit.com/products/937) | 1 | 3.95 | 3.95 |
+| [Assembled Pi T-Cobbler Plus - GPIO Breakout for Raspberry Pi B+](http://www.adafruit.com/products/2028) | 1 | 7.95 | 7.95 |
+| [RJ45-Male-to-Female-Panel-Mount-Ethernet-LAN-Network-Extension-Cable-Excellent](http://www.ebay.com/itm/321524628540?_trksid=p2055119.m1438.l2649&ssPageName=STRK%3AMEBIDX%3AIT) | 1 | 2.44 | 2.44 |
+| [2.1mm female/male barrel jack extension cable - 1.5m / 5 ft](http://www.adafruit.com/products/327) | 1 | 1.95 | 1.95 |
+| [Standalone 5-Pad Capacitive Touch Sensor Breakout - AT42QT1070](http://www.adafruit.com/products/1362) | 1 | 7.5 | 7.5 |
+| [Adafruit Push-button Power Switch Breakout](http://www.adafruit.com/products/1400) | 1 | 6 | 6 |
+| [PIR (motion) sensor](http://www.adafruit.com/product/189) | 1 | 9.94 | 9.94 |
+| [Photo cell (CdS photoresistor)](http://www.adafruit.com/products/161) | 1 | 0.95 | 0.95 |
+| [DS18B20 Digital temperature sensor + extras](http://www.adafruit.com/products/374) | 1 | 3.95 | 3.95 |
+| [Adafruit RGB Matrix HAT + RTC for Raspberry Pi - Mini Kit](http://www.adafruit.com/products/2345) | 1 | 24.95 | 24.95 |
+| [HDMI male to Female AV audio panel screws mount cable 0.3m](http://www.ebay.com/itm/381180456144?_trksid=p2057872.m2749.l2649&ssPageName=STRK%3AMEBIDX%3AIT) | 1 | 3.82 | 3.82 |
+| [6 Inch 1/8" 3.5mm Stereo Audio Headphone Cable Extension Cord M to F MP3 Aux](https://archive.michaellunzer.com/search%20ebay:%204x%206%20Inch%201/8) | 1 | 3.9 | 3.9 |
+| [CR1220 12mm Diameter - 3V Lithium Coin Cell Battery - CR1220](http://www.adafruit.com/products/380) | 1 | 0.95 | 0.95 |
+| [Panel Mount 2.1mm DC barrel jack](http://www.adafruit.com/products/610) | 1 | 2.95 | 2.95 |
+| [16mm Panel Mount Momentary Pushbutton - Burgundy](http://www.adafruit.com/products/1503) | 1 | 0.95 | 0.95 |
+| [Half-size breadboard](http://www.adafruit.com/product/64) | 1 | 5 | 5 |
+| [16mm Panel Mount Momentary Pushbutton - Black](http://www.adafruit.com/products/1505) | 1 | 0.95 | 0.95 |
+| Total | 24 |  | $179.86 |
+
+<br>
+
+May 2017 Updates
+================
+
+![lunzpi face4](//images.ctfassets.net/o4gibwve10tr/3yf0Jhcfsx3tAANBKxoNhy/8f1f84287062d63a21b83a833919489d/lunzpi_face4.jpg)
+
+I had some time to work on the "new clock-faces" and experimented with gradients
+
+![lunzpi face5](//images.ctfassets.net/o4gibwve10tr/7LwGGJVUaBQ7Ha5AjuP28n/8625bec7b1e2271372a733ad03094508/lunzpi_face5.jpg)
+
+More gradients -- this one is the reverse of the photo above.
+
+![lunzpi finished2](//images.ctfassets.net/o4gibwve10tr/46FrBP8npxe6Z75w5ytgfI/2a385fbf2edc652e36a69421027489b4/lunzpi_finished2.jpg)
+
+This is the clock face I'm using these days. I really like the clouds because they aren't as bright and have some "texture" haha]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[Retro Bluetooth Radio]]></title>
+      <link>https://michaellunzer.com/projects/retroBT</link>
+      <guid>https://michaellunzer.com/projects/retroBT</guid>
+      <pubDate>Fri, 14 Apr 2017 00:00:00 GMT</pubDate>
+      <description><![CDATA[# Tear Down
+
+https://www.youtube.com/embed/watch?v=BptfgubLE6c
+
+I felt a little bad disassembling a transistor radio, but it didn't work anymore. Also, I think my grandparents would be happy that someone is actually using it again.
+
+
+![Retro BT8](//images.ctfassets.net/o4gibwve10tr/5KP6JUiP5Y9FSwYQ1r65R1/dbf101e3f43f4830bec29010463e2895/Retro_BT8.jpg)
+
+I searched on eBay for a [bluetooth audio reciever](https://www.ebay.com/sch/sis.html?_nkw=Wireless+Stereo+Bluetooth+Audio+Receiver+Board+3W+%2F+5W+x2+Amplifier+Sound+Module&_id=262059485900&&_trksid=p2057872.m2749.l2658) that was powerful enough to power a speaker. 2-6 weeks later, an ePacket arrived at my house.
+
+I found the perfect set of [metal pushbuttons](https://www.ebay.com/sch/sis.html?_nkw=M19+Metal+PushButton+Switch+Panel+Mount+-+Momentary+type+-+Coffee+Chrome+Plated&_id=381275852697&&_trksid=p2057872.m2749.l2658) to put on the radio -- they were the "coffee" color, so they looked brown and not too out of place.
+
+I was trying to keep the original aesthetic and didn't want flashing LEDs taking away from the device's authenticity. The push button's seller accidentally sent me a button with a seized washer on it. I sent him a photo and explained what happened and he mailed out a new unit a few days later. He was really great about it. Eventually, I unsoldered the buttons to control the device and soldered on new buttons.
+
+## Miscalculations
+![Retro BT10](//images.ctfassets.net/o4gibwve10tr/7ixJg5Qmmm5ixyzlxXo8DC/e996bec304fd3b5ccd2e6f3df8d02c68/Retro_BT10.jpg)
+
+I used a bench grinder to remove some material on the bracket that kept all the components in place.
+
+My Dad's "workshop" aka the basement (where I can make a mess with the bench grinder, table saw, etc.) is accessible only from the outside of his house. It was cold and raining, so I was trying to minimize the trips between the "lab" and the "workshop".
+
+Unfortunately, I misjudged the place where I should grind the bracket, and had to make a second trip to grind down just a bit more.
+
+
+
+I think it came together really nicely!
+
+__The hardest parts of the project were:__
+1.  waiting for parts
+
+2.  measuring where to cut the holes in the wooden radio
+
+I knew I had to be extremely careful to place the buttons to avoid the internal components. Also, I felt I would disappoint my grandparents by destroying one of their antiques. I'm glad everything worked out in the end!
+
+![Retro BT1](//images.ctfassets.net/o4gibwve10tr/3CjByrCmiHxUczZmbCXhzD/e52c54c7701a56116950d26e4b48e230/Retro_BT1.jpg)
+
+It goes well with my room's built in cabinetry and the overall refined look.
+]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[LunRise]]></title>
+      <link>https://michaellunzer.com/projects/lunrise</link>
+      <guid>https://michaellunzer.com/projects/lunrise</guid>
+      <pubDate>Fri, 08 May 2015 00:00:00 GMT</pubDate>
+      <description><![CDATA[LunRise Artificial Sunrise in Action
+====================================
+
+##### Finished Product First:
+
+<div class="iframe-container">
+<iframe src="https://vine.co/v/id7Oq0a0zJO/embed/simple" width="600" height="600" frameborder="0"></iframe><script src="https://platform.vine.co/static/scripts/embed.js"></script>
+</div>
+<br>
+
+### LunRise Artificial Sunrise Alarm Clock
+
+I've been side tracked from my original alarm clock project, LunzPi, and focused on my latest obsession: the LunRise Artificial Sunrise Alarm Clock.
+
+It is a database driven alarm clock that controls a [60 LED strip](https://www.adafruit.com/products/346) as well as [Bluetooth light bulb](https://amzn.to/1G4uzNo).
+
+The bluetooth light bulb idea was started by this [Adafruit guide](https://learn.adafruit.com/reverse-engineering-a-bluetooth-low-energy-light-bulb). Using a [Bluetooth LE Sniffer](https://www.adafruit.com/product/2269), I was able to extract the unique identifier code that was embedded by the manufacturer. This code opens up communication between a device (a raspberry pi) and the bulb. The playbulb's secret code happens to be: **0x001b. **The code **0x001b** was the necessary piece missing to write a hex color to the bulb. Using the code on my [github page](https://github.com/michaellunzer/LunzPi/blob/master/BulbON.py) (adapted from [Tony Dicola](https://learn.adafruit.com/users/tdicola)'s code in the adafruit tutorial) I was able to get full control of my playbulb.
+
+Since the bulb has essentially 2 lights (one "normal"/florescent and the other is RGB) It also had a interesting format so the bulb knows which light to turn on. Here is a brief explanation:
+
+-   __FF000000__ --> this would turn on the normal light
+
+-   __00000000__ --> this would turn off all light
+
+-   __00FF0000__ --> produces a Red color
+
+-   __0000FF00__ --> produces a Green color
+
+-   __000000FF__ --> produces a Blue color
+
+
+![lunrise](//images.ctfassets.net/o4gibwve10tr/30t8d82V6kgs0HOjkr72lD/52c20c114b6e87ca981a8fb6c0f9e7be/lunrise.jpg)
+
+So, this seems like a bit overkill to run a database driven LED Strip, but it was a good opportunity to tie some of my skills together. I've found one of the best way to learn how to do something is using my desire to create something as fuel to learn what I need to accomplish my goals.
+
+This is a first gen Raspberry Pi hosting an LAMP [Linux, Apache, MySQL, PHP/Python] stack (well, it's using lighttp instead of Apache) connected to a 60 LED light strip. It runs very well, considering that the Pi only has 256mb of memory and 700MHz processor (not overclocked at the moment).
+
+I've been captivated by this because of a few reasons:
+
+1.  jQuery Mobile is easy to pick up and quickly produces something that works.
+
+2.  It was a good way to learn AJAX database inserts using PHP.
+
+3.  I'm feeling comfortable enough to build a python script and work reasonably well
+
+The user goes to the IP address of the Pi, adds an alarm of when they would like the LED strip to light up.
+
+![lunrise-app1](//images.ctfassets.net/o4gibwve10tr/3FdeBdULrtzV7CVZCtNyQE/29e851f3bbc39d2315a88a5ea6626e61/lunrise-app1.jpg)
+
+Meanwhile, on the Pi, there is a python script querying the database and waiting for the right day and time the user desired to occur.
+
+When it does, the script continues with a predefined LED light show for the desired duration inputted by the user. From there, it waits until the desired duration has finished before looking once again for the next time to run.
+
+### **Lighting Options:**
+
+-   **Change the color of the bulb**
+
+-   **Turn the LED strip on/off**
+
+![lunrise-app2](//images.ctfassets.net/o4gibwve10tr/44q5KpuqXDVoDLVJ5EvzpD/0b25f00046f050429c42f497fbf830b8/lunrise-app2.jpg)
+
+**Permanent Proto-Board:**
+--------------------------
+
+![lunrise-protoboard](//images.ctfassets.net/o4gibwve10tr/3joojAm0A6FJPYH1qoK2W3/1f52f61e91785e12d112728b5c16336e/lunrise-protoboard.jpg)
+
+### Turning off my PC remotely:
+
+I found out that if the Pi is running a Samba service and so is your windows machine, you can send it a short command to shut down the PC.
+
+This is helpful when you are watching some movie in bed off of your PC running a Plex server and don't want to get up.
+
+This is how I shutdown my PC from across the room
+
+I created a button <Turn PC Off> which sends this command via PHP:
+
+`net rpc SHUTDOWN -C "Goodbye from Lunrise Pi" -f -I Computer.IP.address -U Username%Password`
+
+Yes, the password is stored in plain text, so this probably isn't very secure. But, since it is all on my local network it will be OK.
+
+Also, I needed edit a file the the registry. How-To Geek provides a good walk-through [here](https://www.howtogeek.com/howto/windows-vista/enable-mapping-to-hostnamec-share-on-windows-vista/).
+
+![lunrise-windows-shutdown](//images.ctfassets.net/o4gibwve10tr/6jp7SqAP0xoZUKmnGiZKHG/974d1d4768730cc56c490e3d66cad9fa/lunrise-windows-shutdown.jpg)
+
+Windows Shutdown Prompt: "Goodbye from Lunrise Pi"
+
+**Work In Progress:**
+---------------------
+
+Integrate with Apple Homekit so Siri can control my light.
+
+I have basic light control (on/off) via Siri working.
+
+You can say, "Hey Siri, "make my light red" (and the lights turn red) or *"Netflix and Chill"* and having the lights dim low and the rainbow LED strip turn on!
+
+
+<div class="iframe-container">
+<iframe title="LunzBulb Tweet" src="https://twitframe.com/show?url=https%3A%2F%2Ftwitter.com%2FMichaelLunzer%2Fstatus%2F709635214016811008">
+</iframe>
+</div>]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[Chess Board Night Stand]]></title>
+      <link>https://michaellunzer.com/projects/chessboardnightstand</link>
+      <guid>https://michaellunzer.com/projects/chessboardnightstand</guid>
+      <pubDate>Fri, 17 Jan 2014 00:00:00 GMT</pubDate>
+      <description><![CDATA[# Finished Product First:
+
+![woodworking11](//images.ctfassets.net/o4gibwve10tr/5KAazwfjH5C4joXW6yqmMK/482afe4dc0ff17afbb3fd1a45902262e/woodworking11.jpg)
+
+The Building Process:
+---------------------
+
+After I made a longboard at the UO Craft Center, I decided I needed to hone my craft and make something more complex. I started looking for some inspiration online and kept coming back to chessboards. I also needed another night stand to balance out the fung shui in my room. I was worried that this project might be a bit ambitious for a short class (3 hours a week x 10 weeks), but I figured if I ran out of time, at least I would have a nice chessboard.
+
+![woodworking1](//images.ctfassets.net/o4gibwve10tr/3pWqODlyIDCPHWpF0h7GHh/8a993ee8c01aec890768e1103d9121a1/woodworking1.jpg)
+
+![woodworking2](//images.ctfassets.net/o4gibwve10tr/71eLl4jWE6hx20eQP2x47s/ad03439be16512175673fe77126ebdda/woodworking2.jpg)
+
+![woodworking3](//images.ctfassets.net/o4gibwve10tr/wbzeruSEF3ZVQx2wZXvyR/102a55649377bc8008fe5774ffb4f7a2/woodworking3.jpg)
+
+I took the class with my friend/coworker/carpool buddy Rob Gillin. Under the tutelage of master woodworker Bob, we learned a lot and made some cool projects.
+
+In the beginning, I didn't take too many photos because there was nothing too exciting about cutting a few strips of wood and gluing them together. Here is one of my first cuts of the project:
+
+![woodworking4](//images.ctfassets.net/o4gibwve10tr/43OtcWLi0MSDXUIJoZMvJX/76e62571867e11e782dc129d9ad5757d/woodworking4.jpg)
+
+After cutting the strips to the desired length of one side of the final square, you glue them in alternating colors (light / dark) repeating so you eventually have a group of 8 strips. Sometimes it is hard to glue more than 2 pieces of wood together at a time, so I would clamp pairs together then after about 30 minutes, they could be combined to another set.
+
+Eventually, you will have 8 strips of alternating wood all glued together. Do not worry about planing or sanding, as this board still needs to get cut perpendicular to the strips.
+
+This is where the magic happens... once you cut each strip perpendicular using a sled and a stop block, you can rotate every other strip so the pattern switches, creating a checkered pattern.
+
+Once this happens, again create pairs and start gluing them together. If all goes well and your math as well as cuts are accurate, you will have a square chessboard comprised of square squares.
+
+> "Think of each cut like you would approach hitting a golf ball. Calm down, think about the right tool you need use to accomplish the desired outcome, and execute ~ Bob"
+
+Lots of gluing and waiting!
+------------------------------
+![woodworking5](//images.ctfassets.net/o4gibwve10tr/2qQgnQgdpLZJI0VhVh3v2V/38f227d9423f47bf06b68eea687ffe11/woodworking5.jpg)
+
+The clock starts ticking as soon as you spread the glue!
+
+![woodworking6](//images.ctfassets.net/o4gibwve10tr/3SdVxzSDH5R292cAk4B6Pc/0f86986178517412b6110efd9d02ccd6/woodworking6.jpg)
+
+*I had to recreate one more row because I made a newbie mistake of not leaving enough room for kerf -- the amount of wood lost during the cut.*
+
+![woodworking7](//images.ctfassets.net/o4gibwve10tr/2cRVE2hgXp5BqtUPC4hVpj/72574a3868c1420842d0ea0e296c475d/woodworking7.jpg)
+
+I used a band clamp to glue up the mitered frame around the chess board.
+
+The project is finally starting to take shape
+------------------------------------------
+
+![woodworking8](//images.ctfassets.net/o4gibwve10tr/4Y0meyZmQLSsXSMszVmgpJ/8055570f56cdd3dcf3813edffa5de631/woodworking8.jpg)
+
+![woodworking9](//images.ctfassets.net/o4gibwve10tr/ViO88DvSJjFtt3atEVuhO/acb767d3ad7cbaa62a5ca21cc1b71b74/woodworking9.jpg)
+
+![woodworking10](//images.ctfassets.net/o4gibwve10tr/48CNwI4p2zCdGxsv4pSGkR/cb935d1f8d588df32532f126cb669de3/woodworking10.jpg)
+
+Top down view, applied with a few coasts of GENERAL FINISHES [*Arm-R-Seal*](https://amzn.to/2eLnokR) and the Lo-Fi Instagram filter.
+
+Finished!
+---------
+
+![woodworking11](//images.ctfassets.net/o4gibwve10tr/2bjFzX7133d7rwWvlYYR1e/94f441cff30b80b42b868f4a6a64f5cc/woodworking11.jpg)
+
+Rob and Bob were a huge help!]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[Longboard]]></title>
+      <link>https://michaellunzer.com/projects/longboard</link>
+      <guid>https://michaellunzer.com/projects/longboard</guid>
+      <pubDate>Sat, 04 May 2013 00:00:00 GMT</pubDate>
+      <description><![CDATA[Check out my *first* woodworking project
+========================================
+
+The Building Process:
+---------------------
+
+I took this class during my senior year at University of Oregon's Craft Center. It was a great introduction to this hobby and merged with an existing pastime of mine - longboarding.
+
+In the beginning, I didn't take too many photos because there was nothing too exciting about cutting a few strips of wood and gluing them together. One major lesson learned, is that wood prices can vary dramatically between different types. For whatever reason, I really wanted to use mahogany because I liked the idea of working with mahogany. But I realized at the end how expensive it actually is. I remember the longboard being $27 bucks, which was pretty steep on a college budget...
+
+
+
+![skateboard5](//images.ctfassets.net/o4gibwve10tr/7lItRAXcsbOOG9HdOeEGmn/f038db568045c4cbd5dc5e22429d005f/skateboard5.jpg)
+
+
+![skateboard1](//images.ctfassets.net/o4gibwve10tr/4cU4g5TfniU3rBejltwqKY/e6557bce4fac210f3f0bc14e7a643bd0/skateboard1.jpg)
+
+![skateboard3](//images.ctfassets.net/o4gibwve10tr/2z6zb5F4fadkpqF209J3f4/a755529196d072e37abfdc7d72593c9d/skateboard3.jpg)
+
+## Cruising
+
+<br>
+<div class="iframe-container">
+<iframe src="https://vine.co/v/b0mKh1pjvLD/embed/simple" width="600" height="600" frameborder="0"></iframe><script src="https://platform.vine.co/static/scripts/embed.js"></script>
+</div>
+
+<br>
+
+<div class="iframe-container">
+<iframe src="https://vine.co/v/bQbq5v1IVJt/embed/simple" width="600" height="600" frameborder="0"></iframe><script src="https://platform.vine.co/static/scripts/embed.js"></script>
+</div>
+<br>
+
+Finished!
+---------
+
+![skateboard4](//images.ctfassets.net/o4gibwve10tr/7D9YOQ5r3wdViTbTA6LUoo/c55f371e7edc4ee80b42db7a9c6dd907/skateboard4.jpg)
+
+![skateboard2](//images.ctfassets.net/o4gibwve10tr/1Ue2MtDzhxHFdXg10ehPBo/c396b90996f830d820fcb07d7e6446c0/skateboard2.jpg)
+
+I pulled the trucks and wheels from my existing longboard.]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
+    <item>
+      <title><![CDATA[The Oregon Coasters]]></title>
+      <link>https://michaellunzer.com/projects/oregoncoasters</link>
+      <guid>https://michaellunzer.com/projects/oregoncoasters</guid>
+      <pubDate>Tue, 05 Feb 2013 00:00:00 GMT</pubDate>
+      <description><![CDATA[<div class="iframe-container">
+
+https://www.youtube.com/embed/watch?v=S0T7jzSZmyI
+  
+</div>
+
+<br>
+<br>
+
+<div class="iframe-container">
+<iframe src="https://www.facebook.com/plugins/video.php?href=https%3A%2F%2Fwww.facebook.com%2FTheOregonCoaster%2Fvideos%2F121539914692205%2F&show_text=0" allowFullScreen="true"></iframe>
+</div>
+
+<br>
+<br>
+
+Cultivating Coasters
+--------------------
+
+## Young Entrepreneurs Build a Business
+
+#### Written By __Connor Corr__
+
+Oregon Coasters thrived from an idea to a company in a matter of seconds. The University of Oregon's E-Business club started the company from the ground up after a simple idea was proposed. President Michael Lunzer and Vice President Ian Watson had been looking for new members to join their club, when they realized they weren't attracting the attention they had hoped for with small tech-gadgets at their weekly meetings. After sitting down for a drink and thinking of their resources at hand, Ian mentioned the architecture school's laser cutter. Alas, a ring on the coffee table appeared in Michael's living room, and the idea was born---wooden coasters in the shape of the state of Oregon. Ultimately, the two thought beginning the company Oregon Coasters would be a promising idea, utilizing local resources to target local Oregonians. Excited to build their business, co-founders Ian Watson and Michael Lunzer began the journey.
+
+The University of Oregon E-business club was lacking attendance and motivation until Ian and Michael came up with the idea of beginning a company that produced coasters. The E-business club became revitalized, and attendance more than doubled, Ian explains, "Once we did this our membership increased drastically." Members of the club quickly backed the idea of producing a coaster in the shape of Oregon. After the conception of Oregon Coasters, Lunzer and Watson turned to the resources of their club members and the university to jumpstart production. To design the prototype the E-business club utilized the laser cutters in Lawrence Hall. After cutting the wood coaster in the shape of the state of Oregon, Watson and Lunzer decided to add a feature to each coaster to make it unique.
+
+Watson came up with the idea to incorporate the city of Portland. Born and raised in Portland, Watson wanted a way to represent his hometown that would also be relevant to students at the University of Oregon. Watson came up with the thought to engrave different Portland bridges on each coaster. Growing up in Portland, Watson holds many childhood memories of the Portland bridges and knew that it would easily tap into the Portland market, "Portland is known for its bridges and Portlanders like to express their Portland pride so we think that our product will stand out to our market perfectly." Each of the twelve coasters is inscribed with drawings of the twelve of Portland's famous bridges, causing the coaster to resonate with a larger audience. Lunzer contracted Andrew Seaton, a digital arts major at the University of Oregon, to design the specialized inscription of each of the twelve bridges. Yet, Oregon Coasters market audience is not singularly Portlanders. Oregon Coasters hopes to pertain to a large market audience of not just Portlanders or Oregonians. Oregon Coasters hopes to infiltrate both University of Oregon students who come from out of state. University of Oregon student Corrie Smyth, and native Californian expresses a connection to the coaster, "I grew up in California, however I have found a second home in Oregon. It would be nice to have an Oregon coaster to take with me wherever I find myself settling throughout life." Oregon Coasters appeals to any student at the University of Oregon because it serves as both a sentiment and memento to remember their college experiences.
+
+
+![oregoncoaster](//images.ctfassets.net/o4gibwve10tr/60La6EeqLe2EkPAuPsycUt/feef69ae6d2c8f5f473219648018a780/oregoncoaster.jpg)
+
+
+> "A major takeaway from starting a small company is surrounding yourself with passionate and interested people. I've had to wear many hats during this experience, and each day is a new adventure."
+
+Lunzer and Watson believe that their product will be able to span over several different markets because of the coasters' functionality and distinct features. Oregon Coasters is not limited to specific age demographics because it holds ties to several different cultures within Oregon. Oregon Coasters is relevant to consumers ranging from college students hosting a party to small coffeehouse owners. Watson hopes that the coasters form a distinct bond with the brew culture within Oregon, "...specifically Portland, is well known for its abundance of fine beers and breweries so there was a natural connection." Lunzer and Watson ultimately believe that their product will succeed because it is representative of Oregon, and more importantly is representative of Oregonians and their culture, "People react positively to our product because of their experiences here which creates strong ties to the state."
+
+A large draw to the Oregon Coaster is that all coasters are produced in and by Oregon resources. The wood is taken from Oregon trees and is engraved by University of Oregon machinery in Lawrence Hall. Lunzer and Watson have made it essential for customers to know exactly where, and from what, their product is made from, Watson reasons, "We wanted to keep manufacturing and marketing as local as possible. The coasters are cut on campus which is very convenient." Consumers can feel satisfied knowing that they are supporting a local start-up business, Corrie Smyth admits, "It's nice to know that with a simple purchase I can help local businesses, especially if that business is just starting up."
+
+Each coaster is engraved with one of the twelve famous bridges of Portland, reaching from The Ross Island to The Hawthorne to The Morrison. The coasters are available in both natural wood, and green, and only cost ten dollars for six coasters. Oregon Coasters is an online-focused company that is easily assessable to all Oregonians who wish to order their own Oregon coasters. Oregon Coasters is starting a Kickstarter page in efforts to get support from the local community of Eugene. Oregon Coasters will use the money customers pledge on Kickstarter to begin expanding their newly founded company. Oregon Coasters hopes to branch out to make coasters representing the West coast, such as; Washington, Nevada, Idaho and districts of California. By pledging for Oregon Coasters you will be helping to pay for the production as well as material costs needed to distribute the product. Co-founders Watson and Lunzer are simply proud of their achievement of completing the process of creating a functioning business, Lunzer explains, "A major takeaway from starting a small company is surrounding yourself with passionate and interested people. I've had to wear many hats during this experience, and each day is a new adventure."
+
+## The Oregon Coasters Kickstarter Update #4
+
+<div class="iframe-container">
+
+https://www.youtube.com/embed/watch?v=9DJBGUG1tpE
+  
+</div>
+]]></description>
+      <content:encoded><![CDATA[]]></content:encoded>
+      <category>project</category>
+    </item>
   </channel>
-</rss> 
+</rss>

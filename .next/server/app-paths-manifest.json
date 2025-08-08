@@ -1,12 +1,12 @@
 {
   "/api/send-resume/route": "app/api/send-resume/route.js",
-  "/page": "app/page.js",
-  "/projects/page": "app/projects/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/bucketlist/page": "app/bucketlist/page.js",
   "/blogs/page": "app/blogs/page.js",
-  "/_not-found/page": "app/_not-found/page.js",
-  "/resume/page": "app/resume/page.js",
   "/spotify/page": "app/spotify/page.js",
+  "/page": "app/page.js",
+  "/resume/page": "app/resume/page.js",
+  "/projects/page": "app/projects/page.js",
   "/projects/[slug]/page": "app/projects/[slug]/page.js",
   "/blogs/[slug]/page": "app/blogs/[slug]/page.js"
 }

@@ -10,7 +10,6 @@
     "build": "npm run generate-rss && next build",
     "start": "next start",
     "lint": "next lint",
-    "export": "next export",
     "generate-rss": "node scripts/generate-rss.js",
     "build-with-rss": "npm run generate-rss && next build"
   },
