@@ -7,7 +7,7 @@
   "author": "Michael Lunzer <michaellunzer@gmail.com>",
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run generate-rss && next build",
     "start": "next start",
     "lint": "next lint",
     "export": "next export",
