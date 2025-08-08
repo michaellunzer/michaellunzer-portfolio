@@ -93,9 +93,16 @@ async function generateRSS() {
   </channel>
 </rss>`;
 
-    // Write to public directory
-    const outputPath = path.join(__dirname, '../public/rss.xml');
-    fs.writeFileSync(outputPath, rssContent);
+               // Write to public directory
+           const outputPath = path.join(__dirname, '../public/rss.xml');
+           
+           // Ensure the public directory exists
+           const publicDir = path.dirname(outputPath);
+           if (!fs.existsSync(publicDir)) {
+             fs.mkdirSync(publicDir, { recursive: true });
+           }
+           
+           fs.writeFileSync(outputPath, rssContent);
     
     console.log(`✅ RSS feed generated successfully!`);
     console.log(`📊 Total posts: ${allPosts.length} (${blogs.length} blogs, ${projects.length} projects)`);
@@ -128,8 +135,15 @@ async function generateRSS() {
   </channel>
 </rss>`;
     
-    const outputPath = path.join(__dirname, '../public/rss.xml');
-    fs.writeFileSync(outputPath, fallbackRss);
+               const outputPath = path.join(__dirname, '../public/rss.xml');
+           
+           // Ensure the public directory exists
+           const publicDir = path.dirname(outputPath);
+           if (!fs.existsSync(publicDir)) {
+             fs.mkdirSync(publicDir, { recursive: true });
+           }
+           
+           fs.writeFileSync(outputPath, fallbackRss);
     console.log(`⚠️  Created fallback RSS feed due to error`);
   }
 }
