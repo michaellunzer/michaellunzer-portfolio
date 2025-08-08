@@ -2,7 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   trailingSlash: true,
-  output: 'export',
   images: {
     unoptimized: true,
     remotePatterns: [
@@ -31,4 +30,4 @@ const nextConfig = {
   },
 }
 
-export default nextConfig 
+module.exports = nextConfig 

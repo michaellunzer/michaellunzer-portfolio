@@ -1,5 +1,7 @@
 import { Inter } from 'next/font/google'
 import 'bootstrap/dist/css/bootstrap.css'
+import '../css/style.css'
+import '../css/font-awesome.css'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -40,8 +42,6 @@ export default function RootLayout({ children }) {
         <link rel="apple-touch-icon" sizes="72x72" href="/apple-touch-icon-72x72.png" />
         <link rel="apple-touch-icon" sizes="57x57" href="/apple-touch-icon-57x57.png" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-        <link rel="stylesheet" href="/style.css" />
-        <link rel="stylesheet" href="/font-awesome.css" />
       </head>
       <body className={inter.className}>
         {children}

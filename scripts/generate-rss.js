@@ -1,14 +1,9 @@
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import dotenv from 'dotenv';
+const fs = require('fs');
+const path = require('path');
+const dotenv = require('dotenv');
 
 // Load environment variables
 dotenv.config({ path: '.env.local' });
-
-// Get current directory for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 async function generateRSS() {
   try {
@@ -20,8 +15,9 @@ async function generateRSS() {
       try {
         console.log('📡 Fetching content from Contentful...');
         
-        // Import Contentful functions dynamically
-        const { getAllBlogPosts, getAllProjects } = await import('../lib/contentful.js');
+                       // Import Contentful functions
+               const contentful = require('../lib/contentful.js');
+               const { getAllBlogPosts, getAllProjects } = contentful;
         
         // Fetch data from Contentful
         [blogs, projects] = await Promise.all([
