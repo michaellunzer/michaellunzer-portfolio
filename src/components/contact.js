@@ -3,7 +3,7 @@ import React from "react";
 import { useForm, ValidationError } from "@formspree/react";
 
 export default function Contact({ data }) {
-  const [state, handleSubmit] = useForm("YOUR_FORM_ID"); // Replace with your actual Formspree form ID
+  const [state, handleSubmit] = useForm("xqalgyon"); // Your actual Formspree form ID
 
   if (state.succeeded) {
     return (
@@ -28,26 +28,55 @@ export default function Contact({ data }) {
         </div>
         <form onSubmit={handleSubmit}>
           <div>
-            <label>
-              Your Name: <input type="text" name="name" required />
+            <label htmlFor="name">
+              Your Name
             </label>
-            <ValidationError prefix="Name" field="name" errors={state.errors} />
+            <input
+              id="name"
+              type="text" 
+              name="name"
+              required
+            />
+            <ValidationError 
+              prefix="Name" 
+              field="name"
+              errors={state.errors}
+            />
           </div>
           <div>
-            <label>
-              Your Email: <input type="email" name="email" required />
+            <label htmlFor="email">
+              Your Email
             </label>
-            <ValidationError prefix="Email" field="email" errors={state.errors} />
+            <input
+              id="email"
+              type="email" 
+              name="email"
+              required
+            />
+            <ValidationError 
+              prefix="Email" 
+              field="email"
+              errors={state.errors}
+            />
           </div>
           <div>
-            <label>
-              Message: <textarea name="message" required></textarea>
+            <label htmlFor="message">
+              Message
             </label>
-            <ValidationError prefix="Message" field="message" errors={state.errors} />
+            <textarea
+              id="message"
+              name="message"
+              required
+            />
+            <ValidationError 
+              prefix="Message" 
+              field="message"
+              errors={state.errors}
+            />
           </div>
           <div>
             <button type="submit" disabled={state.submitting}>
-              {state.submitting ? "Sending..." : "Send"}
+              {state.submitting ? "Sending..." : "Submit"}
             </button>
           </div>
           <ValidationError errors={state.errors} />
