@@ -20,20 +20,15 @@ export async function POST(request) {
       to: email,
       from: 'michael@michaellunzer.com', // Replace with your verified sender
       subject: 'Michael Lunzer - Resume',
-      text: 'Please find my resume attached.',
+      text: 'Please find my resume at the link below.',
       html: `
         <p>Hi there!</p>
-        <p>Thanks for requesting my resume. Please find it attached to this email.</p>
+        <p>Thanks for requesting my resume! You can download it using the link below:</p>
+        <p><a href="${process.env.RESUME_URL || 'https://michaellunzer.com/Michael%20Lunzer%20Resume%207-15-24.pdf'}" style="display: inline-block; background-color: #007bff; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; margin: 20px 0;">📄 Download Resume</a></p>
+        <p>If the button doesn't work, you can copy and paste this link into your browser:</p>
+        <p style="word-break: break-all; color: #666;">${process.env.RESUME_URL || 'https://michaellunzer.com/Michael%20Lunzer%20Resume%207-15-24.pdf'}</p>
         <p>Best regards,<br>Michael Lunzer</p>
       `,
-      attachments: [
-        {
-          content: process.env.RESUME_PDF_BASE64,
-          filename: 'Michael_Lunzer_Resume.pdf',
-          type: 'application/pdf',
-          disposition: 'attachment',
-        },
-      ],
     };
 
     // Send email
