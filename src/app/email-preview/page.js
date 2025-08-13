@@ -1,0 +1,503 @@
+"use client"
+import React from 'react';
+
+export default function EmailPreview() {
+  const [emailContent, setEmailContent] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    // Load the email template with a sample resume URL
+    const sampleResumeUrl = 'https://michaellunzer.com/Michael%20Lunzer%20Resume%207-15-24.pdf';
+    
+    try {
+      // For preview purposes, we'll create the content manually since we can't use the utility in client component
+      const htmlContent = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Michael Lunzer - Resume Request</title>
+            <style>
+                /* Reset and base styles */
+                * {
+                    margin: 0;
+                    padding: 0;
+                    box-sizing: border-box;
+                }
+                
+                body {
+                    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+                    line-height: 1.6;
+                    color: #ffffff;
+                    background: linear-gradient(135deg, #0B3D0B 0%, #004400 100%);
+                    margin: 0;
+                    padding: 20px;
+                }
+                
+                .email-container {
+                    max-width: 600px;
+                    margin: 0 auto;
+                    background: #ffffff;
+                    border-radius: 20px;
+                    overflow: hidden;
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+                    position: relative;
+                }
+                
+                /* Header with forest green gradient */
+                .header {
+                    background: linear-gradient(135deg, #0B3D0B 0%, #004400 100%);
+                    padding: 40px 30px;
+                    text-align: center;
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                .header::before {
+                    content: '';
+                    position: absolute;
+                    top: -50%;
+                    left: -50%;
+                    width: 200%;
+                    height: 200%;
+                    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+                    animation: float 6s ease-in-out infinite;
+                }
+                
+                @keyframes float {
+                    0%, 100% { transform: translateY(0px) rotate(0deg); }
+                    50% { transform: translateY(-20px) rotate(180deg); }
+                }
+                
+                .header h1 {
+                    color: white;
+                    font-size: 32px;
+                    font-weight: 700;
+                    margin: 0;
+                    position: relative;
+                    z-index: 2;
+                    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+                }
+                
+                .header .subtitle {
+                    color: rgba(255,255,255,0.9);
+                    font-size: 16px;
+                    margin-top: 10px;
+                    font-weight: 300;
+                    position: relative;
+                    z-index: 2;
+                }
+                
+                /* Content area */
+                .content {
+                    padding: 40px 30px;
+                    background: #ffffff;
+                }
+                
+                .greeting {
+                    font-size: 24px;
+                    font-weight: 600;
+                    color: #0B3D0B;
+                    margin-bottom: 20px;
+                }
+                
+                .message {
+                    font-size: 16px;
+                    color: #2d3748;
+                    margin-bottom: 30px;
+                    line-height: 1.8;
+                }
+                
+                /* Download button */
+                .download-section {
+                    text-align: center;
+                    margin: 40px 0;
+                    padding: 30px;
+                    background: linear-gradient(135deg, #f0f8f0 0%, #e8f5e8 100%);
+                    border-radius: 16px;
+                    border: 2px solid transparent;
+                    background-clip: padding-box;
+                    position: relative;
+                }
+                
+                .download-section::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    border-radius: 16px;
+                    padding: 2px;
+                    background: linear-gradient(135deg, #0B3D0B, #004400);
+                    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                    mask-composite: exclude;
+                }
+                
+                .download-button {
+                    display: inline-block;
+                    background: linear-gradient(135deg, #0B3D0B 0%, #004400 100%);
+                    color: white;
+                    padding: 18px 36px;
+                    text-decoration: none;
+                    border-radius: 50px;
+                    font-weight: 600;
+                    font-size: 18px;
+                    margin: 20px 0;
+                    transition: all 0.3s ease;
+                    box-shadow: 0 8px 25px rgba(11, 61, 11, 0.4);
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                .download-button::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+                    transition: left 0.5s;
+                }
+                
+                .download-button:hover::before {
+                    left: 100%;
+                }
+                
+                .download-button:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 12px 35px rgba(11, 61, 11, 0.6);
+                }
+                
+                .download-button .icon {
+                    margin-right: 10px;
+                    font-size: 20px;
+                }
+                
+                /* Fallback link */
+                .fallback-section {
+                    margin: 30px 0;
+                    padding: 20px;
+                    background: #f8f9fa;
+                    border-radius: 12px;
+                    border-left: 4px solid #0B3D0B;
+                }
+                
+                .fallback-title {
+                    font-weight: 600;
+                    color: #2d3748;
+                    margin-bottom: 15px;
+                    font-size: 16px;
+                }
+                
+                .fallback-link {
+                    background: #ffffff;
+                    padding: 15px;
+                    border-radius: 8px;
+                    border: 1px solid #e2e8f0;
+                    word-break: break-all;
+                    font-family: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+                    font-size: 14px;
+                    color: #4a5568;
+                    display: block;
+                    text-decoration: none;
+                    transition: all 0.3s ease;
+                }
+                
+                .fallback-link:hover {
+                    border-color: #0B3D0B;
+                    background: #f0f8f0;
+                    color: #0B3D0B;
+                }
+                
+                /* Social links with Material Design icons */
+                .social-links {
+                    margin: 30px 0;
+                    text-align: center;
+                }
+                
+                .social-link {
+                    display: inline-block;
+                    margin: 0 15px;
+                    padding: 15px 20px;
+                    background: #f8f9fa;
+                    border-radius: 12px;
+                    color: #2d3748;
+                    text-decoration: none;
+                    font-size: 14px;
+                    font-weight: 500;
+                    transition: all 0.3s ease;
+                    border: 2px solid #e2e8f0;
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                .social-link:hover {
+                    background: #0B3D0B;
+                    color: white;
+                    border-color: #0B3D0B;
+                    transform: translateY(-3px);
+                    box-shadow: 0 8px 25px rgba(11, 61, 11, 0.3);
+                }
+                
+                .social-link .icon {
+                    display: inline-block;
+                    width: 20px;
+                    height: 20px;
+                    margin-right: 8px;
+                    vertical-align: middle;
+                }
+                
+                /* Signature */
+                .signature {
+                    margin-top: 40px;
+                    padding-top: 30px;
+                    border-top: 2px solid #e2e8f0;
+                    text-align: center;
+                }
+                
+                .signature .name {
+                    font-size: 24px;
+                    font-weight: 700;
+                    color: #0B3D0B;
+                    margin-bottom: 8px;
+                }
+                
+                .signature .title {
+                    color: #718096;
+                    font-size: 16px;
+                    font-style: italic;
+                    margin-bottom: 15px;
+                }
+                
+                .signature .company {
+                    color: #4a5568;
+                    font-size: 14px;
+                    font-weight: 500;
+                }
+                
+                /* Footer */
+                .footer {
+                    background: #0B3D0B;
+                    padding: 30px;
+                    text-align: center;
+                    color: white;
+                }
+                
+                .footer p {
+                    color: rgba(255,255,255,0.9);
+                    font-size: 14px;
+                    margin: 5px 0;
+                }
+                
+                .footer .disclaimer {
+                    color: rgba(255,255,255,0.7);
+                    font-size: 12px;
+                    margin-top: 15px;
+                    padding-top: 15px;
+                    border-top: 1px solid rgba(255,255,255,0.2);
+                }
+                
+                /* Responsive design */
+                @media (max-width: 600px) {
+                    body {
+                        padding: 10px;
+                    }
+                    
+                    .email-container {
+                        border-radius: 16px;
+                    }
+                    
+                    .header {
+                        padding: 30px 20px;
+                    }
+                    
+                    .header h1 {
+                        font-size: 28px;
+                    }
+                    
+                    .content {
+                        padding: 30px 20px;
+                    }
+                    
+                    .download-button {
+                        padding: 16px 28px;
+                        font-size: 16px;
+                    }
+                    
+                    .social-link {
+                        margin: 0 10px 10px 10px;
+                        padding: 12px 16px;
+                    }
+                }
+            </style>
+        </head>
+        <body>
+            <div class="email-container">
+                <!-- Header -->
+                <div class="header">
+                    <h1>🚀 Resume Request</h1>
+                    <div class="subtitle">Looking forward to connecting with you!</div>
+                </div>
+                
+                <!-- Content -->
+                <div class="content">
+                    <div class="greeting">Hi there! 👋</div>
+                    
+                    <div class="message">
+                        Thanks for requesting my resume! I'm excited to share my background and experience with you. 
+                        I believe in the power of technology to solve real-world problems, and I'd love to explore 
+                        how we might work together.
+                    </div>
+                    
+                    <!-- Download Section -->
+                    <div class="download-section">
+                        <p style="margin-bottom: 20px; color: #2d3748; font-weight: 500;">
+                            You can download my resume using the button below:
+                        </p>
+                        
+                        <a href="${sampleResumeUrl}" class="download-button">
+                            <span class="icon">📄</span>
+                            Download Resume
+                        </a>
+                        
+                    </div>
+                    
+                    <!-- Fallback Section -->
+                    <div class="fallback-section">
+                        <div class="fallback-title">🔄 Having trouble with the button?</div>
+                        <p style="margin-bottom: 15px; color: #4a5568;">
+                            You can copy and paste this link into your browser:
+                        </p>
+                        <a href="${sampleResumeUrl}" class="fallback-link">
+                            ${sampleResumeUrl}
+                        </a>
+                    </div>
+                    
+                    <!-- Social Links with Material Design Icons -->
+                    <div class="social-links">
+                        <a href="https://linkedin.com/in/michaellunzer" class="social-link">
+                            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+                            </svg>
+                            LinkedIn
+                        </a>
+                        <a href="https://github.com/michaellunzer" class="social-link">
+                            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                            </svg>
+                            GitHub
+                        </a>
+                        <a href="https://michaellunzer.com" class="social-link">
+                            <svg class="icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+                            </svg>
+                            Portfolio
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Signature -->
+                <div class="signature">
+                    <div class="name">Michael Lunzer</div>
+                    <div class="title">Customer Success Manager</div>
+                    <div class="company">Postman</div>
+                </div>
+                
+                <!-- Footer -->
+                <div class="footer">
+                    <p>🚀 Building the future, one connection at a time</p>
+                    <p>This email was sent in response to a resume request from your website.</p>
+                    <div class="disclaimer">
+                        If you didn't request this resume, please ignore this email. 
+                        Your privacy is important to us.
+                    </div>
+                </div>
+            </div>
+        </body>
+        </html>
+      `;
+      
+      setEmailContent(htmlContent);
+    } catch (error) {
+      console.error('Error loading email template:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-800 to-green-900 flex items-center justify-center">
+        <div className="text-white text-xl">Loading email preview...</div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-green-800 to-green-900 p-4">
+      <div className="max-w-4xl mx-auto">
+        {/* Header */}
+        <div className="text-center text-white mb-8">
+          <h1 className="text-4xl font-bold mb-4">📧 Email Template Preview</h1>
+          <p className="text-xl opacity-90">
+            Your new forest green & black AI startup email design
+          </p>
+        </div>
+
+        {/* Email Preview */}
+        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div className="bg-gray-100 px-6 py-4 border-b">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className="w-3 h-3 bg-red-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+              </div>
+              <div className="text-sm text-gray-600">Email Preview</div>
+            </div>
+          </div>
+          
+          <div 
+            className="p-0"
+            dangerouslySetInnerHTML={{ __html: emailContent }}
+          />
+        </div>
+
+        {/* Info Section */}
+        <div className="mt-8 bg-white rounded-2xl p-6 shadow-lg">
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">✨ What's New in This Template</h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div>
+              <h3 className="text-lg font-semibold text-green-700 mb-2">🌲 Forest Green & Black Theme</h3>
+              <ul className="text-gray-700 space-y-1">
+                <li>• Sophisticated forest green gradients</li>
+                <li>• Professional black accents</li>
+                <li>• High contrast for readability</li>
+                <li>• Modern, eco-friendly aesthetic</li>
+              </ul>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-green-700 mb-2">🎯 Streamlined Design</h3>
+              <ul className="text-gray-700 space-y-1">
+                <li>• Removed "What's inside" section</li>
+                <li>• Material Design icons for social links</li>
+                <li>• Cleaner, more focused layout</li>
+                <li>• Professional startup branding</li>
+              </ul>
+            </div>
+          </div>
+          
+          <div className="mt-6 p-4 bg-green-50 rounded-lg">
+            <h3 className="text-lg font-semibold text-green-800 mb-2">📧 Test the Real Thing</h3>
+            <p className="text-green-700">
+              Want to see this in your actual email? Go to your <a href="/resume" className="underline font-semibold">resume page</a> and request a copy!
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

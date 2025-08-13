@@ -1,19 +1,29 @@
 Michael Lunzer - Resume Request
+================================
 
-Hi there!
+Hi there! 👋
 
-Thanks for requesting my resume! I'm excited to share my background and experience with you.
+Thanks for requesting my resume! I'm excited to share my background and experience with you. 
+I believe in the power of technology to solve real-world problems, and I'd love to explore 
+how we might work together.
 
 You can download my resume using the link below:
 
 {{RESUME_URL}}
 
-My resume includes my experience as a Customer Success Manager at Postman, technical background, and various projects I've worked on.
+Connect with me:
+- LinkedIn: https://linkedin.com/in/michaellunzer
+- GitHub: https://github.com/michaellunzer
+- Portfolio: https://michaellunzer.com
 
 Best regards,
 Michael Lunzer
-Customer Success Manager at Postman
+Customer Success Manager
+Postman
 
 ---
+Building the future, one connection at a time 🚀
+
 This email was sent in response to a resume request from your website.
 If you didn't request this resume, please ignore this email.
+Your privacy is important to us.

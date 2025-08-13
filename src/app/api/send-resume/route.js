@@ -1,4 +1,4 @@
-import sgMail from '@sendgrid/mail';
+import { Resend } from 'resend';
 import { loadEmailTemplate } from '../../../utils/emailTemplates.js';
 
 export async function POST(request) {
@@ -13,24 +13,29 @@ export async function POST(request) {
       });
     }
 
-    // Set SendGrid API key
-    sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+    // Initialize Resend
+    const resend = new Resend(process.env.RESEND_API_KEY);
 
     // Load email template
     const resumeUrl = process.env.RESUME_URL || 'https://michaellunzer.com/Michael%20Lunzer%20Resume%207-15-24.pdf';
     const emailContent = loadEmailTemplate('resume-request', { RESUME_URL: resumeUrl });
 
-    // Email content
-    const msg = {
-      to: email,
-      from: 'michael@michaellunzer.com', // Replace with your verified sender
+    // Send email using Resend
+    const { data, error } = await resend.emails.send({
+      from: 'michael@michaellunzer.com',
+      to: [email],
       subject: 'Michael Lunzer - Resume',
       text: emailContent.text,
       html: emailContent.html,
-    };
+    });
 
-    // Send email
-    await sgMail.send(msg);
+    if (error) {
+      console.error('Resend error:', error);
+      return new Response(JSON.stringify({ error: 'Failed to send email' }), {
+        status: 500,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
 
     return new Response(JSON.stringify({ success: true }), {
       status: 200,
