@@ -1,5 +1,6 @@
 {
   "/resume/page": "app/resume/page.js",
+  "/spotify/page": "app/spotify/page.js",
   "/email-preview/page": "app/email-preview/page.js",
   "/page": "app/page.js"
 }

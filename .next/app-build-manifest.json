@@ -38,6 +38,12 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/email-preview/page.js"
+    ],
+    "/spotify/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/spotify/page.css",
+      "static/chunks/app/spotify/page.js"
     ]
   }
 }
