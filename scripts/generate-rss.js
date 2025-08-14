@@ -5,6 +5,40 @@ const dotenv = require('dotenv');
 // Load environment variables
 dotenv.config({ path: '.env.local' });
 
+// Function to safely escape XML content
+function escapeXmlContent(content) {
+  if (!content) return '';
+  
+  // Remove any HTML tags that might cause issues
+  let cleanContent = content
+    .replace(/<[^>]*>/g, '') // Remove HTML tags
+    .replace(/&/g, '&amp;') // Escape ampersands
+    .replace(/</g, '&lt;') // Escape less than
+    .replace(/>/g, '&gt;') // Escape greater than
+    .replace(/"/g, '&quot;') // Escape quotes
+    .replace(/'/g, '&apos;') // Escape apostrophes
+    .trim();
+  
+  // Limit content length to prevent extremely long RSS items
+  if (cleanContent.length > 500) {
+    cleanContent = cleanContent.substring(0, 500) + '...';
+  }
+  
+  return cleanContent;
+}
+
+// Function to safely escape XML attributes
+function escapeXmlAttribute(value) {
+  if (!value) return '';
+  
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+}
+
 async function generateRSS() {
   try {
     let blogs = [];
@@ -15,9 +49,9 @@ async function generateRSS() {
       try {
         console.log('📡 Fetching content from Contentful...');
         
-                       // Import Contentful functions
-               const contentful = require('../lib/contentful.js');
-               const { getAllBlogPosts, getAllProjects } = contentful;
+        // Import Contentful functions
+        const contentful = require('../lib/contentful.js');
+        const { getAllBlogPosts, getAllProjects } = contentful;
         
         // Fetch data from Contentful
         [blogs, projects] = await Promise.all([
@@ -39,27 +73,27 @@ async function generateRSS() {
         ...blog,
         type: 'blog',
         url: `https://michaellunzer.com/blogs/${blog.fields.slug}`,
-        title: blog.fields.title,
-        description: blog.fields.excerpt || blog.fields.description || '',
+        title: escapeXmlContent(blog.fields.title),
+        description: escapeXmlContent(blog.fields.excerpt || blog.fields.description || ''),
         publishedDate: blog.fields.publishedDate || blog.sys.createdAt,
-        content: blog.fields.content || ''
+        content: escapeXmlContent(blog.fields.content || '')
       })),
       ...projects.map(project => ({
         ...project,
         type: 'project',
         url: `https://michaellunzer.com/projects/${project.fields.slug}`,
-        title: project.fields.title,
-        description: project.fields.excerpt || project.fields.description || '',
+        title: escapeXmlContent(project.fields.title),
+        description: escapeXmlContent(project.fields.excerpt || project.fields.description || ''),
         publishedDate: project.fields.publishedDate || project.sys.createdAt,
-        content: project.fields.content || ''
+        content: escapeXmlContent(project.fields.content || '')
       }))
     ].sort((a, b) => new Date(b.publishedDate) - new Date(a.publishedDate));
 
-    // Generate RSS XML
+    // Generate RSS XML with proper escaping
     const rssContent = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Michael Lunzer's Blog & Projects</title>
+    <title>Michael Lunzer's Blog &amp; Projects</title>
     <link>https://www.michaellunzer.com</link>
     <description>Personal blog and projects of Michael Lunzer - Software Engineer and Developer</description>
     <language>en</language>
@@ -68,37 +102,37 @@ async function generateRSS() {
     <ttl>60</ttl>
     ${allPosts.length > 0 ? allPosts.map(post => `
     <item>
-      <title><![CDATA[${post.title}]]></title>
-      <link>${post.url}</link>
-      <guid>${post.url}</guid>
+      <title>${post.title}</title>
+      <link>${escapeXmlAttribute(post.url)}</link>
+      <guid>${escapeXmlAttribute(post.url)}</guid>
       <pubDate>${new Date(post.publishedDate).toUTCString()}</pubDate>
-      <description><![CDATA[${post.description}]]></description>
+      <description>${post.description}</description>
       <content:encoded><![CDATA[${post.content}]]></content:encoded>
       <category>${post.type}</category>
     </item>`).join('') : `
     <!-- Fallback content when no posts are available -->
     <item>
-      <title><![CDATA[Welcome to Michael Lunzer's Portfolio]]></title>
+      <title>Welcome to Michael Lunzer's Portfolio</title>
       <link>https://michaellunzer.com</link>
       <guid>https://michaellunzer.com</guid>
       <pubDate>${new Date().toUTCString()}</pubDate>
-      <description><![CDATA[Welcome to my personal portfolio and blog. Check back soon for new content!]]></description>
+      <description>Welcome to my personal portfolio and blog. Check back soon for new content!</description>
       <content:encoded><![CDATA[<p>Welcome to my personal portfolio and blog. I'll be posting about software development, projects, and more. Check back soon for new content!</p>]]></content:encoded>
       <category>blog</category>
     </item>`}
   </channel>
 </rss>`;
 
-               // Write to public directory
-           const outputPath = path.join(__dirname, '../public/rss.xml');
-           
-           // Ensure the public directory exists
-           const publicDir = path.dirname(outputPath);
-           if (!fs.existsSync(publicDir)) {
-             fs.mkdirSync(publicDir, { recursive: true });
-           }
-           
-           fs.writeFileSync(outputPath, rssContent);
+    // Write to public directory
+    const outputPath = path.join(__dirname, '../public/rss.xml');
+    
+    // Ensure the public directory exists
+    const publicDir = path.dirname(outputPath);
+    if (!fs.existsSync(publicDir)) {
+      fs.mkdirSync(publicDir, { recursive: true });
+    }
+    
+    fs.writeFileSync(outputPath, rssContent);
     
     console.log(`✅ RSS feed generated successfully!`);
     console.log(`📊 Total posts: ${allPosts.length} (${blogs.length} blogs, ${projects.length} projects)`);
@@ -112,7 +146,7 @@ async function generateRSS() {
     const fallbackRss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
-    <title>Michael Lunzer's Blog & Projects</title>
+    <title>Michael Lunzer's Blog &amp; Projects</title>
     <link>https://www.michaellunzer.com</link>
     <description>Personal blog and projects of Michael Lunzer - Software Engineer and Developer</description>
     <language>en</language>
@@ -120,26 +154,26 @@ async function generateRSS() {
     <pubDate>${new Date().toISOString()}</pubDate>
     <ttl>60</ttl>
     <item>
-      <title><![CDATA[Welcome to Michael Lunzer's Portfolio]]></title>
+      <title>Welcome to Michael Lunzer's Portfolio</title>
       <link>https://michaellunzer.com</link>
       <guid>https://michaellunzer.com</guid>
       <pubDate>${new Date().toUTCString()}</pubDate>
-      <description><![CDATA[Welcome to my personal portfolio and blog. Check back soon for new content!]]></description>
+      <description>Welcome to my personal portfolio and blog. Check back soon for new content!</description>
       <content:encoded><![CDATA[<p>Welcome to my personal portfolio and blog. I'll be posting about software development, projects, and more. Check back soon for new content!</p>]]></content:encoded>
       <category>blog</category>
     </item>
   </channel>
 </rss>`;
     
-               const outputPath = path.join(__dirname, '../public/rss.xml');
-           
-           // Ensure the public directory exists
-           const publicDir = path.dirname(outputPath);
-           if (!fs.existsSync(publicDir)) {
-             fs.mkdirSync(publicDir, { recursive: true });
-           }
-           
-           fs.writeFileSync(outputPath, fallbackRss);
+    const outputPath = path.join(__dirname, '../public/rss.xml');
+    
+    // Ensure the public directory exists
+    const publicDir = path.dirname(outputPath);
+    if (!fs.existsSync(publicDir)) {
+      fs.mkdirSync(publicDir, { recursive: true });
+    }
+    
+    fs.writeFileSync(outputPath, fallbackRss);
     console.log(`⚠️  Created fallback RSS feed due to error`);
   }
 }
