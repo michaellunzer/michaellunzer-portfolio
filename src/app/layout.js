@@ -1,4 +1,5 @@
 import { Inter } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
 import 'bootstrap/dist/css/bootstrap.css'
 import '../css/style.css'
 import '../css/font-awesome.css'
@@ -61,6 +62,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className={inter.className}>
         {children}
+        <Analytics />
       </body>
     </html>
   )
