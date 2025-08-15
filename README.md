@@ -1,13 +1,20 @@
   <!-- AUTO-GENERATED-CONTENT:START (STARTER) -->
   <p align="center">
-    <a href="https://michaellunzer.netlify.com/">
-      <img alt="michaellunzer-portfolio" src="https://github.com/michaellunzer/michaellunzer-portfolio/blob/master/src/images/ML.png" width="50" />
+    <a href="https://michaellunzer.com/">
+      <img alt="michaellunzer-portfolio" src="src/images/ML.png" width="50" />
     </a>
   </p>
   <h1 align="center">
     Michael Lunzer - Portfolio Site
   </h1>
-  <img src="https://github.com/michaellunzer/michaellunzer-portfolio/blob/master/docs/screenshot.png" />
+  <img src="public/WebsiteScreenshot.png" alt="Portfolio Screenshot" />
+
+
+
+## In 2025, I vibecoded the website to transition from GatsbyJS to NextJS using cursor. I also moved from Netlify to Vercel and learned a lot along the way. DNS is still on cloudflare.
+
+![Vercel Deploy](https://deploy-badge.vercel.app/vercel/michaellunzer-portfolio)
+
 
 ### Live Demo:
 
@@ -17,7 +24,6 @@ https://michaellunzer.com
 
 I also learned a lot from Andrew Mead's [Great Gatsby bootcamp](https://www.youtube.com/watch?v=8t0vNu2fCCM&t=1762s). It's a 4 hour video and will teach you enough to be dangerous with GatsbyJS.
 
-  [![Netlify Status](https://api.netlify.com/api/v1/badges/56830697-4149-4bad-83e2-21dfe7b3d5b3/deploy-status)](https://app.netlify.com/sites/michaellunzer/deploys)
 
 ## Everything below this is from the original readme.md file
 
