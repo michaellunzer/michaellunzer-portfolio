@@ -7,7 +7,7 @@
   <h1 align="center">
     Michael Lunzer - Portfolio Site
   </h1>
-  <img src="public/WebsiteScreenshot.png" alt="Portfolio Screenshot" />
+  <img src="WebsiteScreenshot.png" alt="Portfolio Screenshot" />
 
 
 
