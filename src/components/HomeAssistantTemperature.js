@@ -27,7 +27,7 @@ export function HomeAssistantTemperature() {
         <div className="card text-center m-3">
             <h5 className="card-header">Data is from my Home-Assistant Server</h5>
             <div className="card-body">
-                Current temperature in my room: {homeAssistantData}&deg; F
+                Current temperature in my room: {homeAssistantData ? Number(homeAssistantData).toFixed(1) : '--'}&deg; F
             </div>
         </div>
     );
