@@ -1299,8 +1299,10 @@ pre{margin-bottom:0}
 }
 
 .spotify__playlist-image {
+  display: block;
   position: relative;
   overflow: hidden;
+  line-height: 0;
 }
 
 .spotify__playlist-image img {

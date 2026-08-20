@@ -4,6 +4,12 @@ import Layout from '../../components/layout'
 import SEO from '../../components/seo'
 import SpotifyMonthlyPlaylists from '../../components/spotifyMonthlyPlaylists'
 
+// Without this the page is prerendered once at build time, so a transient
+// Spotify failure bakes the empty fallback into the deployment until the next
+// push. Revalidating lets it recover on its own, and picks up new monthly
+// playlists between deploys.
+export const revalidate = 3600
+
 export default async function SpotifyPage() {
   try {
     const [siteInfo, monthlyPlaylists] = await Promise.all([
