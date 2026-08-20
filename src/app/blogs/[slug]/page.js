@@ -76,12 +76,6 @@ export default async function BlogPost({ params }) {
             </span>
             <MarkdownRenderer content={blog.fields.description} />
           </div>
-
-          {/* Comments section - you can add your preferred commenting system here */}
-          <div className="comments-section">
-            <h3>Comments</h3>
-            <p>Comments are currently disabled. Feel free to reach out on social media!</p>
-          </div>
         </div>
       </div>
     </Layout>
