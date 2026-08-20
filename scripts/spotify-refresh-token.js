@@ -12,7 +12,7 @@
  * loopback IP for http:// redirects -- "localhost" is rejected.
  */
 
-require('dotenv').config({ path: '.env.local' });
+require('dotenv').config({ path: '.env.local', quiet: true });
 
 const http = require('http');
 const crypto = require('crypto');
