@@ -1665,10 +1665,12 @@ pre{margin-bottom:0}
 }
 
 .youtube-link-container {
+  display: block;
   margin: 1.5em 0;
 }
 
 .youtube-embed-container {
+  display: block;
   position: relative;
   width: 100%;
   max-width: 560px;

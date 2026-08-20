@@ -28,8 +28,10 @@ const getYouTubeVideoId = (url) => {
 const YouTubeEmbed = ({ videoId }) => {
   if (!videoId) return null;
   
+  // A span, not a div: markdown nests links inside <p>, which cannot contain
+  // block-level elements. The container is made block-level with CSS instead.
   return (
-    <div className="youtube-embed-container">
+    <span className="youtube-embed-container">
       <iframe
         width="100%"
         height="315"
@@ -39,7 +41,7 @@ const YouTubeEmbed = ({ videoId }) => {
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
         allowFullScreen
       ></iframe>
-    </div>
+    </span>
   );
 };
 
@@ -72,20 +74,18 @@ const MarkdownRenderer = ({ content }) => {
           h4: ({ children }) => <h4 className="markdown-h4">{children}</h4>,
           h5: ({ children }) => <h5 className="markdown-h5">{children}</h5>,
           h6: ({ children }) => <h6 className="markdown-h6">{children}</h6>,
-          // Custom styling for paragraphs
-          p: ({ children, ...props }) => <p {...props}>{children}</p>,
           // Custom styling for links - handle YouTube links specially
           a: ({ href, children }) => {
             const videoId = getYouTubeVideoId(href);
             
             if (videoId) {
               return (
-                <div className="youtube-link-container">
+                <span className="youtube-link-container">
                   <YouTubeEmbed videoId={videoId} />
                   <a href={href} target="_blank" rel="noopener noreferrer" className="markdown-link youtube-link">
                     {children}
                   </a>
-                </div>
+                </span>
               );
             }
             
