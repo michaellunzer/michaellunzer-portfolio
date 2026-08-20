@@ -22,12 +22,11 @@
     "contentful": "^11.0.0",
     "dotenv": "^17.4.2",
     "moment": "^2.27.0",
-    "next": "^15.5.9",
+    "next": "^16.3.1",
     "prism-themes": "^1.4.0",
     "prismjs": "^1.20.0",
-    "prop-types": "^15.7.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
     "react-markdown": "^10.1.0",
     "react-slick": "^0.31.0",
     "reactjs-popup": "^2.0.5",
@@ -40,12 +39,8 @@
   },
   "devDependencies": {
     "eslint": "^8.0.0",
-    "eslint-config-next": "^15.0.0",
+    "eslint-config-next": "^16.3.1",
     "prettier": "^3.9.6"
-  },
-  "resolutions": {
-    "postcss": "^8.5.26",
-    "sharp": "^0.35.3"
   },
   "keywords": [
     "nextjs",
