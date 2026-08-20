@@ -21,7 +21,7 @@ export default function Testimonial({ data }) {
       <div className="container">
         <div className="section-head text-center">
           <h2>Testimonials</h2>
-          <p>People I've worked with have said some nice things...</p>
+          <p>People I&apos;ve worked with have said some nice things...</p>
         </div>
         <Slider {...settings}>
           {data.map((item, index) => {
