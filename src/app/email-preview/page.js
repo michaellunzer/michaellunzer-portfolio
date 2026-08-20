@@ -468,7 +468,7 @@ export default function EmailPreview() {
 
         {/* Info Section */}
         <div className="mt-8 bg-white rounded-2xl p-6 shadow-lg">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">✨ What's New in This Template</h2>
+          <h2 className="text-2xl font-bold text-gray-800 mb-4">✨ What&apos;s New in This Template</h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
               <h3 className="text-lg font-semibold text-green-700 mb-2">🌲 Forest Green & Black Theme</h3>
@@ -482,7 +482,7 @@ export default function EmailPreview() {
             <div>
               <h3 className="text-lg font-semibold text-green-700 mb-2">🎯 Streamlined Design</h3>
               <ul className="text-gray-700 space-y-1">
-                <li>• Removed "What's inside" section</li>
+                <li>• Removed &quot;What&apos;s inside&quot; section</li>
                 <li>• Material Design icons for social links</li>
                 <li>• Cleaner, more focused layout</li>
                 <li>• Professional startup branding</li>

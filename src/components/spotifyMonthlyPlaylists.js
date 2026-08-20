@@ -10,8 +10,8 @@ export default function SpotifyMonthlyPlaylists({ monthlyPlaylists = [] }) {
             <div className="spotify__monthly-playlists">
                 <h2>Monthly Playlists</h2>
                 <p className="spotify__description">
-                    I usually make a monthly playlist to save the songs that I'm currently listening at that moment in time,  
-                    kinda like a musical time capsule! I've been doing this with Spotify since 2014 
+                    I usually make a monthly playlist to save the songs that I&apos;m currently listening at that moment in time,  
+                    kinda like a musical time capsule! I&apos;ve been doing this with Spotify since 2014 
                     (and before that with iTunes during the iPod era 😎).
                 </p>
                 
@@ -38,8 +38,8 @@ export default function SpotifyMonthlyPlaylists({ monthlyPlaylists = [] }) {
         <div className="spotify__monthly-playlists">
             <h2>Monthly Playlists</h2>
             <p className="spotify__description">
-            I usually make a monthly playlist to save the songs that I'm currently listening at that moment in time,  
-            kinda like a musical time capsule! I've been doing this with Spotify since 2014 
+            I usually make a monthly playlist to save the songs that I&apos;m currently listening at that moment in time,  
+            kinda like a musical time capsule! I&apos;ve been doing this with Spotify since 2014 
             (and before that with iTunes during the iPod era 😎).
             </p>
             

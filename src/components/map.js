@@ -5,7 +5,7 @@ export default function Map() {
     <div className="blogs-section" id="Map">
       <div className="container">
         <div className="section-head">
-          <h2 className="text-center">Everywhere I've Been</h2>
+          <h2 className="text-center">Everywhere I&apos;ve Been</h2>
         </div>
       </div>
       <div className="map-holder">

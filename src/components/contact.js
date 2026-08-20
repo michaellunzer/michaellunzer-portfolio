@@ -13,7 +13,7 @@ export default function Contact({ data }) {
             <h2 className="text-center">Contact</h2>
           </div>
           <div className="text-center">
-            <p>Thanks for your submission! I'll get back to you soon.</p>
+            <p>Thanks for your submission! I&apos;ll get back to you soon.</p>
           </div>
         </div>
       </div>
