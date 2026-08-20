@@ -1,17 +1,12 @@
 "use client"
-import React from 'react';
 
-export default function EmailPreview() {
-  const [emailContent, setEmailContent] = React.useState(null);
-  const [loading, setLoading] = React.useState(true);
+const SAMPLE_RESUME_URL =
+  'https://michaellunzer.com/Michael%20Lunzer%20Resume%207-15-24.pdf';
 
-  React.useEffect(() => {
-    // Load the email template with a sample resume URL
-    const sampleResumeUrl = 'https://michaellunzer.com/Michael%20Lunzer%20Resume%207-15-24.pdf';
-    
-    try {
-      // For preview purposes, we'll create the content manually since we can't use the utility in client component
-      const htmlContent = `
+// The preview markup is a fixed string, so it is built once at module scope.
+// Producing it inside an effect only forced an extra render through a
+// loading state that never actually waited on anything.
+const EMAIL_PREVIEW_HTML = `
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -358,7 +353,7 @@ export default function EmailPreview() {
                             You can download my resume using the button below:
                         </p>
                         
-                        <a href="${sampleResumeUrl}" class="download-button">
+                        <a href="${SAMPLE_RESUME_URL}" class="download-button">
                             <span class="icon">📄</span>
                             Download Resume
                         </a>
@@ -371,8 +366,8 @@ export default function EmailPreview() {
                         <p style="margin-bottom: 15px; color: #4a5568;">
                             You can copy and paste this link into your browser:
                         </p>
-                        <a href="${sampleResumeUrl}" class="fallback-link">
-                            ${sampleResumeUrl}
+                        <a href="${SAMPLE_RESUME_URL}" class="fallback-link">
+                            ${SAMPLE_RESUME_URL}
                         </a>
                     </div>
                     
@@ -418,24 +413,9 @@ export default function EmailPreview() {
             </div>
         </body>
         </html>
-      `;
-      
-      setEmailContent(htmlContent);
-    } catch (error) {
-      console.error('Error loading email template:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+`;
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-green-800 to-green-900 flex items-center justify-center">
-        <div className="text-white text-xl">Loading email preview...</div>
-      </div>
-    );
-  }
-
+export default function EmailPreview() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-800 to-green-900 p-4">
       <div className="max-w-4xl mx-auto">
@@ -462,7 +442,7 @@ export default function EmailPreview() {
           
           <div 
             className="p-0"
-            dangerouslySetInnerHTML={{ __html: emailContent }}
+            dangerouslySetInnerHTML={{ __html: EMAIL_PREVIEW_HTML }}
           />
         </div>
 
