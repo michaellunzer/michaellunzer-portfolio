@@ -2,7 +2,6 @@ import { getBlogPostBySlug, getSiteInformation, getAllBlogPosts } from '../../..
 import { notFound } from 'next/navigation'
 import Layout from '../../../components/layout'
 import SEO from '../../../components/seo'
-import Share from '../../../components/share'
 import MarkdownRenderer from '../../../components/MarkdownRenderer'
 import moment from 'moment'
 import Image from 'next/image'
@@ -41,16 +40,6 @@ export default async function BlogPost({ params }) {
     height: featureImageDetails?.height || 800,
   }
 
-  const siteurl = siteInfo?.fields?.siteUrl || 'https://www.michaellunzer.com'
-  const twitterHandle = siteInfo?.fields?.twiteerHandle
-  const socialConfig = {
-    site: {
-      siteMetadata: { siteurl, twitterHandle }
-    },
-    title: blog.fields.title,
-    slug: blog.fields.slug
-  }
-
   return (
     <Layout siteInfo={siteInfo}>
       <SEO
@@ -86,22 +75,6 @@ export default async function BlogPost({ params }) {
               {moment(blog.fields.publishedDate).format("LL")}
             </span>
             <MarkdownRenderer content={blog.fields.description} />
-          </div>
-          
-          <Share
-            socialConfig={{
-              ...socialConfig.site.siteMetadata,
-              config: {
-                url: `${siteurl}/blogs/${socialConfig.slug}`,
-                title: `${socialConfig.title}`
-              }
-            }}
-          />
-          
-          {/* Comments section - you can add your preferred commenting system here */}
-          <div className="comments-section">
-            <h3>Comments</h3>
-            <p>Comments are currently disabled. Feel free to reach out on social media!</p>
           </div>
         </div>
       </div>

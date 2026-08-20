@@ -46,7 +46,13 @@ export default function SpotifyMonthlyPlaylists({ monthlyPlaylists = [] }) {
             <div className="spotify__playlists-grid">
                 {monthlyPlaylists.map((playlist, index) => (
                     <div key={playlist.id} className="spotify__playlist-item">
-                        <div className="spotify__playlist-image">
+                        <a
+                            href={playlist.external_urls?.spotify}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="spotify__playlist-image"
+                            aria-label={`Open ${playlist.name} on Spotify`}
+                        >
                             <Image
                                 src={playlist.images?.[0]?.url || '/images/spotify-placeholder.jpg'}
                                 alt={`${playlist.name} playlist cover`}
@@ -57,7 +63,7 @@ export default function SpotifyMonthlyPlaylists({ monthlyPlaylists = [] }) {
                             <div className="spotify__playlist-overlay">
                                 <i className="fab fa-spotify"></i>
                             </div>
-                        </div>
+                        </a>
                         <div className="spotify__playlist-info">
                             <h3>
                                 <a href={playlist.external_urls?.spotify} target="_blank" rel="noopener noreferrer">

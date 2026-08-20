@@ -2,7 +2,6 @@ import { getProjectBySlug, getSiteInformation, getAllProjects } from '../../../.
 import { notFound } from 'next/navigation'
 import Layout from '../../../components/layout'
 import SEO from '../../../components/seo'
-import Share from '../../../components/share'
 import MarkdownRenderer from '../../../components/MarkdownRenderer'
 import moment from 'moment'
 import Image from 'next/image'
@@ -39,16 +38,6 @@ export default async function ProjectPost({ params }) {
     const featureImageSize = {
       width: featureImageDetails?.width || 1500,
       height: featureImageDetails?.height || 800,
-    }
-
-    const siteurl = siteInfo?.fields?.siteUrl || 'https://www.michaellunzer.com'
-    const twitterHandle = siteInfo?.fields?.twiteerHandle
-    const socialConfig = {
-      site: {
-        siteMetadata: { siteurl, twitterHandle }
-      },
-      title: project.fields.title,
-      slug: project.fields.slug
     }
 
     return (
@@ -88,15 +77,6 @@ export default async function ProjectPost({ params }) {
               <MarkdownRenderer content={project.fields.description} />
             </div>
             
-            <Share
-              socialConfig={{
-                ...socialConfig.site.siteMetadata,
-                config: {
-                  url: `${siteurl}/projects/${socialConfig.slug}`,
-                  title: `${socialConfig.title}`
-                }
-              }}
-            />
           </div>
         </div>
       </Layout>
