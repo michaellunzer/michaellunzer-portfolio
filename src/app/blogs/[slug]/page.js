@@ -32,6 +32,15 @@ export default async function BlogPost({ params }) {
     notFound()
   }
 
+  // Contentful knows each asset's real dimensions; hard-coding a ratio here
+  // made next/image letterbox and crop images that were not that shape.
+  const featureImageDetails =
+    blog.fields.featureImage?.fields?.file?.details?.image
+  const featureImageSize = {
+    width: featureImageDetails?.width || 1500,
+    height: featureImageDetails?.height || 800,
+  }
+
   const siteurl = siteInfo?.fields?.siteUrl || 'https://www.michaellunzer.com'
   const twitterHandle = siteInfo?.fields?.twiteerHandle
   const socialConfig = {
@@ -61,10 +70,9 @@ export default async function BlogPost({ params }) {
               <Image
                 src={`https:${blog.fields.featureImage.fields.file.url}`}
                 alt={blog.fields.title}
-                width={1500}
-                height={800}
+                width={featureImageSize.width}
+                height={featureImageSize.height}
                 className="img-fluid"
-                style={{ objectFit: 'cover', objectPosition: '50% 50%' }}
               />
             </div>
           ) : (
