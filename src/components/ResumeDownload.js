@@ -46,7 +46,7 @@ export default function ResumeDownload() {
       <div className="resume-download-content">
         <h2>Download My Resume</h2>
         <p>
-          Enter your email address below and I'll send you a copy of my resume as a PDF.
+          Enter your email address below and I&apos;ll send you a copy of my resume as a PDF.
         </p>
         
         {!isSuccess ? (

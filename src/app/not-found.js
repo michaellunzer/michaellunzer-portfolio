@@ -18,7 +18,7 @@ export default async function NotFound() {
           <div className="row">
             <div className="col-sm-12 text-center">
               <h1>404 - Page Not Found</h1>
-              <p>The page you're looking for doesn't exist.</p>
+              <p>The page you&apos;re looking for doesn&apos;t exist.</p>
               <Link href="/" className="btn btn-primary">
                 Go back home
               </Link>

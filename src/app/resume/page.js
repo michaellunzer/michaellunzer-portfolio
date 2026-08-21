@@ -4,47 +4,41 @@ import SEO from '../../components/seo'
 import ResumeDownload from '../../components/ResumeDownload'
 
 export default async function ResumePage() {
-  try {
-    const siteInfo = await getSiteInformation()
+  // Only the data fetch is guarded. Building the JSX inside the try would not
+  // catch render errors anyway, since JSX is constructed lazily.
+  let siteInfo = null
+  let failed = false
 
-    return (
-      <Layout header="resume" siteInfo={siteInfo}>
-        <SEO
-          title="Resume"
-          keywords={['Michael Lunzer', 'Resume', 'CV', 'Experience']}
-          siteInfo={siteInfo}
-        />
-        <div className="site-container">
-          <div className="container">
-            <div className="row">
-              <div className="col-sm-12">
-                <ResumeDownload />
-              </div>
-            </div>
-          </div>
-        </div>
-      </Layout>
-    )
+  try {
+    siteInfo = await getSiteInformation()
   } catch (error) {
     console.error('Error loading resume page:', error)
-    return (
-      <Layout header="resume" siteInfo={null}>
-        <SEO
-          title="Resume"
-          keywords={['Michael Lunzer', 'Resume', 'CV', 'Experience']}
-          siteInfo={null}
-        />
-        <div className="site-container">
-          <div className="container">
-            <div className="row">
-              <div className="col-sm-12">
-                <h1>Resume</h1>
-                <p>Unable to load resume page at the moment. Please try again later.</p>
-              </div>
+    failed = true
+  }
+
+  return (
+    <Layout header="resume" siteInfo={siteInfo}>
+      <SEO
+        title="Resume"
+        keywords={['Michael Lunzer', 'Resume', 'CV', 'Experience']}
+        siteInfo={siteInfo}
+      />
+      <div className="site-container">
+        <div className="container">
+          <div className="row">
+            <div className="col-sm-12">
+              {failed ? (
+                <>
+                  <h1>Resume</h1>
+                  <p>Unable to load resume page at the moment. Please try again later.</p>
+                </>
+              ) : (
+                <ResumeDownload />
+              )}
             </div>
           </div>
         </div>
-      </Layout>
-    )
-  }
-} 
+      </div>
+    </Layout>
+  )
+}

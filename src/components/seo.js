@@ -1,8 +1,7 @@
 import React from "react";
-import PropTypes from "prop-types";
 import Head from "next/head";
 
-function SEO({ description, lang, meta = [], keywords, title, siteInfo }) {
+function SEO({ description, lang = `en`, meta = [], keywords = [], title, siteInfo }) {
   return (
     <Head>
       <title>{title}</title>
@@ -23,20 +22,5 @@ function SEO({ description, lang, meta = [], keywords, title, siteInfo }) {
     </Head>
   );
 }
-
-SEO.defaultProps = {
-  lang: `en`,
-  meta: [],
-  keywords: []
-};
-
-SEO.propTypes = {
-  description: PropTypes.string,
-  lang: PropTypes.string,
-  meta: PropTypes.array,
-  keywords: PropTypes.arrayOf(PropTypes.string),
-  title: PropTypes.string.isRequired,
-  siteInfo: PropTypes.object
-};
 
 export default SEO;

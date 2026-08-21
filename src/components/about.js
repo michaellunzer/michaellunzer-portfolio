@@ -21,7 +21,7 @@ const About = ({ data }) => (
           <div className="about-details">
             <h1 className="name">My Name is {data?.fields?.name}.</h1>
             <h2 className="sub-position">
-              I'm a {data?.fields?.designation}.
+              I&apos;m a {data?.fields?.designation}.
             </h2>
             <MarkdownRenderer content={data?.fields?.description} />
             <ul className="details">

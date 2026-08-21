@@ -21,11 +21,18 @@ export async function generateStaticParams() {
 export default async function BlogPost({ params }) {
   const resolvedParams = await params
   
+  // Only the data fetch is guarded. Building the JSX inside the try would not
+  // catch render errors anyway, since JSX is constructed lazily.
+  let blog, siteInfo
   try {
-    const [blog, siteInfo] = await Promise.all([
+    ;[blog, siteInfo] = await Promise.all([
       getBlogPostBySlug(resolvedParams.slug),
       getSiteInformation(),
     ])
+  } catch (error) {
+    console.error('Error loading blog post:', error)
+    notFound()
+  }
 
   if (!blog) {
     notFound()
@@ -80,8 +87,4 @@ export default async function BlogPost({ params }) {
       </div>
     </Layout>
   )
-  } catch (error) {
-    console.error('Error loading blog post:', error)
-    notFound()
-  }
 } 
