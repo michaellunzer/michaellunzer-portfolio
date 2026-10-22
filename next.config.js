@@ -19,14 +19,6 @@ const nextConfig = {
     ],
     formats: ['image/webp', 'image/avif'],
   },
-  env: {
-    SPACE_ID: process.env.SPACE_ID,
-    API_KEY: process.env.API_KEY,
-    SPOTIFY_CLIENT_ID: process.env.SPOTIFY_CLIENT_ID,
-    SPOTIFY_CLIENT_SECRET: process.env.SPOTIFY_CLIENT_SECRET,
-    SPOTIFY_REFRESH_TOKEN: process.env.SPOTIFY_REFRESH_TOKEN,
-    SEGMENT_WRITE_KEY: process.env.SEGMENT_WRITE_KEY,
-  },
 }
 
 module.exports = nextConfig 
