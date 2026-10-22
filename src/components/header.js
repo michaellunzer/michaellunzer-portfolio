@@ -108,10 +108,6 @@ export default function Header({ data, header }) {
               <li>
                 <Link href="/spotify">Spotify</Link>
               </li>
-
-              <li>
-                <Link href="/resume">Resume</Link>
-              </li>
             </ul>
           </div>
         </div>

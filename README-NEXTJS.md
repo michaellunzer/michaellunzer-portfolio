@@ -56,7 +56,6 @@ src/
 │   ├── page.js            # Home page
 │   ├── blogs/             # Blog pages
 │   ├── projects/          # Project pages
-│   ├── resume/            # Resume page
 │   ├── bucketlist/        # Bucket list page
 │   ├── spotify/           # Spotify page
 │   ├── not-found.js       # 404 page
@@ -156,7 +155,6 @@ All content is managed through Contentful CMS with the following content types:
 - `service` - Services offered
 - `testimonials` - Client testimonials
 - `bucketList` - Personal goals
-- `resume` - Professional experience
 - `siteInformation` - Site configuration
 
 ## 🎯 Features
