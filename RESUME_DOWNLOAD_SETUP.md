@@ -1,5 +1,9 @@
 # Resume Download System Setup Guide
 
+> **Disabled.** The emailed-resume flow described below is no longer active.
+> `/api/send-resume` returns `410 Gone` and `/resume` now points visitors at
+> `/reach-out` instead. This document is kept for reference only.
+
 This guide will help you set up the resume download system using Netlify Functions and SendGrid.
 
 ## Prerequisites

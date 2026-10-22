@@ -1,5 +1,9 @@
 # Resume Download Setup - Simple Version
 
+> **Disabled.** The emailed-resume flow described below is no longer active.
+> `/api/send-resume` returns `410 Gone` and `/resume` now points visitors at
+> `/reach-out` instead. This document is kept for reference only.
+
 ## 🚀 **Recommended Approach: Host PDF on Vercel**
 
 Instead of embedding the PDF as base64, we'll host it directly on Vercel and send a download link via email.
