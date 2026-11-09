@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
@@ -58,8 +58,21 @@ const MODEL_VIEWER_SRC =
 // public/ is gitignored in this repo, so a /models/... path would not deploy.
 // Any other model-viewer attribute passes straight through, and zoom="true"
 // re-enables scroll-to-zoom for an embed that is worth hijacking the wheel for.
-const ModelViewer = ({ src, alt, caption, poster, zoom, ...rest }) => {
+const ModelViewer = ({ node, src, alt, caption, poster, zoom, ...rest }) => {
   const [status, setStatus] = useState('loading');
+
+  // React must not set `src` itself. React treats src as a DOM property, so on
+  // React 18 it lands as a property on the custom element instead of an
+  // attribute, and model-viewer never starts loading - the embed renders as an
+  // empty box with no error. Setting the attribute ourselves once the element
+  // is in the DOM is what model-viewer actually documents, and it behaves the
+  // same on React 18 and 19. Verified on both.
+  const attachSrc = useCallback(
+    (el) => {
+      if (el && src) el.setAttribute('src', src);
+    },
+    [src]
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -117,7 +130,7 @@ const ModelViewer = ({ src, alt, caption, poster, zoom, ...rest }) => {
         // swallowed by the model, and touch-action="pan-y" does the same on
         // mobile. Opt back into zooming per embed with zoom="true".
         <model-viewer
-          src={src}
+          ref={attachSrc}
           alt={alt || 'Interactive 3D model'}
           poster={poster}
           camera-controls=""
