@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
@@ -45,6 +45,115 @@ const YouTubeEmbed = ({ videoId }) => {
   );
 };
 
+// <model-viewer> is a custom element, so the library has to register it before
+// the tag means anything. Load it lazily, once, and only on pages that use it.
+const MODEL_VIEWER_SRC =
+  'https://cdn.jsdelivr.net/npm/@google/model-viewer@4.4.0/dist/model-viewer.min.js';
+
+// Interactive 3D model embed. Authored in Contentful as raw HTML:
+//   <model-viewer src="https://assets.ctfassets.net/.../thing.glb"
+//                 alt="..." caption="..."></model-viewer>
+//
+// Upload the .glb to Contentful as an asset and use that URL - note that
+// public/ is gitignored in this repo, so a /models/... path would not deploy.
+// Any other model-viewer attribute passes straight through, and zoom="true"
+// re-enables scroll-to-zoom for an embed that is worth hijacking the wheel for.
+const ModelViewer = ({ src, alt, caption, poster, zoom, ...rest }) => {
+  const [status, setStatus] = useState('loading');
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (!document.querySelector('script[data-model-viewer]')) {
+      const script = document.createElement('script');
+      script.type = 'module';
+      script.src = MODEL_VIEWER_SRC;
+      script.dataset.modelViewer = '';
+      script.addEventListener('error', () => {
+        if (!cancelled) setStatus('error');
+      });
+      document.head.appendChild(script);
+    }
+
+    // Resolves whenever the element is registered, whether this instance
+    // injected the script or an earlier one already did.
+    window.customElements.whenDefined('model-viewer').then(() => {
+      if (!cancelled) setStatus('ready');
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  // A registered element still leaves an empty box if the .glb itself is
+  // missing. model-viewer 4.x logs that failure to the console but does not
+  // dispatch an event we can listen for, so check the URL ourselves. This runs
+  // alongside the viewer rather than gating it, so a working model is not held
+  // up by the check. Only treat "definitely not there" as a failure - a host
+  // that rejects HEAD would otherwise look like a broken model.
+  useEffect(() => {
+    if (!src) return undefined;
+    let cancelled = false;
+    fetch(src, { method: 'HEAD' })
+      .then((res) => {
+        if (!cancelled && (res.status === 404 || res.status === 410 || res.status >= 500)) {
+          setStatus('error');
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setStatus('error');
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [src]);
+
+  return (
+    <span className="model-viewer-container">
+      {status === 'ready' ? (
+        // Scrolling matters more than zooming for a model sitting mid-article:
+        // disable-zoom lets the wheel/trackpad scroll the page instead of being
+        // swallowed by the model, and touch-action="pan-y" does the same on
+        // mobile. Opt back into zooming per embed with zoom="true".
+        <model-viewer
+          src={src}
+          alt={alt || 'Interactive 3D model'}
+          poster={poster}
+          camera-controls=""
+          auto-rotate=""
+          camera-orbit="-20deg 72deg auto"
+          rotation-per-second="18deg"
+          environment-image="neutral"
+          shadow-intensity="1"
+          exposure="1.05"
+          {...(zoom === 'true' ? {} : { 'disable-zoom': '' })}
+          touch-action="pan-y"
+          {...rest}
+        />
+      ) : (
+        <span className="model-viewer-fallback">
+          {/* one flex child, so the spaces around the link survive */}
+          <span>
+            {status === 'error' ? (
+              <>
+                Could not load the 3D model.{' '}
+                <a href={src} download className="markdown-link">
+                  Download it
+                </a>{' '}
+                instead.
+              </>
+            ) : (
+              'Loading 3D model…'
+            )}
+          </span>
+        </span>
+      )}
+      {caption ? <span className="model-viewer-caption">{caption}</span> : null}
+    </span>
+  );
+};
+
 const MarkdownRenderer = ({ content }) => {
   return (
     <div className="markdown-content">
@@ -52,6 +161,8 @@ const MarkdownRenderer = ({ content }) => {
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[rehypeRaw, rehypeHighlight]}
         components={{
+          // Interactive 3D models, authored as raw <model-viewer> HTML
+          'model-viewer': ModelViewer,
           // Custom styling for code blocks
           code({ node, inline, className, children, ...props }) {
             const match = /language-(\w+)/.exec(className || '');
