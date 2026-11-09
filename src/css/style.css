@@ -1448,3 +1448,63 @@ pre{margin-bottom:0}
     height: 180px;
   }
 }
+/* ---------------------------------------------------------------- */
+/* Interactive 3D model embeds (<model-viewer> in post markdown)     */
+/* ---------------------------------------------------------------- */
+
+/* Markdown nests inline content inside <p>, which cannot contain block
+   elements - so this is a span made block-level, same as the YouTube embed. */
+.model-viewer-container {
+  display: block;
+  width: 100%;
+  max-width: 640px;
+  margin: 1.5em auto;
+}
+
+.model-viewer-container model-viewer {
+  display: block;
+  width: 100%;
+  height: 420px;
+  background-color: #f4f2ef;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --poster-color: transparent;
+}
+
+/* Shown while the library loads, or if it fails to load at all. */
+.model-viewer-fallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 420px;
+  padding: 1em;
+  text-align: center;
+  background-color: #f4f2ef;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  color: #666;
+  font-size: 0.95em;
+}
+
+.model-viewer-caption {
+  display: block;
+  margin-top: 0.6em;
+  text-align: center;
+  font-size: 0.9em;
+  color: #666;
+}
+
+@media (max-width: 768px) {
+  .model-viewer-container model-viewer,
+  .model-viewer-fallback {
+    height: 320px;
+  }
+}
+
+@media (max-width: 480px) {
+  .model-viewer-container model-viewer,
+  .model-viewer-fallback {
+    height: 260px;
+  }
+}
