@@ -48,7 +48,7 @@ export default async function HomePage() {
       )}
 
       {siteInfo?.fields?.menus?.includes('Blogs') && (
-        <Blogs data={blogs} />
+        <Blogs data={blogs} isHomePage={true} />
       )}
 
       {siteInfo?.fields?.menus?.includes('Projects') && (
