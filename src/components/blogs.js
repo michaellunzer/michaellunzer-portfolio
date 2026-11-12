@@ -3,20 +3,20 @@ import Image from "next/image";
 import Link from "next/link";
 import moment from "moment";
 
-export default function Blogs({ data }) {
+export default function Blogs({ data, isHomePage = false }) {
+  // If it's the homepage, only show 5 items
+  const displayData = isHomePage ? data.slice(0, 5) : data;
+
   return (
     <div className="blogs-section section" id="Blogs">
       <div className="container">
         <div className="section-head">
           <h2>Blog Posts</h2>
         </div>
-        
-
-        
         <ul
-          className={`blogs-list ${data.length < 5 ? "few-blogs" : ""}`}
+          className={`blogs-list ${displayData.length < 5 ? "few-blogs" : ""}`}
         >
-          {data.map((item, index) => {
+          {displayData.map((item, index) => {
             return (
               <li key={index} className="item">
                 <div className="inner">
@@ -45,11 +45,13 @@ export default function Blogs({ data }) {
             );
           })}
         </ul>
-        <div className="see-more">
-          <Link href="/blogs">
-            <span>More Blog Posts</span>
-          </Link>
-        </div>
+        {isHomePage && data.length > 5 && (
+          <div className="see-more">
+            <Link href="/blogs">
+              <span>More Blog Posts</span>
+            </Link>
+          </div>
+        )}
       </div>
     </div>
   );
