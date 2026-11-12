@@ -84,3 +84,7 @@ next-env.d.ts
 
 todo.md
 .vercel
+
+# Claude Code (local-only)
+.claude/settings.local.json
+.claude/worktrees/
