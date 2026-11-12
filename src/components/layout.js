@@ -1,7 +1,6 @@
 "use client";
 
 import React from "react";
-import PropTypes from "prop-types";
 import "bootstrap/dist/css/bootstrap.css";
 import Header from "./header";
 import Footer from "./footer";
@@ -26,12 +25,6 @@ const Layout = ({ children, header, siteInfo }) => {
       <Footer siteName={siteInfo?.fields?.siteName} />
     </>
   );
-};
-
-Layout.propTypes = {
-  children: PropTypes.node.isRequired,
-  header: PropTypes.string,
-  siteInfo: PropTypes.object
 };
 
 export default Layout;

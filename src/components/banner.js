@@ -15,7 +15,7 @@ export default function Banner({ data }) {
       <div className="container">
         <div className="banner-details">
           <span>Hello!</span>
-          <h1>I'm {data?.fields?.name}.</h1>
+          <h1>I&apos;m {data?.fields?.name}.</h1>
           <ul className="sub-data">
             {data?.fields?.bannerList?.map((item, index) => {
               return <li key={index}>{item}</li>;
